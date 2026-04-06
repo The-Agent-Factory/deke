@@ -536,13 +536,14 @@ model OutreachLog {
   campaignLeadId  String
   campaign        Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   campaignId      String
-  channel         String          // EMAIL, SMS, LINKEDIN
-  status          String          @default("PENDING") // PENDING, SENT, DELIVERED, OPENED, CLICKED, RESPONDED, FAILED, BOUNCED
-  sentAt          DateTime?
-  openedAt        DateTime?
-  clickedAt       DateTime?
-  respondedAt     DateTime?
-  errorMessage    String?
+  channel           String          // EMAIL, SMS, LINKEDIN
+  status            String          @default("PENDING") // PENDING, SENT, DELIVERED, OPENED, CLICKED, RESPONDED, FAILED, BOUNCED
+  providerMessageId String?         // Resend email ID for status verification
+  sentAt            DateTime?
+  openedAt          DateTime?
+  clickedAt         DateTime?
+  respondedAt       DateTime?
+  errorMessage      String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
