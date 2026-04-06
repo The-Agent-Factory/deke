@@ -94,7 +94,7 @@ export async function processOutreachQueue(
         continue
       }
 
-      // Create OutreachLog entry
+      // Create OutreachLog entry with provider message ID for verification
       await prisma.outreachLog.create({
         data: {
           campaignLeadId: job.campaignLeadId,
@@ -103,6 +103,7 @@ export async function processOutreachQueue(
           status: providerResult.success ? 'SENT' : 'FAILED',
           sentAt: providerResult.success ? new Date() : null,
           errorMessage: providerResult.error,
+          providerMessageId: providerResult.success ? (providerResult.id || null) : null,
         },
       })
 

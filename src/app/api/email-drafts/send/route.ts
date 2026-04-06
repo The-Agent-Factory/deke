@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
             data: { status: 'SENT', sentAt: new Date() },
           })
 
-          // Create outreach log
+          // Create outreach log with Resend message ID for verification
           await prisma.outreachLog.create({
             data: {
               campaignLeadId: draft.campaignLeadId,
@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
               channel: 'EMAIL',
               status: 'SENT',
               sentAt: new Date(),
+              providerMessageId: result.id || null,
             },
           })
 

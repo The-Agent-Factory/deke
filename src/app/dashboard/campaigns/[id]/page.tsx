@@ -941,6 +941,7 @@ export default function CampaignDetailPage({
 
         <TabsContent value="messages">
           <MessagesTab
+            campaignId={campaign.id}
             outreachLogs={campaign.leads.flatMap(cl =>
               cl.outreachLogs.map(ol => ({
                 ...ol,
@@ -948,6 +949,7 @@ export default function CampaignDetailPage({
                 leadEmail: cl.lead.email
               }))
             )}
+            onRefresh={fetchCampaign}
           />
         </TabsContent>
 
