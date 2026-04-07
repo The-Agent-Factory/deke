@@ -12,7 +12,8 @@ export async function POST(
   try {
     const { id: campaignId } = await params
     const body = await request.json().catch(() => ({}))
-    const logIds: string[] | undefined = body.logIds
+    // draftIds: resend specific failed drafts; if omitted, resend all failed drafts
+    const draftIds: string[] | undefined = body.draftIds
 
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
@@ -21,12 +22,32 @@ export async function POST(
       throw new ApiError(404, 'Campaign not found', 'NOT_FOUND')
     }
 
-    // Find failed outreach logs for this campaign
+    // Find failed EmailDraft records (these are the canonical source of truth for failures)
+    const failedDrafts = await prisma.emailDraft.findMany({
+      where: {
+        campaignId,
+        status: 'FAILED',
+        ...(draftIds && draftIds.length > 0 ? { id: { in: draftIds } } : {}),
+      },
+      include: {
+        lead: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    })
+
+    // Also find failed OutreachLogs that have no corresponding draft failure
+    // (can occur from queue-based sends)
     const failedLogs = await prisma.outreachLog.findMany({
       where: {
         campaignId,
         status: 'FAILED',
-        ...(logIds && logIds.length > 0 ? { id: { in: logIds } } : {}),
+        channel: 'EMAIL',
       },
       include: {
         campaignLead: {
@@ -35,8 +56,6 @@ export async function POST(
               select: {
                 id: true,
                 email: true,
-                firstName: true,
-                lastName: true,
               },
             },
             emailDraft: true,
@@ -45,7 +64,25 @@ export async function POST(
       },
     })
 
-    if (failedLogs.length === 0) {
+    // Collect draft IDs already covered by failedDrafts to avoid double-sending
+    const coveredDraftIds = new Set(failedDrafts.map(d => d.id))
+
+    // Add logs whose draft isn't already in failedDrafts
+    const extraDraftsFromLogs: typeof failedDrafts = []
+    for (const log of failedLogs) {
+      const draft = log.campaignLead.emailDraft
+      if (draft && draft.status === 'FAILED' && !coveredDraftIds.has(draft.id)) {
+        coveredDraftIds.add(draft.id)
+        extraDraftsFromLogs.push({
+          ...draft,
+          lead: log.campaignLead.lead as typeof failedDrafts[0]['lead'],
+        })
+      }
+    }
+
+    const allDrafts = [...failedDrafts, ...extraDraftsFromLogs]
+
+    if (allDrafts.length === 0) {
       return NextResponse.json({ resent: 0, failed: 0, skipped: 0 })
     }
 
@@ -53,17 +90,9 @@ export async function POST(
     let failed = 0
     let skipped = 0
 
-    for (const log of failedLogs) {
-      const draft = log.campaignLead.emailDraft
-
-      if (!draft || !['FAILED', 'DRAFT', 'SENT'].includes(draft.status)) {
-        // No draft content available to resend
-        skipped++
-        continue
-      }
-
+    for (const draft of allDrafts) {
       try {
-        const toEmail = draft.overrideEmail || log.campaignLead.lead.email
+        const toEmail = draft.overrideEmail || draft.lead.email
 
         // Build attachments from stored file references
         const emailAttachments: EmailAttachment[] = []
@@ -84,55 +113,65 @@ export async function POST(
           subject: draft.subject,
           html: draft.body,
           campaignId,
-          leadId: log.campaignLead.lead.id,
+          leadId: draft.lead.id,
           cc: draft.ccEmail || undefined,
           attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
         })
 
         if (result.success) {
-          // Update the original failed log to mark it retried
-          await prisma.outreachLog.update({
-            where: { id: log.id },
-            data: {
-              status: 'SENT',
-              sentAt: new Date(),
-              errorMessage: null,
-              providerMessageId: result.id || null,
-            },
-          })
-
-          // Update email draft status
+          // Update draft to SENT
           await prisma.emailDraft.update({
             where: { id: draft.id },
             data: { status: 'SENT', sentAt: new Date(), errorMessage: null },
           })
 
-          // Update campaign lead status to CONTACTED
+          // Create a new OutreachLog (or update existing failed one)
+          const existingLog = await prisma.outreachLog.findFirst({
+            where: { campaignLeadId: draft.campaignLeadId, channel: 'EMAIL', status: 'FAILED' },
+          })
+
+          if (existingLog) {
+            await prisma.outreachLog.update({
+              where: { id: existingLog.id },
+              data: {
+                status: 'SENT',
+                sentAt: new Date(),
+                errorMessage: null,
+                providerMessageId: result.id || null,
+              },
+            })
+          } else {
+            await prisma.outreachLog.create({
+              data: {
+                campaignLeadId: draft.campaignLeadId,
+                campaignId,
+                channel: 'EMAIL',
+                status: 'SENT',
+                sentAt: new Date(),
+                providerMessageId: result.id || null,
+              },
+            })
+          }
+
+          // Mark lead as CONTACTED
           await prisma.campaignLead.update({
-            where: { id: log.campaignLeadId },
+            where: { id: draft.campaignLeadId },
             data: { status: 'CONTACTED' },
           })
 
           resent++
         } else {
-          // Update error message with latest failure reason
-          await prisma.outreachLog.update({
-            where: { id: log.id },
-            data: { errorMessage: result.error },
-          })
-
           await prisma.emailDraft.update({
             where: { id: draft.id },
             data: { status: 'FAILED', errorMessage: result.error },
           })
-
           failed++
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-        await prisma.outreachLog.update({
-          where: { id: log.id },
-          data: { errorMessage },
+        await prisma.emailDraft.update({
+          where: { id: draft.id },
+          data: { status: 'FAILED', errorMessage },
         })
         failed++
       }
