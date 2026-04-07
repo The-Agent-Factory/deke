@@ -15,6 +15,7 @@ import {
   Mail,
   Paperclip,
   AlertTriangle,
+  RotateCcw,
 } from 'lucide-react'
 
 interface AttachmentInfo {
@@ -70,6 +71,9 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [editingDraft, setEditingDraft] = useState<Draft | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [resendingId, setResendingId] = useState<string | null>(null)
+  const [isResendingAll, setIsResendingAll] = useState(false)
+  const [resendResult, setResendResult] = useState<{ resent: number; failed: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const fetchDrafts = useCallback(async () => {
@@ -234,6 +238,35 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
     }
   }
 
+  const handleResendFailed = async (draftId?: string) => {
+    if (draftId) setResendingId(draftId)
+    else setIsResendingAll(true)
+    setResendResult(null)
+    setError(null)
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/resend-failed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(draftId ? { draftIds: [draftId] } : {}),
+      })
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to resend')
+      }
+      const data = await response.json()
+      setResendResult({ resent: data.resent, failed: data.failed })
+      if (data.resent > 0) {
+        await fetchDrafts()
+        onDraftsChange?.()
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to resend emails')
+    } finally {
+      setResendingId(null)
+      setIsResendingAll(false)
+    }
+  }
+
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev)
@@ -263,6 +296,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   }
 
   const draftCount = drafts.filter((d) => d.status === 'DRAFT').length
+  const failedCount = drafts.filter((d) => d.status === 'FAILED').length
   const selectedDraftIds = Array.from(selectedIds).filter((id) =>
     drafts.find((d) => d.id === id && d.status === 'DRAFT')
   )
@@ -296,7 +330,29 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
         </Button>
 
         {drafts.length > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {resendResult && (
+              <p className="text-sm text-muted-foreground">
+                {resendResult.resent > 0
+                  ? `Resent ${resendResult.resent} email${resendResult.resent !== 1 ? 's' : ''}${resendResult.failed > 0 ? `, ${resendResult.failed} still failed` : ''}`
+                  : 'All resends failed'}
+              </p>
+            )}
+            {failedCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleResendFailed()}
+                disabled={isResendingAll || isSending}
+              >
+                {isResendingAll ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                )}
+                Resend Failed ({failedCount})
+              </Button>
+            )}
             {selectedDraftIds.length > 0 && (
               <Button
                 variant="outline"
@@ -482,6 +538,23 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
                     >
                       {statusConfig.label}
                     </Badge>
+                    {draft.status === 'FAILED' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => handleResendFailed(draft.id)}
+                        disabled={resendingId === draft.id || isResendingAll}
+                        aria-label={`Resend email for ${draft.lead.firstName} ${draft.lead.lastName}`}
+                      >
+                        {resendingId === draft.id ? (
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        ) : (
+                          <RotateCcw className="h-3 w-3 mr-1" />
+                        )}
+                        Resend
+                      </Button>
+                    )}
                     {isDraft && (
                       <Button
                         variant="ghost"

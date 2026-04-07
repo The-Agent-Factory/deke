@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { MessageCard } from './message-card'
-import { Mail, RefreshCw } from 'lucide-react'
+import { Mail, RefreshCw, RotateCcw } from 'lucide-react'
 
 interface MessagesTabProps {
   campaignId: string
@@ -29,6 +29,8 @@ export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTab
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [isVerifying, setIsVerifying] = useState(false)
   const [verifyResult, setVerifyResult] = useState<{ verified: number; updated: number } | null>(null)
+  const [isResendingAll, setIsResendingAll] = useState(false)
+  const [resendResult, setResendResult] = useState<{ resent: number; failed: number; skipped: number } | null>(null)
 
   const filtered = outreachLogs.filter(log => {
     if (channelFilter !== 'ALL' && log.channel !== channelFilter) return false
@@ -46,6 +48,8 @@ export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTab
     return acc
   }, {} as Record<string, typeof outreachLogs>)
 
+  const failedCount = outreachLogs.filter(l => l.status === 'FAILED').length
+
   const handleVerify = async () => {
     setIsVerifying(true)
     setVerifyResult(null)
@@ -60,6 +64,27 @@ export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTab
       setVerifyResult({ verified: 0, updated: 0 })
     } finally {
       setIsVerifying(false)
+    }
+  }
+
+  const handleResendAllFailed = async () => {
+    setIsResendingAll(true)
+    setResendResult(null)
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}/resend-failed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      setResendResult(data)
+      if (data.resent > 0) {
+        onRefresh?.()
+      }
+    } catch {
+      setResendResult({ resent: 0, failed: 0, skipped: 0 })
+    } finally {
+      setIsResendingAll(false)
     }
   }
 
@@ -79,7 +104,7 @@ export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTab
 
   return (
     <div className="space-y-6">
-      {/* Filters + Verify */}
+      {/* Filters + Actions */}
       <div className="flex gap-4 items-center flex-wrap">
         <Select value={channelFilter} onValueChange={setChannelFilter}>
           <SelectTrigger className="w-[180px]">
@@ -107,13 +132,33 @@ export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTab
           </SelectContent>
         </Select>
 
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-3 flex-wrap">
+          {resendResult && (
+            <p className="text-sm text-muted-foreground">
+              {resendResult.resent > 0
+                ? `Resent ${resendResult.resent} message${resendResult.resent !== 1 ? 's' : ''}${resendResult.failed > 0 ? `, ${resendResult.failed} still failed` : ''}`
+                : resendResult.skipped > 0
+                  ? `Skipped ${resendResult.skipped} (no draft content)`
+                  : 'All resends failed'}
+            </p>
+          )}
           {verifyResult && (
             <p className="text-sm text-muted-foreground">
               {verifyResult.updated > 0
                 ? `Updated ${verifyResult.updated} of ${verifyResult.verified} emails`
                 : `All ${verifyResult.verified} emails already up to date`}
             </p>
+          )}
+          {failedCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResendAllFailed}
+              disabled={isResendingAll}
+            >
+              <RotateCcw className={`h-4 w-4 mr-2 ${isResendingAll ? 'animate-spin' : ''}`} />
+              {isResendingAll ? 'Resending…' : `Resend Failed (${failedCount})`}
+            </Button>
           )}
           <Button
             variant="outline"
@@ -133,7 +178,12 @@ export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTab
           <h3 className="text-sm font-medium text-muted-foreground">{date}</h3>
           <div className="space-y-2">
             {messages.map(msg => (
-              <MessageCard key={msg.id} message={msg} />
+              <MessageCard
+                key={msg.id}
+                message={msg}
+                campaignId={campaignId}
+                onResent={onRefresh}
+              />
             ))}
           </div>
         </div>
