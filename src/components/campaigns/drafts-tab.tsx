@@ -33,6 +33,7 @@ interface Draft {
   overrideEmail: string | null
   ccEmail: string | null
   attachments: AttachmentInfo[] | null
+  errorMessage: string | null
   lead: {
     firstName: string
     lastName: string
@@ -525,6 +526,11 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
                         </Badge>
                       )}
                     </div>
+                    {draft.status === 'FAILED' && draft.errorMessage && (
+                      <p className="text-xs text-red-600 mt-1">
+                        Error: {draft.errorMessage}
+                      </p>
+                    )}
                   </div>
 
                   {/* Status + actions */}
