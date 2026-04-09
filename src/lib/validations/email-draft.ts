@@ -3,7 +3,6 @@ import { z } from 'zod'
 export const generateDraftsSchema = z.object({
   leadIds: z.array(z.string().min(1)).min(1, 'At least one lead ID is required'),
   templateId: z.string().min(1).optional(),
-  force: z.boolean().optional(),
 })
 
 export const attachmentSchema = z.object({

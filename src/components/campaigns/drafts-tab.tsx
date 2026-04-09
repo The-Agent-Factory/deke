@@ -14,7 +14,6 @@ import {
   FileText,
   Mail,
   Paperclip,
-  AlertTriangle,
   RotateCcw,
 } from 'lucide-react'
 
@@ -67,7 +66,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const [drafts, setDrafts] = useState<Draft[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [isForceGenerating, setIsForceGenerating] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [editingDraft, setEditingDraft] = useState<Draft | null>(null)
@@ -76,7 +74,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const [isResendingAll, setIsResendingAll] = useState(false)
   const [resendResult, setResendResult] = useState<{ resent: number; failed: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [info, setInfo] = useState<string | null>(null)
 
   const fetchDrafts = useCallback(async () => {
     try {
@@ -98,7 +95,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const handleGenerate = async () => {
     setIsGenerating(true)
     setError(null)
-    setInfo(null)
     try {
       const response = await fetch(
         `/api/campaigns/${campaignId}/generate-drafts`,
@@ -114,16 +110,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
         const data = await response.json().catch(() => ({}))
         throw new Error(data.error || 'Failed to generate drafts')
       }
-      const result = await response.json()
-      if (result.created === 0 && result.qualityFiltered > 0) {
-        setInfo(`No drafts generated. ${result.qualityFiltered} lead${result.qualityFiltered !== 1 ? 's were' : ' was'} filtered out by quality gates (placeholder emails, generic addresses, or failed quality checks). Use "Generate for Skipped" to override.`)
-      } else {
-        const parts: string[] = []
-        if (result.created > 0) parts.push(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}`)
-        if (result.skipped > 0) parts.push(`${result.skipped} already existed`)
-        if (result.qualityFiltered > 0) parts.push(`${result.qualityFiltered} filtered by quality gates`)
-        if (parts.length > 0) setInfo(parts.join('. '))
-      }
       setSelectedIds(new Set())
       await fetchDrafts()
       onDraftsChange?.()
@@ -134,49 +120,12 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
     }
   }
 
-  const handleForceGenerate = async () => {
-    setIsForceGenerating(true)
-    setError(null)
-    setInfo(null)
-    try {
-      // Find lead IDs that don't have drafts yet
-      const draftCampaignLeadIds = new Set(drafts.map(d => d.id))
-      const missingLeadIds = campaignLeadIds.filter(id => !draftCampaignLeadIds.has(id))
-
-      if (missingLeadIds.length === 0) return
-
-      const response = await fetch(
-        `/api/campaigns/${campaignId}/generate-drafts`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            leadIds: missingLeadIds,
-            force: true,
-          }),
-        }
-      )
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}))
-        throw new Error(data.error || 'Failed to generate drafts')
-      }
-      setSelectedIds(new Set())
-      await fetchDrafts()
-      onDraftsChange?.()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate drafts for skipped leads')
-    } finally {
-      setIsForceGenerating(false)
-    }
-  }
-
   const handleSendSelected = async () => {
     const ids = Array.from(selectedIds)
     if (ids.length === 0) return
 
     setIsSending(true)
     setError(null)
-    setInfo(null)
     try {
       const response = await fetch(
         `/api/campaigns/${campaignId}/drafts/send`,
@@ -208,7 +157,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
 
     setIsSending(true)
     setError(null)
-    setInfo(null)
     try {
       const response = await fetch(
         `/api/campaigns/${campaignId}/drafts/send`,
@@ -316,7 +264,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const selectedDraftIds = Array.from(selectedIds).filter((id) =>
     drafts.find((d) => d.id === id && d.status === 'DRAFT')
   )
-  const skippedCount = campaignLeadIds.length - drafts.length
 
   if (isLoading) {
     return (
@@ -335,7 +282,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <Button
           onClick={handleGenerate}
-          disabled={isGenerating || isSending || isForceGenerating}
+          disabled={isGenerating || isSending}
         >
           {isGenerating ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -402,36 +349,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
         )}
       </div>
 
-      {/* Skipped leads banner */}
-      {skippedCount > 0 && drafts.length > 0 && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-amber-800">
-              {skippedCount} lead{skippedCount !== 1 ? 's' : ''} skipped
-            </p>
-            <p className="text-xs text-amber-700 mt-0.5">
-              These leads were filtered out due to missing, placeholder, or generic email addresses.
-              You can force-generate drafts for them, then edit the email address before sending.
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 border-amber-300 text-amber-800 hover:bg-amber-100"
-            onClick={handleForceGenerate}
-            disabled={isForceGenerating || isGenerating || isSending}
-          >
-            {isForceGenerating ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4 mr-2" />
-            )}
-            Generate for Skipped
-          </Button>
-        </div>
-      )}
-
       {/* Error display */}
       {error && (
         <div
@@ -439,16 +356,6 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
           role="alert"
         >
           {error}
-        </div>
-      )}
-
-      {/* Info display */}
-      {info && (
-        <div
-          className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800"
-          role="status"
-        >
-          {info}
         </div>
       )}
 
