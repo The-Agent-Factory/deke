@@ -70,7 +70,7 @@ export async function DELETE(
       throw new ApiError(404, 'Draft not found', 'NOT_FOUND')
     }
 
-    if (draft.status !== 'DRAFT' && draft.status !== 'FAILED') {
+    if (draft.status !== 'DRAFT' && draft.status !== 'FAILED' && draft.status !== 'SENT') {
       throw new ApiError(400, `Cannot delete a draft with status ${draft.status}`, 'INVALID_STATUS')
     }
 
