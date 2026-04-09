@@ -33,15 +33,7 @@ export function BulkActionsToolbar({
       if (!response.ok) throw new Error('Failed to generate drafts')
 
       const result = await response.json()
-      const parts: string[] = []
-      parts.push(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}`)
-      if (result.skipped > 0) {
-        parts.push(`${result.skipped} already existed`)
-      }
-      if (result.qualityFiltered > 0) {
-        parts.push(`${result.qualityFiltered} filtered out by quality gates (placeholder emails, generic addresses, or failed quality checks)`)
-      }
-      alert(parts.join('. '))
+      alert(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}${result.skipped > 0 ? ` (${result.skipped} already existed)` : ''}`)
       onActionComplete()
     } catch (error) {
       alert('Failed to generate drafts')
