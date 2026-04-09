@@ -19,7 +19,7 @@ export function BulkActionsToolbar({
 }: BulkActionsToolbarProps) {
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleGenerateDrafts = async () => {
+  const handleGenerateDrafts = async (force = false) => {
     setIsProcessing(true)
     try {
       const response = await fetch(`/api/campaigns/${campaignId}/generate-drafts`, {
@@ -27,21 +27,34 @@ export function BulkActionsToolbar({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           leadIds: selectedLeadIds,
+          force,
         }),
       })
 
       if (!response.ok) throw new Error('Failed to generate drafts')
 
       const result = await response.json()
-      const parts: string[] = []
-      parts.push(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}`)
-      if (result.skipped > 0) {
-        parts.push(`${result.skipped} already existed`)
+
+      // If leads were quality-filtered and none created, offer to force-generate
+      if (!force && result.created === 0 && result.qualityFiltered > 0) {
+        const retry = confirm(
+          `${result.qualityFiltered} lead${result.qualityFiltered !== 1 ? 's were' : ' was'} filtered out by quality gates (placeholder emails, generic addresses, or failed quality checks).\n\nGenerate drafts anyway? You can edit the email address before sending.`
+        )
+        if (retry) {
+          await handleGenerateDrafts(true)
+          return
+        }
+      } else {
+        const parts: string[] = []
+        parts.push(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}`)
+        if (result.skipped > 0) {
+          parts.push(`${result.skipped} already existed`)
+        }
+        if (result.qualityFiltered > 0) {
+          parts.push(`${result.qualityFiltered} filtered by quality gates`)
+        }
+        alert(parts.join('. '))
       }
-      if (result.qualityFiltered > 0) {
-        parts.push(`${result.qualityFiltered} filtered out by quality gates (placeholder emails, generic addresses, or failed quality checks)`)
-      }
-      alert(parts.join('. '))
       onActionComplete()
     } catch (error) {
       alert('Failed to generate drafts')
