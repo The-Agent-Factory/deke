@@ -21,7 +21,7 @@ export async function PATCH(
       throw new ApiError(404, 'Draft not found', 'NOT_FOUND')
     }
 
-    if (draft.status !== 'DRAFT') {
+    if (draft.status !== 'DRAFT' && draft.status !== 'FAILED') {
       throw new ApiError(400, `Cannot edit a draft with status ${draft.status}`, 'INVALID_STATUS')
     }
 
@@ -34,6 +34,8 @@ export async function PATCH(
         ccEmail: data.ccEmail,
         attachments: data.attachments === null ? Prisma.JsonNull : data.attachments,
         editedByUser: true,
+        // Reset FAILED drafts back to DRAFT so they can be re-sent
+        ...(draft.status === 'FAILED' ? { status: 'DRAFT', errorMessage: null } : {}),
       },
       include: {
         lead: {
@@ -68,7 +70,7 @@ export async function DELETE(
       throw new ApiError(404, 'Draft not found', 'NOT_FOUND')
     }
 
-    if (draft.status !== 'DRAFT') {
+    if (draft.status !== 'DRAFT' && draft.status !== 'FAILED') {
       throw new ApiError(400, `Cannot delete a draft with status ${draft.status}`, 'INVALID_STATUS')
     }
 

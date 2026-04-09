@@ -175,7 +175,9 @@ export default function CampaignDetailPage({
       const result = await response.json();
 
       // Show success message with details
-      alert(`Campaign launched! Sent: ${result.sent}, Failed: ${result.failed}`);
+      const sent = result.outreach?.sent ?? result.sent ?? 0;
+      const failed = result.outreach?.failed ?? result.failed ?? 0;
+      alert(`Campaign launched! Sent: ${sent}, Failed: ${failed}`);
 
       // Refresh campaign data to show new status and outreach logs
       await fetchCampaign();

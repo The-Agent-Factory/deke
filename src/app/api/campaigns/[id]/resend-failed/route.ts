@@ -13,13 +13,31 @@ export async function POST(
     const { id: campaignId } = await params
     const body = await request.json().catch(() => ({}))
     // draftIds: resend specific failed drafts; if omitted, resend all failed drafts
-    const draftIds: string[] | undefined = body.draftIds
+    // logIds: OutreachLog IDs (from Messages tab) — resolved to draft IDs via CampaignLead
+    let draftIds: string[] | undefined = body.draftIds
+    const logIds: string[] | undefined = body.logIds
 
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
     })
     if (!campaign) {
       throw new ApiError(404, 'Campaign not found', 'NOT_FOUND')
+    }
+
+    // Resolve OutreachLog IDs → draft IDs via their CampaignLead
+    if (logIds && logIds.length > 0 && (!draftIds || draftIds.length === 0)) {
+      const logs = await prisma.outreachLog.findMany({
+        where: { id: { in: logIds }, campaignId },
+        select: { campaignLeadId: true },
+      })
+      const campaignLeadIds = logs.map(l => l.campaignLeadId)
+      if (campaignLeadIds.length > 0) {
+        const drafts = await prisma.emailDraft.findMany({
+          where: { campaignId, campaignLeadId: { in: campaignLeadIds }, status: 'FAILED' },
+          select: { id: true },
+        })
+        draftIds = drafts.map(d => d.id)
+      }
     }
 
     // Find failed EmailDraft records (these are the canonical source of truth for failures)
