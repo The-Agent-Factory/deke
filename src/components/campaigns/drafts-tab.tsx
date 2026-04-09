@@ -76,6 +76,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const [isResendingAll, setIsResendingAll] = useState(false)
   const [resendResult, setResendResult] = useState<{ resent: number; failed: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
 
   const fetchDrafts = useCallback(async () => {
     try {
@@ -97,6 +98,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const handleGenerate = async () => {
     setIsGenerating(true)
     setError(null)
+    setInfo(null)
     try {
       const response = await fetch(
         `/api/campaigns/${campaignId}/generate-drafts`,
@@ -112,6 +114,16 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
         const data = await response.json().catch(() => ({}))
         throw new Error(data.error || 'Failed to generate drafts')
       }
+      const result = await response.json()
+      if (result.created === 0 && result.qualityFiltered > 0) {
+        setInfo(`No drafts generated. ${result.qualityFiltered} lead${result.qualityFiltered !== 1 ? 's were' : ' was'} filtered out by quality gates (placeholder emails, generic addresses, or failed quality checks). Use "Generate for Skipped" to override.`)
+      } else {
+        const parts: string[] = []
+        if (result.created > 0) parts.push(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}`)
+        if (result.skipped > 0) parts.push(`${result.skipped} already existed`)
+        if (result.qualityFiltered > 0) parts.push(`${result.qualityFiltered} filtered by quality gates`)
+        if (parts.length > 0) setInfo(parts.join('. '))
+      }
       setSelectedIds(new Set())
       await fetchDrafts()
       onDraftsChange?.()
@@ -125,6 +137,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
   const handleForceGenerate = async () => {
     setIsForceGenerating(true)
     setError(null)
+    setInfo(null)
     try {
       // Find lead IDs that don't have drafts yet
       const draftCampaignLeadIds = new Set(drafts.map(d => d.id))
@@ -163,6 +176,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
 
     setIsSending(true)
     setError(null)
+    setInfo(null)
     try {
       const response = await fetch(
         `/api/campaigns/${campaignId}/drafts/send`,
@@ -194,6 +208,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
 
     setIsSending(true)
     setError(null)
+    setInfo(null)
     try {
       const response = await fetch(
         `/api/campaigns/${campaignId}/drafts/send`,
@@ -427,6 +442,16 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
         </div>
       )}
 
+      {/* Info display */}
+      {info && (
+        <div
+          className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800"
+          role="status"
+        >
+          {info}
+        </div>
+      )}
+
       {/* Select all checkbox */}
       {drafts.length > 0 && draftCount > 0 && (
         <div className="flex items-center gap-2 px-1">
@@ -467,6 +492,7 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
               className: 'bg-gray-100 text-gray-800 border-gray-300',
             }
             const isDraft = draft.status === 'DRAFT'
+            const canDelete = draft.status === 'DRAFT' || draft.status === 'FAILED' || draft.status === 'SENT'
             const bodyPreview =
               draft.body.length > 100
                 ? draft.body.slice(0, 100) + '...'
@@ -561,14 +587,17 @@ export function DraftsTab({ campaignId, campaignLeadIds, onDraftsChange }: Draft
                         Resend
                       </Button>
                     )}
-                    {isDraft && (
+                    {canDelete && (
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDelete(draft.id)}
+                        onClick={() => {
+                          if (draft.status === 'SENT' && !confirm('This email has already been sent. Delete the record?')) return
+                          handleDelete(draft.id)
+                        }}
                         disabled={deletingId === draft.id}
-                        aria-label={`Delete draft for ${draft.lead.firstName} ${draft.lead.lastName}`}
+                        aria-label={`Delete email for ${draft.lead.firstName} ${draft.lead.lastName}`}
                       >
                         {deletingId === draft.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
