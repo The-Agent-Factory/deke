@@ -75,6 +75,7 @@ interface Campaign {
       emailVerified?: boolean;
       needsEnrichment?: boolean;
       website: string | null;
+      editorialSummary: string | null;
     };
     outreachLogs: Array<{
       id: string;
