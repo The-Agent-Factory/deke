@@ -64,6 +64,12 @@ model Lead {
   // Conversion tracking
   convertedAt   DateTime?
 
+  // Seasonal contactability override (per-lead). When set, overrides the
+  // SeasonalRule defaults for this lead's classified org type.
+  // JSON array of season codes: ["FALL","WINTER","SPRING","SUMMER"].
+  // null = use SeasonalRule defaults; empty array = always off-season.
+  activeSeasons String?
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -476,6 +482,12 @@ model Campaign {
   // Prospect mode: target org types without requiring a booking
   targetOrgTypes  String?      // JSON array: ["CHOIR", "BARBERSHOP", "MUSIC_SCHOOL"]
 
+  // Seasonal filter escape hatch: when true, the discovery pipeline will not
+  // skip leads whose classified org type is currently off-season. Useful for
+  // building a pipeline ahead of an upcoming active season (e.g. planning a
+  // collegiate tour in July for a September launch).
+  includeOffSeason Boolean     @default(false)
+
   // Optional: Link to booking that triggered campaign
   booking       Booking?       @relation(fields: [bookingId], references: [id])
   bookingId     String?        @unique
@@ -614,6 +626,21 @@ model MessageTemplate {
   targetOrgTypes        String?  // JSON array of OrgType values
 
   @@index([serviceType, channel])
+}
+
+// Seasonal rules for org types — defaults that determine when groups of a
+// given type are contactable. Per-lead overrides live on Lead.activeSeasons.
+// Campaign.includeOffSeason can globally disable the filter for one campaign.
+model SeasonalRule {
+  id            String   @id @default(cuid())
+  orgType       String   @unique // matches OrgType values from org-classifier.ts
+  activeSeasons String   // JSON array: ["FALL","WINTER","SPRING","SUMMER"]
+  enabled       Boolean  @default(true)
+  notes         String?  // human-readable rationale (e.g. "Aug 15 – May 15")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([orgType])
 }
 
 model Suppression {

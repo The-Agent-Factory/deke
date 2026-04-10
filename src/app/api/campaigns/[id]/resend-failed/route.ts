@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { handleApiError, ApiError } from '@/lib/api-error'
 import { sendEmail, EmailAttachment } from '@/lib/outreach/providers/resend'
+import { runThrottled, withRateLimitRetry } from '@/lib/outreach/rate-limit'
 import { readFile } from 'fs/promises'
 import path from 'path'
 
@@ -106,9 +107,12 @@ export async function POST(
 
     let resent = 0
     let failed = 0
-    let skipped = 0
+    const skipped = 0
 
-    for (const draft of allDrafts) {
+    // Throttled send: paces requests to stay under Resend's 2 RPS default
+    // and retries individual sends that hit a 429.
+    await runThrottled(
+      allDrafts.map((draft) => async () => {
       try {
         const toEmail = draft.overrideEmail || draft.lead.email
 
@@ -126,15 +130,17 @@ export async function POST(
           }
         }
 
-        const result = await sendEmail({
-          to: toEmail,
-          subject: draft.subject,
-          html: draft.body,
-          campaignId,
-          leadId: draft.lead.id,
-          cc: draft.ccEmail || undefined,
-          attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
-        })
+        const result = await withRateLimitRetry(() =>
+          sendEmail({
+            to: toEmail,
+            subject: draft.subject,
+            html: draft.body,
+            campaignId,
+            leadId: draft.lead.id,
+            cc: draft.ccEmail || undefined,
+            attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
+          })
+        )
 
         if (result.success) {
           // Update draft to SENT
@@ -193,7 +199,8 @@ export async function POST(
         })
         failed++
       }
-    }
+      })
+    )
 
     return NextResponse.json({ resent, failed, skipped })
   } catch (error) {

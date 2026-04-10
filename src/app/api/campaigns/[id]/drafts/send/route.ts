@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { handleApiError, ApiError } from '@/lib/api-error'
 import { sendEmail, EmailAttachment } from '@/lib/outreach/providers/resend'
+import { runThrottled, withRateLimitRetry } from '@/lib/outreach/rate-limit'
 import { sendDraftsSchema, Attachment } from '@/lib/validations/email-draft'
 import { readFile } from 'fs/promises'
 import path from 'path'
@@ -51,76 +52,82 @@ export async function POST(
     let sent = 0
     let failed = 0
 
-    for (const draft of drafts) {
-      try {
-        // Use override email if set, otherwise fall back to lead email
-        const toEmail = draft.overrideEmail || draft.lead.email
+    // Throttled send: paces requests to stay under Resend's 2 RPS default
+    // and retries individual sends that hit a 429.
+    await runThrottled(
+      drafts.map((draft) => async () => {
+        try {
+          // Use override email if set, otherwise fall back to lead email
+          const toEmail = draft.overrideEmail || draft.lead.email
 
-        // Build attachments from stored file references
-        const emailAttachments: EmailAttachment[] = []
-        if (draft.attachments && Array.isArray(draft.attachments)) {
-          for (const att of draft.attachments as Attachment[]) {
-            try {
-              const filePath = path.join(process.cwd(), 'public', att.path)
-              const content = await readFile(filePath)
-              emailAttachments.push({ filename: att.filename, content })
-            } catch {
-              // Skip attachments that can't be read
+          // Build attachments from stored file references
+          const emailAttachments: EmailAttachment[] = []
+          if (draft.attachments && Array.isArray(draft.attachments)) {
+            for (const att of draft.attachments as Attachment[]) {
+              try {
+                const filePath = path.join(process.cwd(), 'public', att.path)
+                const content = await readFile(filePath)
+                emailAttachments.push({ filename: att.filename, content })
+              } catch {
+                // Skip attachments that can't be read
+              }
             }
           }
-        }
 
-        const result = await sendEmail({
-          to: toEmail,
-          subject: draft.subject,
-          html: draft.body,
-          campaignId,
-          leadId: draft.leadId,
-          cc: draft.ccEmail || undefined,
-          attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
-        })
-
-        if (result.success) {
-          await prisma.emailDraft.update({
-            where: { id: draft.id },
-            data: { status: 'SENT', sentAt: new Date() },
-          })
-
-          // Create outreach log with Resend message ID for verification
-          await prisma.outreachLog.create({
-            data: {
-              campaignLeadId: draft.campaignLeadId,
+          const result = await withRateLimitRetry(() =>
+            sendEmail({
+              to: toEmail,
+              subject: draft.subject,
+              html: draft.body,
               campaignId,
-              channel: 'EMAIL',
-              status: 'SENT',
-              sentAt: new Date(),
-              providerMessageId: result.id || null,
-            },
-          })
+              leadId: draft.leadId,
+              cc: draft.ccEmail || undefined,
+              attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
+            })
+          )
 
-          // Update campaign lead status
-          await prisma.campaignLead.update({
-            where: { id: draft.campaignLeadId },
-            data: { status: 'CONTACTED' },
-          })
+          if (result.success) {
+            await prisma.emailDraft.update({
+              where: { id: draft.id },
+              data: { status: 'SENT', sentAt: new Date() },
+            })
 
-          sent++
-        } else {
+            // Create outreach log with Resend message ID for verification
+            await prisma.outreachLog.create({
+              data: {
+                campaignLeadId: draft.campaignLeadId,
+                campaignId,
+                channel: 'EMAIL',
+                status: 'SENT',
+                sentAt: new Date(),
+                providerMessageId: result.id || null,
+              },
+            })
+
+            // Update campaign lead status
+            await prisma.campaignLead.update({
+              where: { id: draft.campaignLeadId },
+              data: { status: 'CONTACTED' },
+            })
+
+            sent++
+          } else {
+            await prisma.emailDraft.update({
+              where: { id: draft.id },
+              data: { status: 'FAILED', errorMessage: result.error },
+            })
+            failed++
+          }
+        } catch (emailError) {
+          const errorMessage = emailError instanceof Error ? emailError.message : 'Unknown error'
           await prisma.emailDraft.update({
             where: { id: draft.id },
-            data: { status: 'FAILED', errorMessage: result.error },
+            data: { status: 'FAILED', errorMessage },
           })
           failed++
         }
-      } catch (emailError) {
-        const errorMessage = emailError instanceof Error ? emailError.message : 'Unknown error'
-        await prisma.emailDraft.update({
-          where: { id: draft.id },
-          data: { status: 'FAILED', errorMessage },
-        })
-        failed++
-      }
-    }
+      })
+    )
 
     return NextResponse.json({ sent, failed })
   } catch (error) {
