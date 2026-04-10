@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { handleApiError, ApiError } from '@/lib/api-error'
 import { renderTemplate } from '@/lib/outreach/template-renderer'
 import { buildDefaultSubject } from '@/lib/outreach/default-subject'
+import { resolveCampaignVisitDates } from '@/lib/discovery/draft-generator'
 import { generateDraftsSchema } from '@/lib/validations/email-draft'
 
 export async function POST(
@@ -23,9 +24,12 @@ export async function POST(
       throw new ApiError(404, 'Campaign not found', 'NOT_FOUND')
     }
 
+    // Resolve the dates Deke will be visiting the campaign's area so leads can plan around them.
+    const visitDates = await resolveCampaignVisitDates(campaignId)
+
     // Fetch template
     let templateSubject = buildDefaultSubject(campaign.baseLocation, campaign.booking?.serviceType)
-    let templateBody = 'Hi {{firstName}},\n\nI\'m reaching out because I\'ll be in the {{baseLocation}} area soon and thought there might be an opportunity to work together.\n\nWould you be open to a conversation?\n\nBest,\nDeke Sharon'
+    let templateBody = 'Hi {{firstName}},\n\nI\'m reaching out because I\'ll be in the {{baseLocation}} area{{availabilityDates}} and thought there might be an opportunity to work together.\n\nWould you be open to a conversation?\n\nBest,\nDeke Sharon'
 
     if (templateId) {
       const template = await prisma.messageTemplate.findUnique({
@@ -92,6 +96,7 @@ export async function POST(
         organization: cl.lead.organization || '',
         email: cl.lead.email,
         baseLocation: campaign.baseLocation,
+        availabilityDates: visitDates.forTemplate,
       }
 
       const renderedSubject = renderTemplate(templateSubject, vars)

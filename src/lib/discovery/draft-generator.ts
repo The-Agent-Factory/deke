@@ -14,6 +14,102 @@ export interface DraftGenerationResult {
   skipped: number
 }
 
+export interface CampaignVisitDates {
+  /** Formatted human date range, e.g. "January 15 through January 22, 2025". Empty string when no dates were found. */
+  formatted: string
+  /**
+   * The same range, pre-formatted for inline template use ("{{availabilityDates}}").
+   * Starts with a leading space when populated (" January 15 through January 22, 2025")
+   * so templates like "I'll be in the area{{availabilityDates}}" read naturally.
+   * Falls back to " soon" when no dates could be resolved.
+   */
+  forTemplate: string
+}
+
+function formatVisitDate(d: Date | null): string | null {
+  if (!d) return null
+  return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function formatVisitDateRange(start: Date | null, end: Date | null): string {
+  const s = formatVisitDate(start)
+  const e = formatVisitDate(end)
+  if (s && e) return `${s} through ${e}`
+  if (s) return `around ${s}`
+  return ''
+}
+
+/**
+ * Resolve the dates Deke will be visiting the campaign's area.
+ *
+ * Priority order:
+ *   1. The linked booking's explicit dates
+ *   2. The trip attached to that booking
+ *   3. The campaign's own startDate/endDate
+ *   4. Best-effort lookup of an upcoming Trip whose location matches the campaign's baseLocation
+ *
+ * Leads need concrete dates to plan around, so we fall back to searching trips
+ * by location rather than leaving the email vague.
+ */
+export async function resolveCampaignVisitDates(campaignId: string): Promise<CampaignVisitDates> {
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+    select: {
+      baseLocation: true,
+      startDate: true,
+      endDate: true,
+      booking: {
+        select: {
+          startDate: true,
+          endDate: true,
+          trip: {
+            select: {
+              startDate: true,
+              endDate: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  if (!campaign) {
+    return { formatted: '', forTemplate: ' soon' }
+  }
+
+  let start: Date | null =
+    campaign.booking?.startDate ?? campaign.booking?.trip?.startDate ?? campaign.startDate ?? null
+  let end: Date | null =
+    campaign.booking?.endDate ?? campaign.booking?.trip?.endDate ?? campaign.endDate ?? null
+
+  // Last resort: find an upcoming trip that matches the campaign's base location
+  // so leads always see concrete dates rather than a vague "soon".
+  if (!start && !end && campaign.baseLocation) {
+    const cityToken = campaign.baseLocation.split(',')[0].trim()
+    const matchingTrip = await prisma.trip.findFirst({
+      where: {
+        status: { in: ['upcoming', 'in-progress'] },
+        endDate: { gte: new Date() },
+        OR: [
+          { location: { contains: cityToken, mode: 'insensitive' } },
+          { location: { contains: campaign.baseLocation, mode: 'insensitive' } },
+        ],
+      },
+      orderBy: { startDate: 'asc' },
+    })
+    if (matchingTrip) {
+      start = matchingTrip.startDate
+      end = matchingTrip.endDate
+    }
+  }
+
+  const formatted = formatVisitDateRange(start, end)
+  return {
+    formatted,
+    forTemplate: formatted ? ` ${formatted}` : ' soon',
+  }
+}
+
 /**
  * Determine a sensible greeting name for the lead.
  *
@@ -70,12 +166,8 @@ export async function generateDraftsForCampaign(campaignId: string): Promise<Dra
     select: {
       id: true,
       baseLocation: true,
-      startDate: true,
-      endDate: true,
       booking: {
         select: {
-          startDate: true,
-          endDate: true,
           serviceType: true,
         },
       },
@@ -86,20 +178,8 @@ export async function generateDraftsForCampaign(campaignId: string): Promise<Dra
     throw new Error('Campaign not found')
   }
 
-  // Build availability date string from campaign or booking dates
-  const formatDate = (d: Date | string | null) => {
-    if (!d) return null
-    return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-  }
-
-  const availStart = formatDate(campaign.booking?.startDate || campaign.startDate)
-  const availEnd = formatDate(campaign.booking?.endDate || campaign.endDate)
-  let availabilityDates = ''
-  if (availStart && availEnd) {
-    availabilityDates = `${availStart} through ${availEnd}`
-  } else if (availStart) {
-    availabilityDates = `around ${availStart}`
-  }
+  // Resolve the dates Deke will be visiting this campaign's area so leads can plan.
+  const visitDates = await resolveCampaignVisitDates(campaignId)
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://dekesharon.com'
   const workshopLink = `${baseUrl}/workshops`
@@ -154,7 +234,7 @@ export async function generateDraftsForCampaign(campaignId: string): Promise<Dra
       editorialSummary: cl.lead.editorialSummary || '',
       email: cl.lead.email,
       baseLocation: campaign.baseLocation,
-      availabilityDates: availabilityDates ? ` ${availabilityDates}` : ' soon',
+      availabilityDates: visitDates.forTemplate,
       workshopLink,
       servicesLink,
     }
