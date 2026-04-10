@@ -33,6 +33,7 @@ export async function GET(
                 organization: true,
                 contactTitle: true,
                 website: true,
+                editorialSummary: true,
               }
             },
             outreachLogs: true,

@@ -251,3 +251,45 @@ export function getSimilarOrgKeywords(orgType: OrgType): string[] {
   const pattern = ORG_PATTERNS.find((p) => p.type === orgType)
   return pattern ? pattern.keywords : []
 }
+
+const ORG_TYPE_LABELS: Record<OrgType, string> = {
+  UNIVERSITY: 'University',
+  COLLEGE: 'College',
+  HIGH_SCHOOL: 'High School',
+  MIDDLE_SCHOOL: 'Middle School',
+  ELEMENTARY_SCHOOL: 'Elementary School',
+  THEATRE: 'Theatre',
+  THEATER: 'Theater',
+  CHOIR: 'Choir',
+  BARBERSHOP: 'Barbershop',
+  A_CAPPELLA_GROUP: 'A Cappella Group',
+  GOSPEL_CHOIR: 'Gospel Choir',
+  COMMUNITY_CHORUS: 'Community Chorus',
+  YOUTH_CHOIR: 'Youth Choir',
+  CHURCH: 'Church',
+  SYNAGOGUE: 'Synagogue',
+  TEMPLE: 'Temple',
+  MOSQUE: 'Mosque',
+  COMMUNITY_CENTER: 'Community Center',
+  ARTS_CENTER: 'Arts Center',
+  MUSIC_SCHOOL: 'Music School',
+  CONSERVATORY: 'Conservatory',
+  PERFORMING_ARTS: 'Performing Arts',
+  FESTIVAL: 'Festival',
+  CONFERENCE: 'Conference',
+  CONVENTION: 'Convention',
+  CORPORATE: 'Corporate',
+  NONPROFIT: 'Nonprofit',
+  UNKNOWN: 'Music Organization',
+}
+
+/**
+ * Get a human-friendly label for an organization type.
+ *
+ * @example
+ * getOrgTypeLabel('HIGH_SCHOOL') // 'High School'
+ * getOrgTypeLabel('A_CAPPELLA_GROUP') // 'A Cappella Group'
+ */
+export function getOrgTypeLabel(orgType: OrgType): string {
+  return ORG_TYPE_LABELS[orgType] ?? 'Music Organization'
+}
