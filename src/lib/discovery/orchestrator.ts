@@ -16,6 +16,7 @@ import { discoverWithPerplexity } from './perplexity-research'
 import { calculateScore, calculateScoreStats } from './scorer'
 import { deduplicate, getDeduplicationStats } from './deduplicator'
 import { classifyOrganization } from './org-classifier'
+import { filterBySeasonality, getSeasonForDate } from './seasons'
 import { getRecommendations, buildRecommendationReason } from '@/lib/recommendations/engine'
 import { calculateRecommendationBonus } from '@/lib/recommendations/scorer'
 
@@ -289,10 +290,33 @@ export async function discoverLeads(campaignId: string): Promise<DiscoveryResult
     warnings.push(`${filtered} leads filtered out (college/university or classical)`)
   }
 
-  const originalCount = allLeads.length
+  // Seasonal filter — skip groups whose org type is currently off-season
+  // (e.g. collegiate groups in summer). Campaigns can opt out via
+  // includeOffSeason to build pipeline ahead of an upcoming active season.
+  const currentSeason = getSeasonForDate(new Date())
+  const seasonResult = await filterBySeasonality(allLeads as Array<{ organization: string | null; activeSeasons?: string | null }>, {
+    includeOffSeason: campaign.includeOffSeason,
+  })
+  const inSeasonLeads = seasonResult.kept as typeof allLeads
+  const offSeasonCount = seasonResult.skipped.length
+  if (offSeasonCount > 0) {
+    console.log(
+      `[Discovery:Orchestrator] Seasonal filter removed ${offSeasonCount} off-season leads (current season: ${currentSeason})`
+    )
+    warnings.push(
+      `${offSeasonCount} leads filtered out as off-season in ${currentSeason} (set Campaign.includeOffSeason to override)`
+    )
+    if (process.env.NODE_ENV !== 'production') {
+      for (const { lead, reason } of seasonResult.skipped.slice(0, 10)) {
+        console.log(`[Discovery:Orchestrator] Off-season: "${lead.organization ?? ''}" — ${reason}`)
+      }
+    }
+  }
+
+  const originalCount = inSeasonLeads.length
 
   // Deduplicate by email (keeping highest score per email)
-  const deduped = deduplicate(allLeads as any[])
+  const deduped = deduplicate(inSeasonLeads as any[])
 
   // Calculate deduplication statistics
   const deduplicationStats = getDeduplicationStats(originalCount, deduped.length)
