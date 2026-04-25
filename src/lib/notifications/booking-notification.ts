@@ -267,6 +267,7 @@ export async function sendBookingNotification(
     const adminResult = await resend.emails.send({
       from: fromEmail,
       to: NOTIFICATION_EMAILS,
+      replyTo: data.contactEmail,
       subject: `🎵 New Booking Request: ${getServiceTypeLabel(data.serviceType)} - ${data.contactName}`,
       html: generateAdminEmailHtml(data),
       tags: [
