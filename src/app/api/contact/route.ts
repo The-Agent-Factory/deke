@@ -3,7 +3,6 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { handleApiError, ApiError } from "@/lib/api-error";
 import { sendSignupNotification } from "@/lib/notifications/signup-notification";
-import { sendCloudflareNotification } from "@/lib/notifications/cloudflare-notify";
 
 const ContactFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -52,27 +51,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send notifications — await both so they complete before the response
-    const [resendResult, cfResult] = await Promise.allSettled([
-      sendSignupNotification({
+    try {
+      await sendSignupNotification({
         type: 'contact',
         name: `${firstName} ${lastName}`,
         email,
         message: `Subject: ${subject}\n\n${message}`,
-      }),
-      sendCloudflareNotification({
-        type: 'contact',
-        name: `${firstName} ${lastName}`,
-        email,
-        message: `Subject: ${subject}\n\n${message}`,
-      }),
-    ]);
-
-    if (resendResult.status === 'rejected') {
-      console.error("[CONTACT] Resend notification threw:", resendResult.reason);
-    }
-    if (cfResult.status === 'rejected') {
-      console.error("[CONTACT] Cloudflare notification threw:", cfResult.reason);
+      });
+    } catch (err) {
+      console.error("[CONTACT] Resend notification threw:", err);
     }
 
     return NextResponse.json({
