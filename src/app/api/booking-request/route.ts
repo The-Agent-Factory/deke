@@ -3,7 +3,6 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { handleApiError, ApiError } from "@/lib/api-error";
 import { sendBookingNotification } from "@/lib/notifications/booking-notification";
-import { sendCloudflareNotification } from "@/lib/notifications/cloudflare-notify";
 
 // Map project type from form to service type
 const projectTypeToServiceType: Record<string, string> = {
@@ -158,9 +157,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send notifications — await both so they complete before the response
-    const [resendResult, cfResult] = await Promise.allSettled([
-      sendBookingNotification({
+    try {
+      await sendBookingNotification({
         bookingId: booking.id,
         contactName: booking.contact ? `${booking.contact.firstName} ${booking.contact.lastName}` : 'Unknown Contact',
         contactEmail: booking.contact?.email ?? '',
@@ -171,25 +169,9 @@ export async function POST(request: NextRequest) {
         location: null,
         amount: null,
         clientNotes: booking.clientNotes,
-      }),
-      sendCloudflareNotification({
-        type: 'booking_request',
-        name,
-        email,
-        phone: phone || undefined,
-        organization: organization || undefined,
-        serviceType: projectType,
-        eventDate: eventDate || undefined,
-        budget: budget || undefined,
-        message: message || undefined,
-      }),
-    ]);
-
-    if (resendResult.status === 'rejected') {
-      console.error("[BOOKING-REQUEST] Resend notification threw:", resendResult.reason);
-    }
-    if (cfResult.status === 'rejected') {
-      console.error("[BOOKING-REQUEST] Cloudflare notification threw:", cfResult.reason);
+      });
+    } catch (err) {
+      console.error("[BOOKING-REQUEST] Resend notification threw:", err);
     }
 
     return NextResponse.json({
