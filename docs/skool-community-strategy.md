@@ -2,8 +2,10 @@
 
 *A proposal to build, launch, and grow an a cappella membership community to $25,000/month in recurring revenue.*
 
-> **Tip:** Open `deke-skool-planner.html` (in the repo root) in any browser to configure the
-> community and adjust pricing yourself — it recalculates MRR and ARR live as you change things.
+> **Tip:** Open the interactive planner (`public/skool/deke-skool-planner.html`, served at
+> `/skool/deke-skool-planner.html`, or from the **Skool** section of the admin dashboard) in any
+> browser to configure the community and adjust pricing yourself — it recalculates MRR and ARR
+> live as you change things.
 
 ---
 
