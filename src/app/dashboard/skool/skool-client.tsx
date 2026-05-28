@@ -46,6 +46,7 @@ const PHASE_STYLES: Record<Phase, string> = {
 };
 
 const STORAGE_KEY = "deke-skool-kanban-v1";
+const BACKUP_KEY = "deke-skool-kanban-v1-backup";
 
 const SEED_TASKS: Task[] = [
   // Pre-launch
@@ -88,6 +89,7 @@ export function SkoolClient() {
   const [addingTo, setAddingTo] = useState<ColumnId | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newPhase, setNewPhase] = useState<Phase>("Pre-launch");
+  const [backup, setBackup] = useState<Task[] | null>(null);
 
   // Hydrate once from localStorage after mount. Done in an effect (not a lazy
   // initializer) so server and first client render both match SEED_TASKS and
@@ -103,6 +105,16 @@ export function SkoolClient() {
     if (stored) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from persisted state
       setTasks(stored);
+    }
+    // Surface a recoverable backup (e.g. from a reset before a refresh).
+    try {
+      const rawBackup = localStorage.getItem(BACKUP_KEY);
+      if (rawBackup) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from persisted state
+        setBackup(JSON.parse(rawBackup) as Task[]);
+      }
+    } catch {
+      /* ignore */
     }
     setLoaded(true);
   }, []);
@@ -137,7 +149,37 @@ export function SkoolClient() {
   }
 
   function resetBoard() {
+    const confirmed = window.confirm(
+      "Reset the board to the default launch plan?\n\nThis clears your current cards. A backup is saved automatically, so you can Undo right after."
+    );
+    if (!confirmed) return;
+    // Stash the current board so a reset is always recoverable, even after refresh.
+    setBackup(tasks);
+    try {
+      localStorage.setItem(BACKUP_KEY, JSON.stringify(tasks));
+    } catch {
+      /* storage unavailable — in-memory backup still allows immediate undo */
+    }
     setTasks(SEED_TASKS);
+  }
+
+  function undoReset() {
+    let restore: Task[] | null = backup;
+    if (!restore) {
+      try {
+        const raw = localStorage.getItem(BACKUP_KEY);
+        if (raw) restore = JSON.parse(raw) as Task[];
+      } catch {
+        /* ignore */
+      }
+    }
+    if (restore) setTasks(restore);
+    setBackup(null);
+    try {
+      localStorage.removeItem(BACKUP_KEY);
+    } catch {
+      /* ignore */
+    }
   }
 
   const completed = tasks.filter((t) => t.column === "done").length;
@@ -173,6 +215,38 @@ export function SkoolClient() {
           Reset board
         </Button>
       </div>
+
+      {/* Undo-after-reset banner — keeps an accidental reset fully recoverable */}
+      {backup && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-sm font-medium text-amber-900">
+            Board was reset to the default plan. Your previous board is backed up.
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              className="h-8 bg-amber-600 px-3 text-xs text-white hover:bg-amber-700"
+              onClick={undoReset}
+            >
+              <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+              Undo reset
+            </Button>
+            <button
+              onClick={() => {
+                setBackup(null);
+                try {
+                  localStorage.removeItem(BACKUP_KEY);
+                } catch {
+                  /* ignore */
+                }
+              }}
+              className="text-xs font-medium text-amber-700 hover:text-amber-900"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Strategy resources */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
