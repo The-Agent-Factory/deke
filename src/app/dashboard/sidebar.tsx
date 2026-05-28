@@ -18,6 +18,7 @@ import {
   Target,
   Newspaper,
   Megaphone,
+  GraduationCap,
   LogOut,
 } from "lucide-react";
 
@@ -35,6 +36,7 @@ const iconMap = {
   Target,
   Newspaper,
   Megaphone,
+  GraduationCap,
 } as const;
 
 type BadgeCounts = Record<string, number>;

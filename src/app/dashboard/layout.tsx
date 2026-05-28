@@ -39,6 +39,7 @@ const primaryNav = [
   { href: "/dashboard/leads", label: "LEADS", icon: "Target" as const, badgeKey: "leads" as const },
   { href: "/dashboard/contacts", label: "CONTACTS", icon: "Users" as const },
   { href: "/dashboard/calendar", label: "CALENDAR", icon: "CalendarDays" as const },
+  { href: "/dashboard/skool", label: "SKOOL", icon: "GraduationCap" as const },
 ];
 
 const insightNav: typeof primaryNav = [];

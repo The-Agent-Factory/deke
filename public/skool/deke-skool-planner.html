@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deke Sharon · Skool Community Planner</title>
+<!-- Brand fonts load when online; robust system fallback keeps it polished offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --blue:#0066FF; --yellow:#FFD23F; --coral:#FF6B6B; --mint:#4ECDC4; --purple:#9B5DE5;
+    --cream:#FFFEF9; --surface:#F8F7F4; --charcoal:#2D3436; --warm:#636E72; --border:#E8E6E1;
+    --grad-hero:linear-gradient(135deg,#0066FF 0%,#9B5DE5 50%,#FF6B6B 100%);
+    --grad-cta:linear-gradient(90deg,#0066FF 0%,#4ECDC4 100%);
+    --grad-warm:linear-gradient(135deg,#FFD23F 0%,#FF6B6B 100%);
+    --display:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+    --body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+    --shadow:0 8px 28px rgba(45,52,54,.10); --shadow-sm:0 2px 10px rgba(45,52,54,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);background:var(--cream);color:var(--charcoal);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.display{font-family:var(--display);font-weight:600;letter-spacing:.2px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Header ---------- */
+  header.hero{background:var(--grad-hero);color:#fff;padding:48px 0 120px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(255,255,255,.18),transparent 40%);pointer-events:none}
+  .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase}
+  header.hero h1{font-size:clamp(2rem,4.5vw,3.4rem);margin:16px 0 10px;line-height:1.05;text-shadow:0 2px 18px rgba(0,0,0,.15)}
+  header.hero p.sub{font-size:clamp(1rem,2vw,1.2rem);max-width:760px;opacity:.96;font-weight:600}
+  .hero-note{margin-top:18px;font-size:.92rem;opacity:.9;max-width:760px}
+
+  /* ---------- Revenue dashboard (sticky) ---------- */
+  .dash{position:sticky;top:0;z-index:50;margin-top:-92px}
+  .dash-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;border:1px solid var(--border)}
+  .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:end}
+  .metric .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.7px;color:var(--warm);font-weight:800}
+  .metric .value{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.1}
+  .metric.mrr .value{color:var(--blue)} .metric.arr .value{color:var(--purple)}
+  .metric .sub{font-size:.78rem;color:var(--warm);font-weight:700}
+  .goal{grid-column:span 1}
+  .goal .track{height:14px;border-radius:999px;background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-top:8px}
+  .goal .fill{height:100%;width:0;background:var(--grad-cta);transition:width .35s ease}
+  .goal.hit .fill{background:linear-gradient(90deg,#2bbf6f,#4ECDC4)}
+  .goal .pct{font-family:var(--display);font-size:1.1rem}
+  @media(max-width:760px){.dash-grid{grid-template-columns:repeat(2,1fr)}.dash{margin-top:-70px}}
+
+  /* ---------- Sections ---------- */
+  section.block{padding:48px 0 8px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .sec-head .num{font-family:var(--display);color:#fff;background:var(--charcoal);width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:1rem}
+  .sec-head h2{font-size:clamp(1.4rem,2.6vw,1.9rem)}
+  .sec-desc{color:var(--warm);font-weight:600;max-width:820px;margin:4px 0 22px}
+
+  /* toggle / select cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
+  .card{position:relative;background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:16px 16px 16px 16px;cursor:pointer;transition:.18s;user-select:none}
+  .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+  .card .tick{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:7px;border:2px solid var(--border);display:grid;place-items:center;font-size:.85rem;color:transparent;transition:.18s}
+  .card h3{font-size:1.02rem;font-family:var(--body);font-weight:800;padding-right:30px}
+  .card p{font-size:.86rem;color:var(--warm);margin-top:4px;font-weight:600}
+  .chip{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:3px 8px;border-radius:999px;margin-top:10px}
+  .chip.low{background:#e8f0ff;color:var(--blue)} .chip.med{background:#e6faf8;color:#13988e} .chip.vip{background:#f3e9ff;color:var(--purple)} .chip.all{background:#fff4d6;color:#9a7400}
+  .card.on{border-color:var(--blue);background:#fbfcff}
+  .card.on .tick{background:var(--grad-cta);border-color:transparent;color:#fff}
+  /* content & interview cards use coral/purple accents when on */
+  .cards.content .card.on{border-color:var(--coral);background:#fff8f8}
+  .cards.content .card.on .tick{background:var(--grad-warm)}
+  .cards.interview .card.on{border-color:var(--purple);background:#fcf9ff}
+  .cards.interview .card.on .tick{background:linear-gradient(90deg,#9B5DE5,#FF6B6B)}
+
+  .selctl{display:flex;gap:10px;margin:0 0 16px}
+  .selctl button{font-family:var(--body);font-weight:800;font-size:.8rem;border:1.5px solid var(--border);background:#fff;color:var(--warm);padding:7px 14px;border-radius:999px;cursor:pointer;transition:.15s}
+  .selctl button:hover{border-color:var(--charcoal);color:var(--charcoal)}
+
+  /* ---------- Pricing ---------- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .tier{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+  .tier.low{border-top:6px solid var(--blue)} .tier.med{border-top:6px solid var(--mint)} .tier.vip{border-top:6px solid var(--purple)}
+  .tier .tname{font-family:var(--display);font-size:1.3rem}
+  .tier .tsub{color:var(--warm);font-weight:700;font-size:.85rem;margin-bottom:6px}
+  .tier .permo{font-family:var(--display);font-size:2.1rem;line-height:1}
+  .tier .permo span{font-size:.9rem;color:var(--warm);font-family:var(--body);font-weight:700}
+  .field{margin-top:16px}
+  .field label{display:flex;justify-content:space-between;font-weight:800;font-size:.8rem;color:var(--warm);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+  .field input[type=range]{width:100%;accent-color:var(--blue)}
+  .tier.med .field input[type=range]{accent-color:var(--mint)} .tier.vip .field input[type=range]{accent-color:var(--purple)}
+  .numrow{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .numrow input[type=number]{width:100%;font-family:var(--body);font-weight:800;font-size:1rem;padding:8px 10px;border:1.5px solid var(--border);border-radius:10px;color:var(--charcoal)}
+  .numrow .pre{color:var(--warm);font-weight:800}
+  .tier .tmrr{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);font-weight:800;color:var(--charcoal);display:flex;justify-content:space-between;align-items:baseline}
+  .tier .tmrr b{font-family:var(--display);font-size:1.25rem;color:var(--blue)}
+  .tier.vip .tmrr b{color:var(--purple)} .tier.med .tmrr b{color:#13988e}
+
+  /* ---------- Summary ---------- */
+  .summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin:14px 0 0}
+  .summary h3{font-size:1.25rem;margin-bottom:12px}
+  .sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .sum-grid h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--warm);margin-bottom:8px}
+  .sum-grid ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .sum-grid li{font-weight:700;font-size:.9rem;padding-left:20px;position:relative}
+  .sum-grid li::before{content:"♪";position:absolute;left:0;color:var(--coral);font-weight:800}
+  .sum-grid li.none{color:var(--warm);font-weight:600;font-style:italic}.sum-grid li.none::before{content:"–";color:var(--warm)}
+  .sum-foot{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:26px;align-items:baseline}
+  .sum-foot .big{font-family:var(--display);font-size:1.7rem}
+  .sum-foot .big.mrr{color:var(--blue)} .sum-foot .big.arr{color:var(--purple)}
+  .btns{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn{font-family:var(--body);font-weight:800;border:none;border-radius:999px;padding:12px 22px;cursor:pointer;font-size:.92rem}
+  .btn.primary{background:var(--grad-cta);color:#fff;box-shadow:var(--shadow-sm)}
+  .btn.ghost{background:#fff;border:2px solid var(--border);color:var(--charcoal)}
+  .btn:hover{transform:translateY(-1px)}
+
+  footer{padding:40px 0 60px;color:var(--warm);font-weight:600;font-size:.85rem;text-align:center}
+  @media(max-width:760px){.tiers,.sum-grid{grid-template-columns:1fr}}
+  @media print{header.hero{padding:24px 0}.dash{position:static;margin-top:24px}.card{break-inside:avoid}.btns{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Skool Community · Build & Price It</span>
+    <h1>Design Your A Cappella Academy</h1>
+    <p class="sub">Pick what goes inside the community, choose the content and interviews you want to create, set your pricing — and watch your monthly and annual revenue update live.</p>
+    <p class="hero-note">Everything here is yours to adjust. Toggle options on or off, drag the price and member sliders, and the dashboard recalculates instantly. The default setup is tuned to reach the <strong>$25,000/month</strong> goal.</p>
+  </div>
+</header>
+
+<!-- Sticky revenue dashboard -->
+<div class="dash">
+  <div class="wrap">
+    <div class="dash-card">
+      <div class="dash-grid">
+        <div class="metric mrr"><div class="label">Monthly Recurring Revenue</div><div class="value" id="d-mrr">$0</div><div class="sub" id="d-members">0 paying members</div></div>
+        <div class="metric arr"><div class="label">Annual Recurring Revenue</div><div class="value" id="d-arr">$0</div><div class="sub">MRR × 12</div></div>
+        <div class="metric"><div class="label">Net after fees</div><div class="value" id="d-net" style="color:var(--mint)">$0</div><div class="sub">≈ Skool + Stripe (~12%)</div></div>
+        <div class="goal metric">
+          <div class="label">Goal · $25,000 / mo</div>
+          <div class="pct" id="d-pct">0%</div>
+          <div class="track"><div class="fill" id="d-fill"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- 1. Building blocks -->
+  <section class="block" id="blocks">
+    <div class="sec-head"><span class="num">1</span><h2>What goes inside the community</h2></div>
+    <p class="sec-desc">Select the building blocks you want to offer. Tier chips show where each one typically lives. Turn anything off you'd rather skip — your choices flow into the summary below.</p>
+    <div class="selctl"><button data-all="blocks">Select all</button><button data-none="blocks">Clear all</button></div>
+    <div class="cards" id="blocks-cards"></div>
+  </section>
+
+  <!-- 2. Content types -->
+  <section class="block" id="content">
+    <div class="sec-head"><span class="num">2</span><h2>The content you want to create</h2></div>
+    <p class="sec-desc">Which formats do you actually want to make? Pick the ones that play to your strengths — these become the publishing calendar and the course library.</p>
+    <div class="selctl"><button data-all="content">Select all</button><button data-none="content">Clear all</button></div>
+    <div class="cards content" id="content-cards"></div>
+  </section>
+
+  <!-- 3. Interviews -->
+  <section class="block" id="interviews">
+    <div class="sec-head"><span class="num">3</span><h2>The interviews & guests you want</h2></div>
+    <p class="sec-desc">A guest series is one of the fastest ways to grow a community. Choose the kinds of conversations you'd enjoy hosting — leave the rest off.</p>
+    <div class="selctl"><button data-all="interview">Select all</button><button data-none="interview">Clear all</button></div>
+    <div class="cards interview" id="interview-cards"></div>
+  </section>
+
+  <!-- 4. Pricing -->
+  <section class="block" id="pricing">
+    <div class="sec-head"><span class="num">4</span><h2>Set your pricing &amp; membership</h2></div>
+    <p class="sec-desc">Drag to set each tier's monthly price and how many members you expect. The dashboard and summary update as you go. (Defaults assume roughly 2% of a 25k+ audience converts.)</p>
+    <div class="tiers" id="tiers"></div>
+  </section>
+
+  <!-- 5. Summary -->
+  <section class="block" id="summary-sec">
+    <div class="sec-head"><span class="num">5</span><h2>Your community at a glance</h2></div>
+    <div class="summary">
+      <h3>What you're building</h3>
+      <div class="sum-grid">
+        <div><h4>Inside the community</h4><ul id="sum-blocks"></ul></div>
+        <div><h4>Content you'll create</h4><ul id="sum-content"></ul></div>
+        <div><h4>Interview series</h4><ul id="sum-interview"></ul></div>
+      </div>
+      <div class="sum-foot">
+        <div><div class="metric"><div class="label">Tiers</div></div><span id="sum-tiers" style="font-weight:800"></span></div>
+        <div><div class="label" style="font-size:.72rem;color:var(--warm);font-weight:800;text-transform:uppercase">Monthly</div><div class="big mrr" id="sum-mrr">$0</div></div>
+        <div><div class="label" style="font-size:.72rem;color:var(--warm);font-weight:800;text-transform:uppercase">Annual</div><div class="big arr" id="sum-arr">$0</div></div>
+        <div><div class="label" style="font-size:.72rem;color:var(--warm);font-weight:800;text-transform:uppercase">Goal status</div><div class="big" id="sum-goal">—</div></div>
+      </div>
+      <div class="btns">
+        <button class="btn primary" onclick="window.print()">Save / print this plan</button>
+        <button class="btn ghost" id="reset-btn">Reset to recommended setup</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Deke Sharon · A Cappella Community Planner — an interactive proposal. Prepared by the brand's communications &amp; operations management. Figures are planning estimates, not guarantees.</div>
+</footer>
+
+<script>
+/* ---------------- Data ---------------- */
+const BLOCKS = [
+  {id:'library', name:'On-demand course library', tier:'low', desc:'Arranging, tuning, blend, performance — the evergreen core.'},
+  {id:'monthly-live', name:'Monthly live class', tier:'low', desc:'One signature teaching session each month, open to all paid members.'},
+  {id:'feedback-threads', name:'Community feedback threads', tier:'low', desc:'Members post recordings and get peer + team feedback.'},
+  {id:'challenges', name:'Challenges & gamification', tier:'low', desc:'Skool leaderboard, monthly arranging/sing challenges, unlockables.'},
+  {id:'resource-drops', name:'Sheet music & resource drops', tier:'low', desc:'Templates, warm-ups, charts and starter arrangements.'},
+  {id:'weekly-live', name:'Weekly live classes', tier:'med', desc:'A regular weekly teaching cadence for serious members.'},
+  {id:'group-coaching', name:'Monthly group coaching call', tier:'med', desc:'Hot-seat coaching where members bring real problems.'},
+  {id:'teardowns', name:'Arrangement teardowns', tier:'med', desc:'Deke breaks down a real chart line by line.'},
+  {id:'song-feedback', name:'Member song feedback (batched)', tier:'med', desc:'Submit a track each month for recorded feedback.'},
+  {id:'toolkits', name:'Arranging toolkits', tier:'med', desc:'Downloadable systems, checklists and frameworks.'},
+  {id:'vip-call', name:'VIP small-group call with Deke', tier:'vip', desc:'Capped cohort, direct monthly access to Deke.'},
+  {id:'vip-review', name:'Personal arrangement / coaching review', tier:'vip', desc:'One personal review per month per VIP member.'},
+  {id:'vip-discounts', name:'Discounts on premium services', tier:'vip', desc:'Member pricing on custom arrangements & workshops.'},
+  {id:'guest-series', name:'Guest interview series', tier:'all', desc:'Recurring conversations with notable a cappella names.'},
+  {id:'directory', name:'Member directory & "find a group"', tier:'all', desc:'Connect singers, directors and groups worldwide.'},
+];
+const CONTENT = [
+  {id:'video-courses', name:'On-demand video courses', desc:'Structured, evergreen lessons.'},
+  {id:'live-workshops', name:'Live workshops', desc:'Interactive, real-time teaching.'},
+  {id:'arranging-breakdowns', name:'Arranging breakdowns', desc:'Show the craft behind a chart.'},
+  {id:'vocal-technique', name:'Vocal technique clinics', desc:'Blend, tuning, tone, range.'},
+  {id:'vocal-percussion', name:'Vocal percussion / beatbox', desc:'The rhythm section of the mouth.'},
+  {id:'behind-scenes', name:'Behind-the-scenes stories', desc:'Pitch Perfect, Sing-Off, Broadway.'},
+  {id:'song-of-month', name:'Song-of-the-month', desc:'A new arrangement focus monthly.'},
+  {id:'live-qa', name:'Live Q&A / AMA', desc:'Answer member questions on air.'},
+  {id:'rehearsal-tips', name:'Rehearsal & director tips', desc:'Run better rehearsals.'},
+  {id:'performance', name:'Stage presence & performance', desc:'Choreo, energy, showmanship.'},
+];
+const INTERVIEWS = [
+  {id:'pp-alumni', name:'Pitch Perfect / Sing-Off alumni', desc:'Recognizable names, big draw.'},
+  {id:'working-artists', name:'Working a cappella artists', desc:'Touring & recording pros.'},
+  {id:'collegiate', name:'Collegiate & HS directors', desc:'Speak straight to the core audience.'},
+  {id:'producers', name:'Industry producers & arrangers', desc:'The people behind the sound.'},
+  {id:'broadway', name:'Broadway & session vocalists', desc:'Elite-level technique.'},
+  {id:'upcoming', name:'Up-and-coming groups', desc:'Spotlight rising talent.'},
+  {id:'beatboxers', name:'Vocal percussion specialists', desc:'The beatbox world.'},
+  {id:'composers', name:'Composers & songwriters', desc:'Writing for voices.'},
+];
+const TIERS = [
+  {id:'low', name:'The Ensemble', sub:'Low tier · the on-ramp', cls:'low', price:29, members:400, pMin:9, pMax:99, mMax:2000},
+  {id:'med', name:'The Soloists', sub:'Medium tier · serious growth', cls:'med', price:99, members:100, pMin:49, pMax:299, mMax:600},
+  {id:'vip', name:"The Producers' Room", sub:'VIP · capped cohort with Deke', cls:'vip', price:497, members:8, pMin:199, pMax:1500, mMax:60},
+];
+const GOAL = 25000;
+const FEE_RATE = 0.12; // Skool platform + Stripe blended estimate
+
+/* ---------------- State ---------------- */
+const state = {
+  blocks:new Set(BLOCKS.map(b=>b.id)),       // all on by default
+  content:new Set(['video-courses','live-workshops','arranging-breakdowns','vocal-technique','behind-scenes','song-of-month','live-qa']),
+  interview:new Set(['pp-alumni','working-artists','collegiate','producers']),
+  tiers:Object.fromEntries(TIERS.map(t=>[t.id,{price:t.price,members:t.members}])),
+};
+
+const fmt = n => '$'+Math.round(n).toLocaleString('en-US');
+const $ = id => document.getElementById(id);
+
+/* ---------------- Render selectable cards ---------------- */
+function chipFor(tier){const m={low:'Low',med:'Medium',vip:'VIP',all:'All tiers'};return `<span class="chip ${tier}">${m[tier]}</span>`;}
+
+function renderCards(items, containerId, group, withChip){
+  const c = $(containerId); c.innerHTML='';
+  items.forEach(it=>{
+    const on = state[group].has(it.id);
+    const el = document.createElement('div');
+    el.className = 'card'+(on?' on':'');
+    el.setAttribute('role','button'); el.setAttribute('tabindex','0');
+    el.setAttribute('aria-pressed', on);
+    el.innerHTML = `<div class="tick">✓</div><h3>${it.name}</h3><p>${it.desc}</p>${withChip?chipFor(it.tier):''}`;
+    const toggle=()=>{
+      if(state[group].has(it.id)) state[group].delete(it.id); else state[group].add(it.id);
+      const nowOn = state[group].has(it.id);
+      el.classList.toggle('on',nowOn); el.setAttribute('aria-pressed',nowOn);
+      renderSummary();
+    };
+    el.addEventListener('click',toggle);
+    el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}});
+    c.appendChild(el);
+  });
+}
+
+/* ---------------- Render pricing tiers ---------------- */
+function renderTiers(){
+  const c=$('tiers'); c.innerHTML='';
+  TIERS.forEach(t=>{
+    const s=state.tiers[t.id];
+    const el=document.createElement('div');
+    el.className='tier '+t.cls;
+    el.innerHTML=`
+      <div class="tname">${t.name}</div>
+      <div class="tsub">${t.sub}</div>
+      <div class="permo" id="permo-${t.id}">$${s.price}<span>/mo</span></div>
+      <div class="field">
+        <label>Monthly price <span id="plab-${t.id}">$${s.price}</span></label>
+        <input type="range" id="prange-${t.id}" min="${t.pMin}" max="${t.pMax}" step="1" value="${s.price}">
+        <div class="numrow"><span class="pre">$</span><input type="number" id="pnum-${t.id}" min="${t.pMin}" max="${t.pMax}" value="${s.price}"></div>
+      </div>
+      <div class="field">
+        <label>Expected members <span id="mlab-${t.id}">${s.members}</span></label>
+        <input type="range" id="mrange-${t.id}" min="0" max="${t.mMax}" step="1" value="${s.members}">
+        <div class="numrow"><input type="number" id="mnum-${t.id}" min="0" max="${t.mMax}" value="${s.members}"></div>
+      </div>
+      <div class="tmrr"><span>Tier MRR</span><b id="tmrr-${t.id}">$0</b></div>`;
+    c.appendChild(el);
+  });
+  // wire inputs
+  TIERS.forEach(t=>{
+    const pr=$('prange-'+t.id), pn=$('pnum-'+t.id), mr=$('mrange-'+t.id), mn=$('mnum-'+t.id);
+    const clamp=(v,min,max)=>Math.max(min,Math.min(max,isNaN(v)?min:v));
+    const setPrice=v=>{v=clamp(Math.round(v),t.pMin,t.pMax);state.tiers[t.id].price=v;pr.value=v;pn.value=v;$('plab-'+t.id).textContent='$'+v;$('permo-'+t.id).innerHTML='$'+v+'<span>/mo</span>';recalc();};
+    const setMem=v=>{v=clamp(Math.round(v),0,t.mMax);state.tiers[t.id].members=v;mr.value=v;mn.value=v;$('mlab-'+t.id).textContent=v;recalc();};
+    pr.addEventListener('input',e=>setPrice(+e.target.value));
+    pn.addEventListener('input',e=>setPrice(+e.target.value));
+    mr.addEventListener('input',e=>setMem(+e.target.value));
+    mn.addEventListener('input',e=>setMem(+e.target.value));
+  });
+}
+
+/* ---------------- Calculations ---------------- */
+function recalc(){
+  let mrr=0, members=0;
+  TIERS.forEach(t=>{
+    const s=state.tiers[t.id];
+    const tierMrr=s.price*s.members;
+    mrr+=tierMrr; members+=s.members;
+    const b=$('tmrr-'+t.id); if(b) b.textContent=fmt(tierMrr);
+  });
+  const arr=mrr*12, net=mrr*(1-FEE_RATE), pct=Math.round(mrr/GOAL*100);
+  $('d-mrr').textContent=fmt(mrr);
+  $('d-arr').textContent=fmt(arr);
+  $('d-net').textContent=fmt(net);
+  $('d-members').textContent=members.toLocaleString('en-US')+' paying members';
+  $('d-pct').textContent=pct+'%';
+  const fill=$('d-fill'); fill.style.width=Math.min(100,pct)+'%';
+  $('d-fill').parentElement.parentElement.classList.toggle('hit',mrr>=GOAL);
+  // summary footer
+  $('sum-mrr').textContent=fmt(mrr);
+  $('sum-arr').textContent=fmt(arr);
+  const goalEl=$('sum-goal');
+  if(mrr>=GOAL){goalEl.textContent='✓ Goal met';goalEl.style.color='#2bbf6f';}
+  else {goalEl.textContent=fmt(GOAL-mrr)+' to go';goalEl.style.color='var(--coral)';}
+}
+
+/* ---------------- Summary lists ---------------- */
+function listInto(elId, items, set){
+  const el=$(elId); el.innerHTML='';
+  const chosen=items.filter(i=>set.has(i.id));
+  if(!chosen.length){el.innerHTML='<li class="none">Nothing selected yet</li>';return;}
+  chosen.forEach(i=>{const li=document.createElement('li');li.textContent=i.name;el.appendChild(li);});
+}
+function renderSummary(){
+  listInto('sum-blocks',BLOCKS,state.blocks);
+  listInto('sum-content',CONTENT,state.content);
+  listInto('sum-interview',INTERVIEWS,state.interview);
+  const active=TIERS.filter(t=>state.tiers[t.id].members>0).map(t=>t.name);
+  $('sum-tiers').textContent=active.length?active.join(' · '):'No paid tiers active';
+}
+
+/* ---------------- Select all / clear ---------------- */
+const groupData={blocks:BLOCKS,content:CONTENT,interview:INTERVIEWS};
+const groupContainer={blocks:'blocks-cards',content:'content-cards',interview:'interview-cards'};
+document.querySelectorAll('[data-all]').forEach(b=>b.addEventListener('click',()=>{
+  const g=b.dataset.all; groupData[g].forEach(i=>state[g].add(i.id));
+  renderCards(groupData[g],groupContainer[g],g,g==='blocks'); renderSummary();
+}));
+document.querySelectorAll('[data-none]').forEach(b=>b.addEventListener('click',()=>{
+  const g=b.dataset.none; state[g].clear();
+  renderCards(groupData[g],groupContainer[g],g,g==='blocks'); renderSummary();
+}));
+
+/* ---------------- Reset ---------------- */
+$('reset-btn').addEventListener('click',()=>{
+  state.blocks=new Set(BLOCKS.map(b=>b.id));
+  state.content=new Set(['video-courses','live-workshops','arranging-breakdowns','vocal-technique','behind-scenes','song-of-month','live-qa']);
+  state.interview=new Set(['pp-alumni','working-artists','collegiate','producers']);
+  TIERS.forEach(t=>state.tiers[t.id]={price:t.price,members:t.members});
+  init();
+});
+
+/* ---------------- Init ---------------- */
+function init(){
+  renderCards(BLOCKS,'blocks-cards','blocks',true);
+  renderCards(CONTENT,'content-cards','content',false);
+  renderCards(INTERVIEWS,'interview-cards','interview',false);
+  renderTiers();
+  renderSummary();
+  recalc();
+}
+init();
+</script>
+</body>
+</html>
