@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deke Sharon · Skool Community — Strategy & Operations Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --blue:#0066FF; --yellow:#FFD23F; --coral:#FF6B6B; --mint:#4ECDC4; --purple:#9B5DE5;
+    --cream:#FFFEF9; --surface:#F8F7F4; --charcoal:#2D3436; --warm:#636E72; --border:#E8E6E1;
+    --grad-hero:linear-gradient(135deg,#0066FF 0%,#9B5DE5 50%,#FF6B6B 100%);
+    --grad-cta:linear-gradient(90deg,#0066FF 0%,#4ECDC4 100%);
+    --display:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+    --body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+    --shadow:0 8px 28px rgba(45,52,54,.10); --shadow-sm:0 2px 10px rgba(45,52,54,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);background:var(--cream);color:var(--charcoal);line-height:1.65;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;letter-spacing:.2px;line-height:1.2}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px}
+  a{color:var(--blue);font-weight:700}
+
+  /* Hero */
+  header.hero{background:var(--grad-hero);color:#fff;padding:56px 0 64px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 5%,rgba(255,255,255,.18),transparent 42%);pointer-events:none}
+  .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;font-weight:800;font-size:.75rem;letter-spacing:.8px;text-transform:uppercase}
+  header.hero h1{font-size:clamp(2.1rem,4.6vw,3.3rem);margin:16px 0 10px;text-shadow:0 2px 18px rgba(0,0,0,.15)}
+  header.hero p.sub{font-size:clamp(1rem,2vw,1.22rem);max-width:720px;opacity:.96;font-weight:600}
+  .meta{margin-top:22px;font-size:.85rem;opacity:.92;font-weight:700;display:flex;gap:18px;flex-wrap:wrap}
+  .meta span{background:rgba(255,255,255,.14);padding:5px 12px;border-radius:8px}
+
+  /* TOC */
+  .toc{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 26px;margin:-36px 0 8px;position:relative;z-index:2}
+  .toc h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.7px;color:var(--warm);margin-bottom:12px}
+  .toc ol{list-style:none;counter-reset:t;columns:2;column-gap:32px}
+  .toc li{counter-increment:t;margin-bottom:7px;font-weight:700;font-size:.92rem;break-inside:avoid}
+  .toc li::before{content:counter(t)". ";color:var(--coral);font-weight:800}
+  .toc a{color:var(--charcoal);text-decoration:none} .toc a:hover{color:var(--blue)}
+  @media(max-width:640px){.toc ol{columns:1}}
+
+  /* Sections */
+  section{padding:36px 0 8px;border-bottom:1px solid var(--border)}
+  section:last-of-type{border-bottom:none}
+  .kicker{font-size:.74rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--blue)}
+  section h2{font-size:clamp(1.45rem,2.8vw,2rem);margin:6px 0 14px}
+  section h3{font-size:1.15rem;margin:22px 0 8px;color:var(--charcoal)}
+  p{margin:0 0 14px}
+  ul.list{list-style:none;margin:0 0 16px;display:flex;flex-direction:column;gap:9px}
+  ul.list li{padding-left:24px;position:relative;font-weight:600}
+  ul.list li::before{content:"♪";position:absolute;left:0;color:var(--coral);font-weight:800}
+  ul.list li b{font-weight:800}
+
+  /* Callout / lead */
+  .lead{font-size:1.08rem;font-weight:700;background:linear-gradient(0deg,var(--surface),var(--surface)) padding-box;border-left:5px solid var(--blue);padding:16px 18px;border-radius:0 12px 12px 0;margin:0 0 18px}
+  .callout{background:#fff;border:2px solid var(--border);border-left:6px solid var(--purple);border-radius:0 14px 14px 0;padding:16px 18px;margin:18px 0;box-shadow:var(--shadow-sm)}
+  .callout.blue{border-left-color:var(--blue)} .callout.coral{border-left-color:var(--coral)} .callout.mint{border-left-color:var(--mint)}
+  .callout h4{font-family:var(--body);font-weight:800;font-size:.95rem;margin-bottom:6px}
+
+  /* Tables */
+  .tablewrap{overflow-x:auto;margin:8px 0 18px}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm)}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+  th{background:var(--charcoal);color:#fff;font-family:var(--body);font-weight:800;font-size:.82rem;letter-spacing:.3px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  tr.total td{background:var(--surface);font-weight:800}
+  tr.total td .big{font-family:var(--display);color:var(--blue);font-size:1.05rem}
+  .center{text-align:center}
+  .yes{color:#1f9d57;font-weight:800} .dash-c{color:var(--border);font-weight:800}
+
+  /* tier cards */
+  .tiercards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 18px}
+  .tc{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm)}
+  .tc.low{border-top:6px solid var(--blue)} .tc.med{border-top:6px solid var(--mint)} .tc.vip{border-top:6px solid var(--purple)}
+  .tc .nm{font-family:var(--display);font-size:1.2rem} .tc .pr{font-family:var(--display);font-size:1.9rem;margin:2px 0}
+  .tc .pr span{font-size:.85rem;color:var(--warm);font-family:var(--body);font-weight:700}
+  .tc .tag{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--warm)}
+  @media(max-width:680px){.tiercards{grid-template-columns:1fr}}
+
+  /* stat band */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0 18px}
+  .stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;box-shadow:var(--shadow-sm)}
+  .stat .v{font-family:var(--display);font-size:1.7rem;color:var(--blue)} .stat:nth-child(2) .v{color:var(--purple)} .stat:nth-child(3) .v{color:var(--coral)} .stat:nth-child(4) .v{color:#13988e}
+  .stat .l{font-size:.74rem;color:var(--warm);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+  @media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  .cta{background:var(--grad-cta);color:#fff;border-radius:var(--radius);padding:24px 26px;margin:24px 0 8px;box-shadow:var(--shadow)}
+  .cta h3{color:#fff;margin-top:0} .cta ol{margin:10px 0 0 20px;font-weight:700}
+  .cta a{color:#fff;text-decoration:underline}
+
+  footer{padding:32px 0 56px;color:var(--warm);font-weight:600;font-size:.83rem;text-align:center}
+  .printbtn{position:fixed;bottom:22px;right:22px;background:var(--grad-cta);color:#fff;border:none;border-radius:999px;padding:13px 22px;font-family:var(--body);font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:var(--shadow);z-index:99}
+  .printbtn:hover{transform:translateY(-1px)}
+  @media print{.printbtn{display:none}header.hero{padding:24px 0}.toc{box-shadow:none;margin-top:18px}section{break-inside:avoid;border-bottom:1px solid var(--border)}.cta{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Strategy &amp; Operations Analysis</span>
+    <h1>The A Cappella Academy</h1>
+    <p class="sub">A complete plan to build, launch, and operate a Skool membership community — turning Deke Sharon's authority into $25,000/month of recurring revenue.</p>
+    <div class="meta"><span>Goal · $25,000 / month</span><span>3 tiers · Low / Medium / VIP</span><span>Platform · Skool</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc">
+    <h4>Contents</h4>
+    <ol>
+      <li><a href="#summary">Executive summary</a></li>
+      <li><a href="#why">Why Skool &amp; community</a></li>
+      <li><a href="#audience">Audience &amp; positioning</a></li>
+      <li><a href="#tiers">The three tiers</a></li>
+      <li><a href="#content">Content plan &amp; cadence</a></li>
+      <li><a href="#money">Monetization &amp; path to $25k</a></li>
+      <li><a href="#launch">Launch plan</a></li>
+      <li><a href="#ops">Operations &amp; metrics</a></li>
+      <li><a href="#risks">Risks &amp; mitigations</a></li>
+      <li><a href="#next">Recommendation &amp; next steps</a></li>
+    </ol>
+  </nav>
+</div>
+
+<main class="wrap">
+
+  <section id="summary">
+    <div class="kicker">01 · Overview</div>
+    <h2>Executive summary</h2>
+    <p class="lead">Deke Sharon is the most recognized authority in contemporary a cappella. Today that authority is monetized almost entirely through high-touch, non-recurring work. A Skool community converts the existing 25,000+ audience into predictable monthly recurring revenue — and a content asset that keeps working between live sessions.</p>
+    <p>The credentials are unmatched: Pitch Perfect, NBC's The Sing-Off, Broadway's <em>In Transit</em>, 2,500+ arrangements, four books, and a #1 Billboard credit. But the current revenue model — custom arrangements ($500–$5k), coaching ($200–$500/hr), and workshops ($5k–$25k+) — is lucrative yet doesn't compound, and it's capped by Deke's calendar.</p>
+    <p>This plan uses a <b>three-tier membership</b> — a low-priced on-ramp, a mid-priced growth tier, and a capped VIP cohort — to reach <b>$25,000/month</b> while concentrating Deke's live time (8+ hours/month) where it creates the most value. The headline: roughly <b>2% of a 25k audience</b> converting across the three tiers gets there.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="v">$25,476</div><div class="l">Target MRR</div></div>
+      <div class="stat"><div class="v">$305,712</div><div class="l">Target ARR</div></div>
+      <div class="stat"><div class="v">508</div><div class="l">Paying members</div></div>
+      <div class="stat"><div class="v">~2%</div><div class="l">Of 25k audience</div></div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tier</th><th class="num">Price</th><th class="num">Members</th><th class="num">Monthly</th></tr></thead>
+        <tbody>
+          <tr><td>The Ensemble <span style="color:var(--warm)">· low</span></td><td class="num">$29</td><td class="num">400</td><td class="num">$11,600</td></tr>
+          <tr><td>The Soloists <span style="color:var(--warm)">· medium</span></td><td class="num">$99</td><td class="num">100</td><td class="num">$9,900</td></tr>
+          <tr><td>The Producers' Room <span style="color:var(--warm)">· VIP</span></td><td class="num">$497</td><td class="num">8</td><td class="num">$3,976</td></tr>
+          <tr class="total"><td>Total</td><td class="num">—</td><td class="num">508</td><td class="num"><span class="big">$25,476</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout mint"><h4>Companion tool</h4><p style="margin:0">Pair this document with <b>deke-skool-planner.html</b> — an interactive version where you can toggle options and drag pricing to watch MRR/ARR update live against the $25k goal.</p></div>
+  </section>
+
+  <section id="why">
+    <div class="kicker">02 · Rationale</div>
+    <h2>Why Skool, and why a community</h2>
+    <ul class="list">
+      <li><b>Recurring beats one-off.</b> One $99 arrangement is a transaction; one $99/month member is an asset worth ~$1,200/year and growing.</li>
+      <li><b>The content compounds.</b> Every live class becomes a library lesson, then a social clip that recruits the next member. The work is done once and sells repeatedly.</li>
+      <li><b>Community is a moat.</b> Peer feedback, challenges, and belonging drive retention in ways a course never can — members stay for each other, not just the teacher.</li>
+      <li><b>Skool is purpose-built.</b> It bundles community feed, a course "classroom," events calendar, and gamification (leaderboards, levels) in one simple platform members already trust.</li>
+    </ul>
+    <div class="callout"><h4>One platform reality to design around</h4><p>A single Skool group has <b>one price</b>. So the three tiers are delivered as: <b>(1)</b> a free group as top of funnel, <b>(2)</b> one core paid group where Ensemble/Soloists content lives (higher-cadence Soloists material gated in the classroom), and <b>(3)</b> a capped VIP cohort sold as an add-on/upgrade. This is the standard, proven creator structure — and exactly what the planner models.</p></div>
+  </section>
+
+  <section id="audience">
+    <div class="kicker">03 · Market</div>
+    <h2>Audience &amp; positioning</h2>
+    <p class="lead">Positioning: <em>Learn contemporary a cappella from the person who invented the modern sound.</em></p>
+    <p>Core segments — all already in Deke's orbit, and none with a single home to learn from him on an ongoing basis:</p>
+    <ul class="list">
+      <li><b>Collegiate &amp; high-school singers</b> and their <b>music directors</b> — the largest, most engaged group.</li>
+      <li><b>Community and semi-pro group</b> members and organizers.</li>
+      <li><b>Choral educators and arrangers</b> who want to modernize their craft.</li>
+      <li><b>Hobbyist arrangers and beatboxers</b> chasing a specific skill.</li>
+    </ul>
+    <p>The community becomes that home — and the natural top of the funnel for Deke's premium services.</p>
+  </section>
+
+  <section id="tiers">
+    <div class="kicker">04 · Product</div>
+    <h2>The three tiers</h2>
+    <div class="tiercards">
+      <div class="tc low"><div class="tag">Low · on-ramp</div><div class="nm">The Ensemble</div><div class="pr">$29<span>/mo</span></div><p style="margin:0;font-size:.9rem;color:var(--warm);font-weight:600">Library, monthly live class, community, challenges, resource drops.</p></div>
+      <div class="tc med"><div class="tag">Medium · serious</div><div class="nm">The Soloists</div><div class="pr">$99<span>/mo</span></div><p style="margin:0;font-size:.9rem;color:var(--warm);font-weight:600">Everything in Ensemble + weekly classes, group coaching, teardowns, feedback.</p></div>
+      <div class="tc vip"><div class="tag">VIP · capped cohort</div><div class="nm">Producers' Room</div><div class="pr">$497<span>/mo</span></div><p style="margin:0;font-size:.9rem;color:var(--warm);font-weight:600">Everything + small-group call with Deke, personal reviews, service discounts.</p></div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Feature</th><th class="center">Free</th><th class="center">Ensemble $29</th><th class="center">Soloists $99</th><th class="center">VIP $497</th></tr></thead>
+        <tbody>
+          <tr><td>Community feed &amp; intro module</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Monthly open Q&amp;A clip</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Full on-demand course library</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Monthly live class</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Challenges, leaderboard, resource drops</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td><b>Weekly</b> live classes</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Monthly group coaching call</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Arrangement teardowns + toolkits</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Batched member-song feedback</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td><td class="center yes">✓</td></tr>
+          <tr><td>Small-group monthly call <b>with Deke</b></td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td></tr>
+          <tr><td>Personal arrangement/coaching review (1/mo)</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td></tr>
+          <tr><td>Discounts on premium services</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center dash-c">–</td><td class="center yes">✓</td></tr>
+          <tr class="total"><td>Cohort size</td><td class="center">unlimited</td><td class="center">unlimited</td><td class="center">unlimited</td><td class="center">capped ~15–25</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout coral"><p style="margin:0">The VIP cap is deliberate: scarcity justifies the price and keeps Deke's 1:1 time sustainable.</p></div>
+  </section>
+
+  <section id="content">
+    <div class="kicker">05 · Engine</div>
+    <h2>Content plan &amp; cadence</h2>
+    <h3>Content pillars</h3>
+    <p>Arranging · Vocal technique (blend, tuning, tone) · Vocal percussion · Performance &amp; stage presence · Director/rehearsal craft · Career &amp; business of a cappella · Stories from the industry (Pitch Perfect, Sing-Off, Broadway).</p>
+    <h3>Mapping Deke's 8+ live hours per month</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Live commitment</th><th>Tier reached</th><th class="num">Approx. time</th></tr></thead>
+        <tbody>
+          <tr><td>Weekly live class (4×/mo)</td><td>Ensemble + Soloists</td><td class="num">~4 hrs</td></tr>
+          <tr><td>Monthly group coaching</td><td>Soloists</td><td class="num">~1.5 hrs</td></tr>
+          <tr><td>VIP small-group call</td><td>VIP</td><td class="num">~1.5 hrs</td></tr>
+          <tr><td>VIP personal reviews (batched)</td><td>VIP</td><td class="num">~1–2 hrs</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout blue"><h4>Every live session is recorded once and reused three ways</h4><p style="margin:0"><b>1.</b> Added to the course library · <b>2.</b> Cut into short social clips for top-of-funnel growth · <b>3.</b> Summarized into the newsletter.</p></div>
+    <h3>The guest / interview series — the growth flywheel</h3>
+    <p>Recurring conversations with Pitch Perfect/Sing-Off alumni, working artists, collegiate directors, and industry producers. Guests bring their audiences; clips travel; the free group fills.</p>
+    <h3>Launch the classroom with 2–3 flagship courses</h3>
+    <p>For example: <em>Arranging in 10 Steps</em>, <em>Blend &amp; Tuning</em>, <em>Performance &amp; Stage Presence</em> — then add one new module per month so there's always a reason to stay subscribed.</p>
+  </section>
+
+  <section id="money">
+    <div class="kicker">06 · Economics</div>
+    <h2>Monetization &amp; the path to $25,000/month</h2>
+    <ul class="list">
+      <li><b>Pricing rationale.</b> $29 is an easy yes for a student; $99 is the "I'm serious" tier; $497 is genuinely premium but a fraction of Deke's $200–500/hr coaching — and capped.</li>
+      <li><b>VIP is the margin driver.</b> Just 8 VIP members ≈ 280 Ensemble members in revenue. Filling and retaining the VIP cohort is the single highest-leverage activity.</li>
+      <li><b>Annual plans</b> (offer ~2 months free) bring cash up front and cut churn — model these as a share of each tier once live.</li>
+      <li><b>Backend upsells.</b> The community feeds Deke's existing high-ticket services — custom arrangements, workshops, university residencies — at member-only rates. It can <em>increase</em> the legacy business, not cannibalize it.</li>
+      <li><b>Referrals.</b> Skool's structure makes member-get-member promotions easy; reward with free months.</li>
+    </ul>
+    <div class="callout"><h4>Fees to net out</h4><p style="margin:0">Budget ~12% blended for the Skool platform fee and Stripe processing when projecting take-home. At the target mix, net ≈ <b>$22,400/month</b>.</p></div>
+  </section>
+
+  <section id="launch">
+    <div class="kicker">07 · Go-to-market</div>
+    <h2>Launch plan</h2>
+    <h3>Phase 1 — Pre-launch (Weeks 1–3): build quietly</h3>
+    <ul class="list">
+      <li>Stand up the Skool group(s), brand them, write the classroom outline.</li>
+      <li>Record the 2–3 flagship courses.</li>
+      <li>Open the <b>free group</b> and a <b>founding-member waitlist</b>; warm the email list and socials with teasers and guest-interview trailers.</li>
+    </ul>
+    <h3>Phase 2 — Launch (Week 4): go loud</h3>
+    <ul class="list">
+      <li>Founding-member promo to the 25k+ list (limited-time price or bonus, real deadline).</li>
+      <li>A free <b>live kickoff event</b> that converts attendees into paid members on the call.</li>
+      <li>Open a <b>scarce VIP cohort</b> with a hard cap — this drives urgency.</li>
+    </ul>
+    <h3>Phase 3 — Scale (Months 2–3+): turn the flywheel</h3>
+    <ul class="list">
+      <li>Publish on a steady cadence; repurpose every live into library + clips.</li>
+      <li>Run the guest series to keep filling the free group.</li>
+      <li>Optimize free→paid and paid→up-tier conversion; introduce annual plans and referrals.</li>
+    </ul>
+  </section>
+
+  <section id="ops">
+    <div class="kicker">08 · Operations</div>
+    <h2>Operations &amp; metrics</h2>
+    <p>Day-to-day the community is run by the brand's <b>communications &amp; operations manager</b>: content scheduling and production support, member onboarding, moderation, the guest-booking pipeline, email/social repurposing, and reporting. Deke's job is to <b>teach, show up live, and review VIP work</b> — the parts only he can do.</p>
+    <h3>Setup</h3>
+    <p>Skool group(s) + Stripe; email platform integration; a simple onboarding sequence; clear community guidelines.</p>
+    <h3>Track weekly</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Metric</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td><b>MRR</b></td><td>The headline number — progress to $25k.</td></tr>
+          <tr><td><b>Churn rate</b></td><td>Retention is the difference between growth and a treadmill.</td></tr>
+          <tr><td><b>Conversion</b> (free→paid, paid→up-tier)</td><td>Where the funnel leaks; where to optimize.</td></tr>
+          <tr><td><b>VIP cohort fill</b></td><td>Highest-leverage revenue; protect and renew.</td></tr>
+          <tr><td><b>Member LTV</b></td><td>Sets how much can be spent to acquire a member.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>These tie naturally into the automation ideas already documented for the brand (concierge onboarding, content-repurposing agents).</p>
+  </section>
+
+  <section id="risks">
+    <div class="kicker">09 · Risk</div>
+    <h2>Risks &amp; mitigations</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Deke's time gets stretched</td><td>Cap VIP; batch reviews; reuse recordings; ops manager absorbs everything non-teaching.</td></tr>
+          <tr><td>Churn</td><td>Community + challenges + always-fresh content; annual plans; strong onboarding.</td></tr>
+          <tr><td>Content treadmill</td><td>Repurpose every asset 3×; guest series shares the load.</td></tr>
+          <tr><td>Skool single-price limit</td><td>Free funnel + core paid group + VIP add-on cohort.</td></tr>
+          <tr><td>Slow start</td><td>Founding-member promo + live launch event + waitlist scarcity.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="next">
+    <div class="kicker">10 · Decision</div>
+    <h2>Recommendation &amp; next steps</h2>
+    <p>Launch a three-tier Skool community anchored by Deke's live teaching and a guest series, targeting <b>$25,000/month</b> within the first ~90 days of an audience this size.</p>
+    <div class="cta">
+      <h3>Three decisions to move forward</h3>
+      <ol>
+        <li><b>Approve the tier structure and pricing</b> (adjust freely in the interactive planner).</li>
+        <li><b>Confirm Deke's live cadence</b> and the first three flagship courses.</li>
+        <li><b>Green-light the pre-launch build</b> so the founding-member launch can hit the full list.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Deke Sharon · A Cappella Community — Strategy &amp; Operations Analysis. Prepared by the brand's communications &amp; operations management. Figures are planning estimates, not guarantees.</div>
+</footer>
+
+<button class="printbtn" onclick="window.print()">⤓ Save as PDF / Print</button>
+</body>
+</html>
