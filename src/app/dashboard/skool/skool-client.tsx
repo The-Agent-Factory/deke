@@ -12,6 +12,8 @@ import {
   DollarSign,
   Users,
   TrendingUp,
+  Pencil,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,12 +24,15 @@ import { Card, CardContent } from "@/components/ui/card";
 
 type Phase = "Pre-launch" | "Launch" | "Scale" | "Ops";
 type ColumnId = "backlog" | "todo" | "in_progress" | "review" | "done";
+type Assignee = "Denis" | "Deke" | null;
 
 type Task = {
   id: string;
   title: string;
   phase: Phase;
   column: ColumnId;
+  assignee?: Assignee;
+  due?: string | null; // ISO date (yyyy-mm-dd)
 };
 
 const COLUMNS: { id: ColumnId; label: string; dot: string }[] = [
@@ -45,15 +50,46 @@ const PHASE_STYLES: Record<Phase, string> = {
   Ops: "bg-emerald-100 text-emerald-800 border-emerald-200",
 };
 
+// Who can own a card. `null` = unassigned. This is high-level PM only —
+// everything is actually executed by Claude Code; the assignee just signals
+// who owns / reviews the work.
+const ASSIGNEES: Assignee[] = ["Denis", "Deke"];
+
+const ASSIGNEE_STYLES: Record<"Denis" | "Deke", { badge: string; dot: string }> = {
+  Denis: { badge: "bg-indigo-100 text-indigo-800 border-indigo-200", dot: "#6366F1" },
+  Deke: { badge: "bg-rose-100 text-rose-800 border-rose-200", dot: "#C05A3C" },
+};
+
+function initials(name: "Denis" | "Deke") {
+  return name.slice(0, 2).toUpperCase();
+}
+
+// Format an ISO date (yyyy-mm-dd) for display, parsed as a local date so it
+// doesn't drift a day from UTC.
+function formatDue(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(y, (m ?? 1) - 1, d ?? 1);
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+// True when the due date is strictly before today (local midnight).
+function isOverdue(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const due = new Date(y, (m ?? 1) - 1, d ?? 1);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return due.getTime() < today.getTime();
+}
+
 const STORAGE_KEY = "deke-skool-kanban-v1";
 const BACKUP_KEY = "deke-skool-kanban-v1-backup";
 
 const SEED_TASKS: Task[] = [
   // Pre-launch
-  { id: "t1", title: "Create Skool group(s) + brand them", phase: "Pre-launch", column: "in_progress" },
-  { id: "t2", title: "Write classroom course outline", phase: "Pre-launch", column: "in_progress" },
-  { id: "t3", title: "Record flagship course: Arranging in 10 Steps", phase: "Pre-launch", column: "todo" },
-  { id: "t4", title: "Record flagship course: Blend & Tuning", phase: "Pre-launch", column: "todo" },
+  { id: "t1", title: "Create Skool group(s) + brand them", phase: "Pre-launch", column: "in_progress", assignee: "Denis", due: "2026-06-05" },
+  { id: "t2", title: "Write classroom course outline", phase: "Pre-launch", column: "in_progress", assignee: "Deke", due: "2026-06-10" },
+  { id: "t3", title: "Record flagship course: Arranging in 10 Steps", phase: "Pre-launch", column: "todo", assignee: "Deke", due: "2026-06-20" },
+  { id: "t4", title: "Record flagship course: Blend & Tuning", phase: "Pre-launch", column: "todo", assignee: "Deke" },
   { id: "t5", title: "Record flagship course: Performance & Stage Presence", phase: "Pre-launch", column: "backlog" },
   { id: "t6", title: "Set up Stripe + tier pricing ($29 / $99 / $497)", phase: "Pre-launch", column: "todo" },
   { id: "t7", title: "Build free group + founding-member waitlist", phase: "Pre-launch", column: "todo" },
@@ -89,7 +125,10 @@ export function SkoolClient() {
   const [addingTo, setAddingTo] = useState<ColumnId | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newPhase, setNewPhase] = useState<Phase>("Pre-launch");
+  const [newAssignee, setNewAssignee] = useState<Assignee>(null);
+  const [newDue, setNewDue] = useState("");
   const [backup, setBackup] = useState<Task[] | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Hydrate once from localStorage after mount. Done in an effect (not a lazy
   // initializer) so server and first client render both match SEED_TASKS and
@@ -135,6 +174,11 @@ export function SkoolClient() {
 
   function deleteTask(id: string) {
     setTasks((prev) => prev.filter((t) => t.id !== id));
+    setEditingId((cur) => (cur === id ? null : cur));
+  }
+
+  function updateTask(id: string, patch: Partial<Task>) {
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
   }
 
   function addTask(column: ColumnId) {
@@ -142,9 +186,18 @@ export function SkoolClient() {
     if (!title) return;
     setTasks((prev) => [
       ...prev,
-      { id: `t${Date.now()}`, title, phase: newPhase, column },
+      {
+        id: `t${Date.now()}`,
+        title,
+        phase: newPhase,
+        column,
+        assignee: newAssignee,
+        due: newDue || null,
+      },
     ]);
     setNewTitle("");
+    setNewAssignee(null);
+    setNewDue("");
     setAddingTo(null);
   }
 
@@ -184,6 +237,7 @@ export function SkoolClient() {
 
   const completed = tasks.filter((t) => t.column === "done").length;
   const progress = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
+  const editingTask = tasks.find((t) => t.id === editingId) ?? null;
 
   return (
     <div className="space-y-6">
@@ -283,7 +337,7 @@ export function SkoolClient() {
           >
             Launch Board
           </h2>
-          <span className="text-xs text-[#aaa]">Saved to this browser · drag cards between columns</span>
+          <span className="text-xs text-[#aaa]">Saved to this browser · drag to move · hover a card to edit</span>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -342,19 +396,53 @@ export function SkoolClient() {
                         <p className="text-[13px] font-medium leading-snug text-[#1a1a1a]">
                           {task.title}
                         </p>
-                        <button
-                          onClick={() => deleteTask(task.id)}
-                          className="opacity-0 transition-opacity group-hover:opacity-100"
-                          aria-label="Delete task"
-                        >
-                          <X className="h-3.5 w-3.5 text-[#bbb] hover:text-[#C05A3C]" />
-                        </button>
+                        <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                          <button
+                            onClick={() => setEditingId(task.id)}
+                            aria-label="Edit task"
+                          >
+                            <Pencil className="h-3.5 w-3.5 text-[#bbb] hover:text-[#C05A3C]" />
+                          </button>
+                          <button
+                            onClick={() => deleteTask(task.id)}
+                            aria-label="Delete task"
+                          >
+                            <X className="h-3.5 w-3.5 text-[#bbb] hover:text-[#C05A3C]" />
+                          </button>
+                        </div>
                       </div>
-                      <span
-                        className={`mt-2 inline-block rounded border px-1.5 py-0.5 text-[10px] font-semibold ${PHASE_STYLES[task.phase]}`}
-                      >
-                        {task.phase}
-                      </span>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={`inline-block rounded border px-1.5 py-0.5 text-[10px] font-semibold ${PHASE_STYLES[task.phase]}`}
+                        >
+                          {task.phase}
+                        </span>
+                        {task.assignee && (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold ${ASSIGNEE_STYLES[task.assignee].badge}`}
+                          >
+                            <span
+                              className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-[7px] font-bold text-white"
+                              style={{ backgroundColor: ASSIGNEE_STYLES[task.assignee].dot }}
+                            >
+                              {initials(task.assignee)}
+                            </span>
+                            {task.assignee}
+                          </span>
+                        )}
+                        {task.due && (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold ${
+                              isOverdue(task.due) && task.column !== "done"
+                                ? "border-red-200 bg-red-100 text-red-700"
+                                : "border-[#E8E4DD] bg-[#F5F3EF] text-[#777]"
+                            }`}
+                          >
+                            <Calendar className="h-2.5 w-2.5" />
+                            {formatDue(task.due)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
 
@@ -373,13 +461,15 @@ export function SkoolClient() {
                           if (e.key === "Escape") {
                             setAddingTo(null);
                             setNewTitle("");
+                            setNewAssignee(null);
+                            setNewDue("");
                           }
                         }}
                         placeholder="Task title…"
                         rows={2}
                         className="w-full resize-none rounded border border-[#E8E4DD] p-1.5 text-[13px] text-[#1a1a1a] outline-none focus:border-[#C05A3C]"
                       />
-                      <div className="mt-2 flex items-center gap-2">
+                      <div className="mt-2 grid grid-cols-2 gap-1.5">
                         <select
                           value={newPhase}
                           onChange={(e) => setNewPhase(e.target.value as Phase)}
@@ -391,6 +481,28 @@ export function SkoolClient() {
                             </option>
                           ))}
                         </select>
+                        <select
+                          value={newAssignee ?? ""}
+                          onChange={(e) =>
+                            setNewAssignee((e.target.value || null) as Assignee)
+                          }
+                          className="rounded border border-[#E8E4DD] px-1.5 py-1 text-[11px] text-[#555] outline-none"
+                        >
+                          <option value="">Unassigned</option>
+                          {ASSIGNEES.map((a) => (
+                            <option key={a} value={a ?? ""}>
+                              {a}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="date"
+                          value={newDue}
+                          onChange={(e) => setNewDue(e.target.value)}
+                          className="col-span-2 rounded border border-[#E8E4DD] px-1.5 py-1 text-[11px] text-[#555] outline-none"
+                        />
+                      </div>
+                      <div className="mt-2 flex items-center gap-2">
                         <Button
                           size="sm"
                           className="h-7 px-2 text-xs text-white hover:opacity-90"
@@ -403,6 +515,8 @@ export function SkoolClient() {
                           onClick={() => {
                             setAddingTo(null);
                             setNewTitle("");
+                            setNewAssignee(null);
+                            setNewDue("");
                           }}
                           className="text-[11px] text-[#999] hover:text-[#555]"
                         >
@@ -415,6 +529,8 @@ export function SkoolClient() {
                       onClick={() => {
                         setAddingTo(col.id);
                         setNewTitle("");
+                        setNewAssignee(null);
+                        setNewDue("");
                       }}
                       className="flex items-center gap-1.5 rounded-lg border border-dashed border-[#D8D4CD] px-3 py-2 text-[12px] font-medium text-[#999] transition-colors hover:border-[#C05A3C]/50 hover:text-[#C05A3C]"
                     >
@@ -428,6 +544,18 @@ export function SkoolClient() {
           })}
         </div>
       </div>
+
+      {editingTask && (
+        <EditModal
+          task={editingTask}
+          onClose={() => setEditingId(null)}
+          onSave={(patch) => {
+            updateTask(editingTask.id, patch);
+            setEditingId(null);
+          }}
+          onDelete={() => deleteTask(editingTask.id)}
+        />
+      )}
     </div>
   );
 }
@@ -435,6 +563,162 @@ export function SkoolClient() {
 /* ------------------------------------------------------------------ */
 /* Sub-components                                                      */
 /* ------------------------------------------------------------------ */
+
+function EditModal({
+  task,
+  onClose,
+  onSave,
+  onDelete,
+}: {
+  task: Task;
+  onClose: () => void;
+  onSave: (patch: Partial<Task>) => void;
+  onDelete: () => void;
+}) {
+  const [title, setTitle] = useState(task.title);
+  const [phase, setPhase] = useState<Phase>(task.phase);
+  const [column, setColumn] = useState<ColumnId>(task.column);
+  const [assignee, setAssignee] = useState<Assignee>(task.assignee ?? null);
+  const [due, setDue] = useState(task.due ?? "");
+
+  // Close on Escape for quick keyboard dismissal.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  function save() {
+    const trimmed = title.trim();
+    if (!trimmed) return;
+    onSave({ title: trimmed, phase, column, assignee, due: due || null });
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl border border-[#E8E4DD] bg-white p-5 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h3
+            className="text-base font-bold text-[#1a1a1a]"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            Edit card
+          </h3>
+          <button onClick={onClose} aria-label="Close">
+            <X className="h-4 w-4 text-[#bbb] hover:text-[#C05A3C]" />
+          </button>
+        </div>
+
+        <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+          Title
+        </label>
+        <textarea
+          autoFocus
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          rows={2}
+          className="mb-4 w-full resize-none rounded-lg border border-[#E8E4DD] p-2 text-sm text-[#1a1a1a] outline-none focus:border-[#C05A3C]"
+        />
+
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+              Column
+            </label>
+            <select
+              value={column}
+              onChange={(e) => setColumn(e.target.value as ColumnId)}
+              className="w-full rounded-lg border border-[#E8E4DD] px-2 py-1.5 text-sm text-[#555] outline-none focus:border-[#C05A3C]"
+            >
+              {COLUMNS.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+              Phase
+            </label>
+            <select
+              value={phase}
+              onChange={(e) => setPhase(e.target.value as Phase)}
+              className="w-full rounded-lg border border-[#E8E4DD] px-2 py-1.5 text-sm text-[#555] outline-none focus:border-[#C05A3C]"
+            >
+              {PHASES.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+              Assignee
+            </label>
+            <select
+              value={assignee ?? ""}
+              onChange={(e) => setAssignee((e.target.value || null) as Assignee)}
+              className="w-full rounded-lg border border-[#E8E4DD] px-2 py-1.5 text-sm text-[#555] outline-none focus:border-[#C05A3C]"
+            >
+              <option value="">Unassigned</option>
+              {ASSIGNEES.map((a) => (
+                <option key={a} value={a ?? ""}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+              Due date
+            </label>
+            <input
+              type="date"
+              value={due}
+              onChange={(e) => setDue(e.target.value)}
+              className="w-full rounded-lg border border-[#E8E4DD] px-2 py-1.5 text-sm text-[#555] outline-none focus:border-[#C05A3C]"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onDelete}
+            className="text-xs font-medium text-[#C05A3C] hover:underline"
+          >
+            Delete card
+          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="text-sm font-medium text-[#999] hover:text-[#555]"
+            >
+              Cancel
+            </button>
+            <Button
+              size="sm"
+              className="text-white hover:opacity-90"
+              style={{ backgroundColor: "#C05A3C" }}
+              onClick={save}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ResourceCard({
   href,
