@@ -3,7 +3,8 @@
     "allow": [
       "Skill(commit)",
       "mcp__grep__searchGitHub",
-      "mcp__43c9b6bf-523a-4554-bde8-38c7ebd50287__execute_sql"
+      "mcp__43c9b6bf-523a-4554-bde8-38c7ebd50287__execute_sql",
+      "mcp__43c9b6bf-523a-4554-bde8-38c7ebd50287__apply_migration"
     ]
   }
 }
