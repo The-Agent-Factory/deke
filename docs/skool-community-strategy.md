@@ -6,6 +6,11 @@
 > `/skool/deke-skool-planner.html`, or from the **Skool** section of the admin dashboard) in any
 > browser to configure the community and adjust pricing yourself — it recalculates MRR and ARR
 > live as you change things.
+>
+> **Ready to build?** See the companion [**Skool Build Runbook**](./skool-community-structure.md) —
+> the step-by-step skeleton for standing up the actual structure (groups, tiers, classroom, levels)
+> on Skool. Note: Skool now supports **Tiers** (multiple paid plans in one group), so the three tiers
+> in §2 below are delivered via Tiers + a free funnel group rather than the older one-price workaround.
 
 ---
 
