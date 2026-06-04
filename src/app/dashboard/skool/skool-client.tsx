@@ -303,7 +303,14 @@ export function SkoolClient() {
       )}
 
       {/* Strategy resources */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <ResourceCard
+          href="/skool/deke-skool-build.html"
+          icon={<GraduationCap className="h-5 w-5 text-[#C05A3C]" />}
+          tint="#C05A3C"
+          title="Community Build Overview"
+          desc="The visual walkthrough to show Deke: groups, tiers, classroom, levels & launch — his brand front and center. Print / PDF ready."
+        />
         <ResourceCard
           href="/skool/deke-skool-strategy.html"
           icon={<FileText className="h-5 w-5 text-[#0066FF]" />}
