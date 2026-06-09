@@ -255,7 +255,7 @@ export function SkoolClient() {
               Skool Project
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-[#888]">
-              The A Cappella Academy — build, launch, and operate the membership community.
+              Deke A Cappella — build, launch, and operate the membership community.
               Target: $25,000/month across three tiers.
             </p>
           </div>
@@ -303,18 +303,32 @@ export function SkoolClient() {
       )}
 
       {/* Strategy resources */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <ResourceCard
+          href="/skool/deke-skool-launch-brief.html"
+          icon={<FileText className="h-5 w-5 text-[#C05A3C]" />}
+          tint="#C05A3C"
+          title="Launch Brief — Start This Week"
+          desc="The meeting one-pager + this-week launch pack: $10k/mo math, the email, posts & run of show. Print / PDF ready."
+        />
+        <ResourceCard
+          href="/skool/deke-skool-build.html"
+          icon={<GraduationCap className="h-5 w-5 text-[#1B1B33]" />}
+          tint="#1B1B33"
+          title="Community Build Overview"
+          desc="The visual walkthrough to show Deke: groups, tiers, classroom, levels & launch — his brand front and center."
+        />
         <ResourceCard
           href="/skool/deke-skool-strategy.html"
-          icon={<FileText className="h-5 w-5 text-[#0066FF]" />}
-          tint="#0066FF"
+          icon={<FileText className="h-5 w-5 text-[#3E8E6E]" />}
+          tint="#3E8E6E"
           title="Strategy & Operations Analysis"
           desc="The full proposal: tiers, content cadence, monetization, launch plan, ops & risks. Print / PDF ready."
         />
         <ResourceCard
           href="/skool/deke-skool-planner.html"
-          icon={<SlidersHorizontal className="h-5 w-5 text-[#9B5DE5]" />}
-          tint="#9B5DE5"
+          icon={<SlidersHorizontal className="h-5 w-5 text-[#D9A23F]" />}
+          tint="#D9A23F"
           title="Interactive Revenue Planner"
           desc="Toggle community options and drag pricing to watch MRR / ARR update live against the $25k goal."
         />
@@ -322,10 +336,10 @@ export function SkoolClient() {
 
       {/* Revenue snapshot */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={<DollarSign className="h-5 w-5" />} tint="#0066FF" value="$25,476" label="Target MRR" />
-        <StatCard icon={<TrendingUp className="h-5 w-5" />} tint="#9B5DE5" value="$305,712" label="Target ARR" />
-        <StatCard icon={<Users className="h-5 w-5" />} tint="#FF6B6B" value="508" label="Paying members" />
-        <StatCard icon={<GraduationCap className="h-5 w-5" />} tint="#13988e" value={`${progress}%`} label="Launch tasks done" />
+        <StatCard icon={<DollarSign className="h-5 w-5" />} tint="#C05A3C" value="$25,476" label="Target MRR" />
+        <StatCard icon={<TrendingUp className="h-5 w-5" />} tint="#D9A23F" value="$305,712" label="Target ARR" />
+        <StatCard icon={<Users className="h-5 w-5" />} tint="#1B1B33" value="508" label="Paying members" />
+        <StatCard icon={<GraduationCap className="h-5 w-5" />} tint="#3E8E6E" value={`${progress}%`} label="Launch tasks done" />
       </div>
 
       {/* Kanban */}

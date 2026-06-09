@@ -17,7 +17,7 @@
 **Deke Sharon is the brand.** Not a faceless "academy." His name, face, voice, and story are the
 product and the entire reason anyone joins. So, everywhere in this build:
 
-- **The headline brand is "Deke Sharon."** *"A Cappella Academy"* is, at most, a descriptive
+- **The headline brand is "Deke Sharon."** *"Deke A Cappella"* is, at most, a descriptive
   subtitle — never the standalone name.
 - All member-facing copy is in **Deke's first-person voice** — *"Learn directly from me…"* — anchored
   to the positioning: **"Learn contemporary a cappella from the person who invented the modern sound."**
@@ -46,7 +46,7 @@ A group is configured as **either** Tiers **or** Freemium — not both at once.
 | # | Group (member-facing name) | Plan model | Purpose |
 |---|---|---|---|
 | 1 | **Sing with Deke** *(free)* | Free group | Top-of-funnel. The audience lands here; clips, taster posts, and the waitlist live here. |
-| 2 | **Deke Sharon — A Cappella Academy** *(paid)* | **Tiers** → Ensemble $29 · Soloists $99 · Producers' Room $497 | The paid home. All three price points live in **one** group via Skool Tiers; higher tiers unlock more cadence, coaching, and access to Deke. |
+| 2 | **Deke A Cappella** *(paid)* | **Tiers** → Ensemble $29 · Soloists $99 · Producers' Room $497 | The paid home. All three price points live in **one** group via Skool Tiers; higher tiers unlock more cadence, coaching, and access to Deke. |
 
 Two groups, cleanly: one **free funnel**, one **paid home with three tiers**. This is the simplest
 structure that delivers all four levels from the strategy doc without juggling a separate VIP group.
@@ -63,9 +63,9 @@ structure that delivers all four levels from the strategy doc without juggling a
 
 For **each** of the two groups above, set:
 
-| Setting | "Sing with Deke" (free) | "Deke Sharon — A Cappella Academy" (paid) |
+| Setting | "Sing with Deke" (free) | "Deke A Cappella" (paid) |
 |---|---|---|
-| **Name** | Sing with Deke | Deke Sharon — A Cappella Academy |
+| **Name** | Sing with Deke | Deke A Cappella |
 | **URL slug** | `/sing-with-deke` | `/deke-sharon` *(secure the cleanest Deke-named slug available)* |
 | **Privacy** | Public (discoverable) | Private (paid) |
 | **Icon** | Deke headshot (`deke_hi.jpg`) | Deke headshot (`deke_hi.jpg`) |
@@ -194,7 +194,7 @@ Create recurring Skool events matching the live cadence in strategy §5 (titles 
 
 - [ ] Reserve the Deke-named URL slugs for both groups.
 - [ ] Create **"Sing with Deke"** (free) — icon, cover, color, description.
-- [ ] Create **"Deke Sharon — A Cappella Academy"** (paid) — same branding.
+- [ ] Create **"Deke A Cappella"** (paid) — same branding.
 - [ ] Enable **Tiers** on the paid group; add **Ensemble $29 / Soloists $99 / Producers' Room $497**.
 - [ ] Add **annual** prices (~2 months free) per tier.
 - [ ] Decide **free-trial** on/off (§10) and set it.
