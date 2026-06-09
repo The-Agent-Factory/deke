@@ -6,16 +6,16 @@
 <title>Deke Sharon · Skool Community Planner</title>
 <!-- Brand fonts load when online; robust system fallback keeps it polished offline. -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --blue:#0066FF; --yellow:#FFD23F; --coral:#FF6B6B; --mint:#4ECDC4; --purple:#9B5DE5;
-    --cream:#FFFEF9; --surface:#F8F7F4; --charcoal:#2D3436; --warm:#636E72; --border:#E8E6E1;
-    --grad-hero:linear-gradient(135deg,#0066FF 0%,#9B5DE5 50%,#FF6B6B 100%);
-    --grad-cta:linear-gradient(90deg,#0066FF 0%,#4ECDC4 100%);
-    --grad-warm:linear-gradient(135deg,#FFD23F 0%,#FF6B6B 100%);
-    --display:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
-    --body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+    --blue:#C05A3C; --yellow:#E8C07A; --coral:#B0492E; --mint:#3E8E6E; --purple:#D9A23F;
+    --cream:#F5F1E9; --surface:#ECE6D9; --charcoal:#232026; --warm:#6B6258; --border:#E2DACB;
+    --grad-hero:linear-gradient(135deg,#15152C 0%,#7A3326 58%,#C05A3C 118%);
+    --grad-cta:linear-gradient(90deg,#C05A3C 0%,#E8C07A 100%);
+    --grad-warm:linear-gradient(135deg,#E8C07A 0%,#B0492E 100%);
+    --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+    --body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
     --shadow:0 8px 28px rgba(45,52,54,.10); --shadow-sm:0 2px 10px rgba(45,52,54,.08);
     --radius:18px;
   }
@@ -44,7 +44,7 @@
   .goal{grid-column:span 1}
   .goal .track{height:14px;border-radius:999px;background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-top:8px}
   .goal .fill{height:100%;width:0;background:var(--grad-cta);transition:width .35s ease}
-  .goal.hit .fill{background:linear-gradient(90deg,#2bbf6f,#4ECDC4)}
+  .goal.hit .fill{background:linear-gradient(90deg,#2bbf6f,#3E8E6E)}
   .goal .pct{font-family:var(--display);font-size:1.1rem}
   @media(max-width:760px){.dash-grid{grid-template-columns:repeat(2,1fr)}.dash{margin-top:-70px}}
 
@@ -63,14 +63,14 @@
   .card h3{font-size:1.02rem;font-family:var(--body);font-weight:800;padding-right:30px}
   .card p{font-size:.86rem;color:var(--warm);margin-top:4px;font-weight:600}
   .chip{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:3px 8px;border-radius:999px;margin-top:10px}
-  .chip.low{background:#e8f0ff;color:var(--blue)} .chip.med{background:#e6faf8;color:#13988e} .chip.vip{background:#f3e9ff;color:var(--purple)} .chip.all{background:#fff4d6;color:#9a7400}
+  .chip.low{background:#e8f0ff;color:var(--blue)} .chip.med{background:#e6faf8;color:#3E8E6E} .chip.vip{background:#f3e9ff;color:var(--purple)} .chip.all{background:#fff4d6;color:#9a7400}
   .card.on{border-color:var(--blue);background:#fbfcff}
   .card.on .tick{background:var(--grad-cta);border-color:transparent;color:#fff}
   /* content & interview cards use coral/purple accents when on */
   .cards.content .card.on{border-color:var(--coral);background:#fff8f8}
   .cards.content .card.on .tick{background:var(--grad-warm)}
   .cards.interview .card.on{border-color:var(--purple);background:#fcf9ff}
-  .cards.interview .card.on .tick{background:linear-gradient(90deg,#9B5DE5,#FF6B6B)}
+  .cards.interview .card.on .tick{background:linear-gradient(90deg,#D9A23F,#B0492E)}
 
   .selctl{display:flex;gap:10px;margin:0 0 16px}
   .selctl button{font-family:var(--body);font-weight:800;font-size:.8rem;border:1.5px solid var(--border);background:#fff;color:var(--warm);padding:7px 14px;border-radius:999px;cursor:pointer;transition:.15s}
@@ -93,7 +93,7 @@
   .numrow .pre{color:var(--warm);font-weight:800}
   .tier .tmrr{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);font-weight:800;color:var(--charcoal);display:flex;justify-content:space-between;align-items:baseline}
   .tier .tmrr b{font-family:var(--display);font-size:1.25rem;color:var(--blue)}
-  .tier.vip .tmrr b{color:var(--purple)} .tier.med .tmrr b{color:#13988e}
+  .tier.vip .tmrr b{color:var(--purple)} .tier.med .tmrr b{color:#3E8E6E}
 
   /* ---------- Summary ---------- */
   .summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin:14px 0 0}
@@ -123,7 +123,7 @@
 <header class="hero">
   <div class="wrap">
     <span class="badge">Skool Community · Build & Price It</span>
-    <h1>Design Your A Cappella Academy</h1>
+    <h1>Design Your Deke A Cappella</h1>
     <p class="sub">Pick what goes inside the community, choose the content and interviews you want to create, set your pricing — and watch your monthly and annual revenue update live.</p>
     <p class="hero-note">Everything here is yours to adjust. Toggle options on or off, drag the price and member sliders, and the dashboard recalculates instantly. The default setup is tuned to reach the <strong>$25,000/month</strong> goal.</p>
   </div>
