@@ -67,11 +67,11 @@
   @media(max-width:780px){.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);min-width:0;padding:6px 0}}
 
   /* Tiers */
-  .tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:6px 0 4px}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:6px 0 4px}
   .tier{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
   .tier.free{border-top:6px solid var(--teal)} .tier.low{border-top:6px solid var(--gold)}
   .tier.med{border-top:6px solid var(--brand)} .tier.vip{border-top:6px solid var(--plum);position:relative}
-  .tier.vip::before{content:"Capped · with Deke";position:absolute;top:-11px;right:12px;background:var(--plum);color:#fff;font-size:.62rem;font-weight:900;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  .tier.vip::before{content:"Annual · VIP";position:absolute;top:-11px;right:12px;background:var(--plum);color:#fff;font-size:.62rem;font-weight:900;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:999px}
   .tier .nm{font-family:var(--display);font-size:1.12rem}
   .tier .pr{font-family:var(--display);font-size:1.9rem;margin:2px 0 2px}
   .tier .pr small{font-size:.8rem;color:var(--warm);font-family:var(--body);font-weight:800}
@@ -170,8 +170,8 @@
       <p class="tag">Your a cappella community — designed, structured, and ready to build.</p>
       <p class="sub">We've already laid out the whole thing: the groups, the tiers, the classroom, the levels, and the launch. Here's exactly what it looks like.</p>
       <div class="meta">
-        <span>Target · $25,000 / month</span>
-        <span>2 groups · 3 tiers</span>
+        <span>First goal · $10,000 / month</span>
+        <span>2 groups · $49/mo + $490/yr VIP</span>
         <span>Platform · Skool</span>
       </div>
     </div>
@@ -193,8 +193,8 @@
   <section id="topology">
     <span class="kicker">The big picture</span>
     <h2>Two groups, one funnel</h2>
-    <p class="intro">A free group catches your 25,000+ audience and warms them up. One paid group — with
-    three tiers inside it — is where they learn, level up, and get closer to you.</p>
+    <p class="intro">A free group catches your 25,000+ audience and warms them up. One paid group — one simple
+    price, billed monthly or annually — is where they learn, level up, and get closer to you.</p>
     <div class="flow">
       <div class="gcard free">
         <span class="pill">Free · top of funnel</span>
@@ -210,11 +210,11 @@
       <div class="gcard paid">
         <span class="pill">Paid · the academy</span>
         <h3>Deke A Cappella</h3>
-        <p class="desc">The paid home. Three tiers in one group: courses, live classes, coaching, and — at the top — you.</p>
+        <p class="desc">The paid home. One membership: courses, live classes, feedback — and annual members unlock the VIP room.</p>
         <ul>
           <li>Full course classroom</li>
-          <li>Weekly live classes &amp; coaching</li>
-          <li>VIP room with Deke</li>
+          <li>Live classes with Deke</li>
+          <li>Annual = VIP room + arrangements</li>
         </ul>
       </div>
     </div>
@@ -223,12 +223,12 @@
   <!-- 2. Tiers -->
   <section id="tiers">
     <span class="kicker">Membership</span>
-    <h2>Three tiers — how close they get to you</h2>
-    <p class="intro">Priced as an easy yes, a serious commitment, and a genuine VIP. The math: about 2% of
-    your audience across these tiers reaches the $25k/month goal.</p>
+    <h2>One membership — two ways to pay</h2>
+    <p class="intro">A free funnel, one paid membership at $49/mo (7-day trial), and an annual option that
+    <i>is</i> the VIP tier. The math to ~$10k/month: about 1% of your audience.</p>
     <div class="tiers">
       <div class="tier free">
-        <div class="nm">The Singalong</div>
+        <div class="nm">Sing with Deke</div>
         <div class="pr">Free</div>
         <div class="who">The audience</div>
         <ul>
@@ -237,43 +237,32 @@
           <li>Monthly Q&amp;A clip</li>
         </ul>
       </div>
-      <div class="tier low">
-        <div class="nm">The Ensemble</div>
-        <div class="pr">$29<small>/mo</small></div>
-        <div class="who">~400 members</div>
+      <div class="tier med">
+        <div class="nm">Membership</div>
+        <div class="pr">$49<small>/mo</small></div>
+        <div class="who">7-day free trial</div>
         <ul>
           <li>Full course library</li>
-          <li>Monthly live class</li>
+          <li>Live classes with Deke</li>
           <li>Challenges &amp; leaderboard</li>
-          <li>Resource drops</li>
-        </ul>
-      </div>
-      <div class="tier med">
-        <div class="nm">The Soloists</div>
-        <div class="pr">$99<small>/mo</small></div>
-        <div class="who">~100 members</div>
-        <ul>
-          <li class="add">+ Weekly live classes</li>
-          <li class="add">+ Monthly group coaching</li>
-          <li class="add">+ Arrangement teardowns</li>
-          <li class="add">+ Batched song feedback</li>
+          <li>Feedback &amp; resource drops</li>
         </ul>
       </div>
       <div class="tier vip">
-        <div class="nm">Producers' Room</div>
-        <div class="pr">$497<small>/mo</small></div>
-        <div class="who">8–25 · capped</div>
+        <div class="nm">VIP — annual</div>
+        <div class="pr">$490<small>/yr</small></div>
+        <div class="who">≈ 2 months free</div>
         <ul>
-          <li class="add">+ Monthly call with Deke</li>
-          <li class="add">+ Personal review / mo</li>
-          <li class="add">+ Service discounts</li>
+          <li class="add">Everything in membership</li>
+          <li class="add">+ Private Producers' Room</li>
+          <li class="add">+ Special-arrangements package</li>
         </ul>
       </div>
     </div>
     <div class="stats">
-      <div class="stat"><div class="v">$25,476</div><div class="l">Target MRR</div></div>
-      <div class="stat"><div class="v">$305,712</div><div class="l">Target ARR</div></div>
-      <div class="stat"><div class="v">508</div><div class="l">Paying members</div></div>
+      <div class="stat"><div class="v">≈$10,086</div><div class="l">Target MRR</div></div>
+      <div class="stat"><div class="v">≈$27k</div><div class="l">Annual cash up front</div></div>
+      <div class="stat"><div class="v">215</div><div class="l">Paying members</div></div>
       <div class="stat"><div class="v">8+ hrs</div><div class="l">Deke live / month</div></div>
     </div>
   </section>
@@ -290,15 +279,15 @@
       <div class="courses">
         <div class="course"><div class="thumb"><img src="/images/deke/deke_hi.jpg" alt=""><span class="lock">Free</span></div>
           <div class="body"><h4>Start Here — Meet Deke</h4><p>Who I am &amp; how to get the most from this community.</p></div></div>
-        <div class="course"><div class="thumb"><img src="/images/deke/riffoff2.jpg" alt=""><span class="lock">Ensemble+</span></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/riffoff2.jpg" alt=""><span class="lock">Members</span></div>
           <div class="body"><h4>Arranging in 10 Steps</h4><p>My exact process — start to finish.</p></div></div>
-        <div class="course"><div class="thumb"><img src="/images/deke/big-img-20.jpg" alt=""><span class="lock">Ensemble+</span></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-20.jpg" alt=""><span class="lock">Members</span></div>
           <div class="body"><h4>Blend &amp; Tuning</h4><p>Make any group sound like one instrument.</p></div></div>
-        <div class="course"><div class="thumb"><img src="/images/deke/big-img-31.jpg" alt=""><span class="lock">Ensemble+</span></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-31.jpg" alt=""><span class="lock">Members</span></div>
           <div class="body"><h4>Performance &amp; Stage Presence</h4><p>The difference between singing and performing.</p></div></div>
         <div class="course"><div class="thumb"><img src="/images/deke/big-img-15.jpg" alt=""><span class="lock">Drips monthly</span></div>
           <div class="body"><h4>Monthly Masterclass Library</h4><p>One new recorded class every month.</p></div></div>
-        <div class="course"><div class="thumb"><img src="/images/deke/big-img-41.jpg" alt=""><span class="lock">Soloists</span></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-41.jpg" alt=""><span class="lock">VIP</span></div>
           <div class="body"><h4>Arrangement Teardowns</h4><p>Deep-dive breakdowns + toolkits.</p></div></div>
       </div>
     </div>

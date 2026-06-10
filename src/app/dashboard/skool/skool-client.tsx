@@ -91,7 +91,7 @@ const SEED_TASKS: Task[] = [
   { id: "t3", title: "Record flagship course: Arranging in 10 Steps", phase: "Pre-launch", column: "todo", assignee: "Deke", due: "2026-06-20" },
   { id: "t4", title: "Record flagship course: Blend & Tuning", phase: "Pre-launch", column: "todo", assignee: "Deke" },
   { id: "t5", title: "Record flagship course: Performance & Stage Presence", phase: "Pre-launch", column: "backlog" },
-  { id: "t6", title: "Set up Stripe + tier pricing ($29 / $99 / $497)", phase: "Pre-launch", column: "todo" },
+  { id: "t6", title: "Set up Stripe + pricing: $49/mo (7-day trial) + $490/yr VIP", phase: "Pre-launch", column: "todo" },
   { id: "t7", title: "Build free group + founding-member waitlist", phase: "Pre-launch", column: "todo" },
   { id: "t8", title: "Email platform integration + onboarding sequence", phase: "Pre-launch", column: "backlog" },
   { id: "t9", title: "Draft community guidelines", phase: "Pre-launch", column: "backlog" },
@@ -256,7 +256,7 @@ export function SkoolClient() {
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-[#888]">
               Deke A Cappella — build, launch, and operate the membership community.
-              Target: $25,000/month across three tiers.
+              Free funnel + $49/mo membership ($490/yr VIP). First milestone: $10,000/month.
             </p>
           </div>
         </div>
@@ -336,9 +336,9 @@ export function SkoolClient() {
 
       {/* Revenue snapshot */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={<DollarSign className="h-5 w-5" />} tint="#C05A3C" value="$25,476" label="Target MRR" />
-        <StatCard icon={<TrendingUp className="h-5 w-5" />} tint="#D9A23F" value="$305,712" label="Target ARR" />
-        <StatCard icon={<Users className="h-5 w-5" />} tint="#1B1B33" value="508" label="Paying members" />
+        <StatCard icon={<DollarSign className="h-5 w-5" />} tint="#C05A3C" value="$10,086" label="Target MRR" />
+        <StatCard icon={<TrendingUp className="h-5 w-5" />} tint="#D9A23F" value="~$27k" label="Annual VIP cash" />
+        <StatCard icon={<Users className="h-5 w-5" />} tint="#1B1B33" value="215" label="Paying members" />
         <StatCard icon={<GraduationCap className="h-5 w-5" />} tint="#3E8E6E" value={`${progress}%`} label="Launch tasks done" />
       </div>
 

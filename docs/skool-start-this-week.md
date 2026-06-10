@@ -1,7 +1,7 @@
 # Start Deke's Skool THIS WEEK — Action + Content Pack
 
 Goal: **first paying members by the weekend**, on the road to **$10k/month**.
-Principle: launch small. Two paid tiers + a free group. One hour of Deke on camera. Improve live.
+Principle: launch small. One paid plan (monthly + annual VIP) + a free group. One hour of Deke on camera. Improve live.
 
 ---
 
@@ -10,11 +10,11 @@ Principle: launch small. Two paid tiers + a free group. One hour of Deke on came
 | Day | Action | Owner |
 |---|---|---|
 | **Mon** | Create the 2 Skool groups (free + paid), brand them, connect Stripe. | Denis |
-| **Tue** | Set tiers: Ensemble **$29/mo** + Producers' Room **$497/mo** (cap 6). Build free group + waitlist post. | Denis |
+| **Tue** | Set the paid plan (Freemium): **$49/mo** with a **7-day free trial** + **$490/yr** annual VIP. Build free group + waitlist post. | Denis |
 | **Wed** | Deke records a **5-min welcome video** + we post the pinned "Start Here." Open the **free group**. | Deke + Denis |
 | **Thu** | Send **founding-member email** to the 25k list. Post teasers on socials. | Denis |
-| **Fri** | Reminder email + DMs to warm leads. Final push on VIP scarcity ("6 seats"). | Denis |
-| **Sat** | **Live kickoff call** (free, public) → pitch + convert on the call. Open VIP. | Deke + Denis |
+| **Fri** | Reminder email + DMs to warm leads. Push the annual VIP upgrade ($490/yr). | Denis |
+| **Sat** | **Live kickoff call** (free, public) → pitch + convert on the call. Add annual buyers to the VIP room. | Deke + Denis |
 | **Sun** | Welcome new members, schedule first weekly live class, tally MRR. | Denis |
 
 **Minimum content to open:** 1 welcome video, 1 live kickoff, 3 community posts, 1 email. That's it.
@@ -23,11 +23,11 @@ Principle: launch small. Two paid tiers + a free group. One hour of Deke on came
 
 ## The founding-member offer (the hook)
 
-> **Founding 50.** The first 50 members lock in founding pricing for life and get a founding-member
-> badge. When we hit 50, the price goes up. VIP (Producers' Room) is capped at **6 seats** — when
-> they're gone, they're gone.
+> **Founding 50.** The first 50 members lock in the **$49/mo founding rate for life** and get a
+> founding-member badge. When we hit 50, the price goes up. Going **annual ($490/yr)** unlocks **VIP** —
+> the private Producers' Room and Deke's special-arrangements package.
 
-Use real scarcity (50 founders, 6 VIP) and a real deadline (the kickoff call).
+Use real scarcity (Founding 50) and a real deadline (the kickoff call). Annual = VIP is the upgrade.
 
 ---
 
@@ -51,9 +51,10 @@ feedback on your own work, and a room full of singers as obsessed as you are.
 
 I'm opening it this week with **Founding 50** — the first 50 members lock in founding pricing for life:
 
-- **The Ensemble — $29/mo:** full course library, monthly live class with me, challenges & resources.
-- **The Producers' Room — $497/mo (only 6 seats):** everything above, *plus* a monthly small-group call
-  with me and a personal review of your arrangement or performance every month.
+- **Membership — $49/mo (7-day free trial):** full course library, live classes with me, challenges,
+  feedback & resources.
+- **Go annual — $490/yr (VIP):** everything in the membership, billed yearly (two months free), *plus*
+  VIP status — my private Producers' Room and my special-arrangements package.
 
 I'm kicking it off with a **free live class this Saturday** — come sing, ask me anything, and grab a
 founding spot.
@@ -74,9 +75,9 @@ Can't wait to make music with you.
 > drop a hello below — where are you from and what do you sing? First live class is [date].
 
 **2) Free group — the offer**
-> Founding 50 is open. The first 50 members lock in founding pricing for life, and there are only
-> **6 VIP seats** (monthly calls + personal feedback from me). Free live kickoff this Saturday —
-> [RSVP]. Doors to founding pricing close when we hit 50.
+> Founding 50 is open. The first 50 members lock in the **$49/mo founding rate for life**. Go
+> **annual ($490/yr)** to unlock VIP — my private Producers' Room + my special-arrangements package.
+> Free live kickoff this Saturday — [RSVP]. Doors to founding pricing close when we hit 50.
 
 **3) Intro prompt — "Wins & Performances"**
 > Introduce yourself 👇 Name, where you sing, and one thing you want to get better at this year.
@@ -97,7 +98,7 @@ Can't wait to make music with you.
 2. **Story (5 min)** — why he built this, who it's for.
 3. **Teach something real (10 min)** — one genuinely useful tip (a blend trick or arranging move) so
    people feel the value live.
-4. **The offer (5 min)** — Founding 50, the two tiers, the 6 VIP seats, the deadline.
+4. **The offer (5 min)** — Founding 50, $49/mo (7-day trial), the $490/yr VIP, the deadline.
 5. **Q&A + close (10 min)** — answer live, drop the join link in chat, convert on the call.
 
 ---
@@ -106,7 +107,7 @@ Can't wait to make music with you.
 
 - **Stripe connected** so you can actually charge. (Everything else can be rough.)
 - **Free group live** with the welcome video + offer post.
-- **Paid group** with two tiers priced and the VIP cap set to 6.
+- **Paid group (Freemium)** with $49/mo (7-day trial) + $490/yr, and a **private VIP room** annual members are added to.
 - **One scheduled live event** (Saturday) with an RSVP link.
 
 Skip for now: the full course library, the middle tier, automations, fancy branding. **Open first,
@@ -116,5 +117,5 @@ polish live.** Momentum and founding members beat perfection.
 
 ## Track from day one
 
-MRR · founding spots filled (X/50) · VIP seats filled (X/6) · kickoff RSVPs → attendees → conversions.
+MRR · founding spots filled (X/50) · annual VIP members · trial→paid conversion · kickoff RSVPs → attendees → conversions.
 First milestone: **$10,000/month.**

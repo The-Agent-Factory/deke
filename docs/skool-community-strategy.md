@@ -2,6 +2,15 @@
 
 *A proposal to build, launch, and grow an a cappella membership community to $25,000/month in recurring revenue.*
 
+> **⚠️ Pricing finalized — read this first.** The launch pricing is now **decided** and differs from
+> the $25k / 3-tier model described below (which remains the *longer-term vision*). The community
+> **launches** with a **Skool Freemium** setup: a free funnel + **one paid plan at $49/mo (7-day free
+> trial)** or **$490/yr**, where the **annual is the VIP tier** (private "Producers' Room" + Deke's
+> special-arrangements package). First milestone: **$10,000/month**. The current source of truth is
+> [**`skool-community-structure.md`**](./skool-community-structure.md) (runbook) and the
+> [**launch brief**](../public/skool/deke-skool-launch-brief.html). Treat the $29/$99/$497 tiers below
+> as the future expansion path, not the launch.
+
 > **Tip:** Open the interactive planner (`public/skool/deke-skool-planner.html`, served at
 > `/skool/deke-skool-planner.html`, or from the **Skool** section of the admin dashboard) in any
 > browser to configure the community and adjust pricing yourself — it recalculates MRR and ARR

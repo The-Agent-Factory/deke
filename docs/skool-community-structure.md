@@ -36,7 +36,7 @@ product and the entire reason anyone joins. So, everywhere in this build:
 The strategy doc was written when *"a single Skool group has one price,"* and worked around it with
 separate groups. **Skool now supports two relevant models:**
 
-- **Tiers** — *multiple paid plans inside one group* (e.g. $29 / $99 / $497), each unlocking more.
+- **Tiers** — *multiple paid plans inside one group* (e.g. three ascending price points), each unlocking more.
 - **Freemium** — *one free plan + one paid plan* inside one group.
 
 A group is configured as **either** Tiers **or** Freemium — not both at once.
@@ -46,14 +46,14 @@ A group is configured as **either** Tiers **or** Freemium — not both at once.
 | # | Group (member-facing name) | Plan model | Purpose |
 |---|---|---|---|
 | 1 | **Sing with Deke** *(free)* | Free group | Top-of-funnel. The audience lands here; clips, taster posts, and the waitlist live here. |
-| 2 | **Deke A Cappella** *(paid)* | **Tiers** → Ensemble $29 · Soloists $99 · Producers' Room $497 | The paid home. All three price points live in **one** group via Skool Tiers; higher tiers unlock more cadence, coaching, and access to Deke. |
+| 2 | **Deke A Cappella** *(paid)* | **Freemium** → free preview + one paid plan: **$49/mo (7-day trial)** or **$490/yr** | The paid home. One simple membership; the **annual** option is the **VIP** tier (see §3). |
 
-Two groups, cleanly: one **free funnel**, one **paid home with three tiers**. This is the simplest
-structure that delivers all four levels from the strategy doc without juggling a separate VIP group.
+Two groups, cleanly: one **free funnel**, one **paid home** with a single membership billed monthly or
+annually. This is the simplest structure to launch with — no multi-tier setup to slow the doors opening.
 
-> **Alternative (only if Tiers feels heavy at launch):** run a single **Freemium** group (free + one
-> $29–$99 paid plan) and sell the **Producers' Room** as a separate capped add-on group. More moving
-> parts; not recommended unless you want to launch with just one paid price and add tiers later.
+> **Why not Skool "Tiers"?** Tiers (multiple paid plans in one group) suit a 3-tier model. We're
+> launching with **one** paid plan + a free funnel, so **Freemium** is the right fit. The $99 middle
+> tier can be added later once there's volume.
 
 ---
 
@@ -79,24 +79,26 @@ assets before launch.
 
 ---
 
-## 3. Step 2 — Membership tiers & pricing
+## 3. Step 2 — Membership & pricing (Freemium + annual VIP)
 
-Configure the paid group with **Skool Tiers**. Pricing and feature split come straight from the
-strategy doc — **do not invent new numbers.**
+Configure the paid group as **Freemium**: a free preview plus **one paid plan**, offered monthly or
+annually. The annual option **is** the VIP tier.
 
-| Tier (internal) | Price / mo | What it unlocks (high level) |
+| Plan | Price | What it is |
 |---|---:|---|
 | **Free → "Sing with Deke"** | $0 | Community feed, intro module, monthly open Q&A clip. *(separate free group)* |
-| **Ensemble** | **$29** | Full on-demand course library · monthly live class · challenges, leaderboard, resource drops. |
-| **Soloists** | **$99** | Everything in Ensemble **plus** weekly live classes · monthly group coaching · arrangement teardowns · batched member-song feedback. |
-| **Producers' Room** *(VIP)* | **$497** | Everything in Soloists **plus** small-group monthly call **with Deke** · 1 personal arrangement/coaching review per month · discounts on Deke's premium services. |
+| **Membership (monthly)** | **$49/mo** · 7-day free trial | Full course library · live classes with Deke · challenges, leaderboard · feedback · resource drops. |
+| **VIP (annual)** | **$490/yr** | Everything in the membership, billed yearly (≈2 months free), **plus VIP status** → a **private "Producers' Room"** space (§4) and **Deke's special-arrangements package**. |
 
 Setup notes:
-- **Annual option:** offer each paid tier annually at **~2 months free** (cash up front, lower churn).
-- **VIP cap:** the Producers' Room is **hard-capped (~15–25 members)** to protect Deke's time and keep
-  it scarce. Skool won't auto-cap a tier — **manually close/open** it and show "X seats left."
-- **Free trial:** 7-day trial on paid tiers is an **open decision** (see §10).
-- Feature-by-feature matrix lives in `skool-community-strategy.md` §4 — keep the two in sync.
+- **Annual = VIP, not just a discount.** It's a year up front + lower churn, rewarded with the VIP
+  space + arrangement package. It's the premium even though the monthly-equivalent is lower.
+- **⚠️ Skool can't auto-gate content by billing interval.** Monthly vs annual is the *same plan* to
+  Skool. So VIP access is **manual**: when someone buys annual, **add them to a "VIP" member role/tag**
+  and to the gated **Producers' Room** category (§4); Deke delivers the arrangement package directly.
+  Document this as a standing operational step.
+- **Free trial:** **7-day** trial on the monthly plan (confirmed).
+- **$99 middle tier:** deferred — add later once there's volume.
 
 ---
 
@@ -115,7 +117,7 @@ Create these post categories in the **paid** group. Gate is "who can see/post."
 | **Feedback & Critiques** | Where members post work for feedback (Soloists get batched Deke feedback). | All members (tier perk in *replies*) |
 | **Find a Group** | Connect singers ↔ groups (ties to the brand's existing "find a group" feature). | All members |
 | **The Green Room** | Off-topic, social, belonging. | All members |
-| **Producers' Room** | VIP-only lounge for $497 members + Deke. | **Tier-gated (VIP)** |
+| **Producers' Room** | VIP lounge for **annual** members + Deke. | **Gated — manual VIP role** (annual buyers) |
 
 For the **free** group, create a slim set: **Start Here · Announcements · Wins & Performances ·
 Ask Deke (monthly Q&A)**.
@@ -138,7 +140,7 @@ unlock rule. **No modules/lessons yet** — that's the next pass.
 Notes:
 - **Modules & lessons: later pass.** Each shell gets its folder/lesson breakdown in the next round.
 - Set the library to **drip** so new monthly content lands on a schedule.
-- Higher-tier teardowns/toolkits (Soloists) can live as **tier-gated courses** added later.
+- VIP teardowns/toolkits can live as **VIP-gated courses** (manual role) added later.
 
 ---
 
@@ -195,15 +197,14 @@ Create recurring Skool events matching the live cadence in strategy §5 (titles 
 - [ ] Reserve the Deke-named URL slugs for both groups.
 - [ ] Create **"Sing with Deke"** (free) — icon, cover, color, description.
 - [ ] Create **"Deke A Cappella"** (paid) — same branding.
-- [ ] Enable **Tiers** on the paid group; add **Ensemble $29 / Soloists $99 / Producers' Room $497**.
-- [ ] Add **annual** prices (~2 months free) per tier.
-- [ ] Decide **free-trial** on/off (§10) and set it.
-- [ ] Create the **feed categories** (§4) in both groups; gate **Producers' Room** to VIP.
+- [ ] Set the paid group to **Freemium**; add the paid plan **$49/mo with a 7-day trial** + **$490/yr** annual.
+- [ ] Create a **"VIP" member role/tag** + the gated **Producers' Room** category for annual buyers.
+- [ ] Create the **feed categories** (§4) in both groups; gate **Producers' Room** to the VIP role.
 - [ ] Create the **5 course shells** (§5); set library to drip; set unlocks.
 - [ ] Rename the **9 levels** (§6) and attach unlocks.
 - [ ] Write **About**, pin **Start Here — Meet Deke**, set **welcome DM** (§7).
 - [ ] Create the **recurring calendar events** (§8).
-- [ ] Manually set the **VIP seat cap** display (~15–25).
+- [ ] Document the standing op: **annual purchase → add VIP role + Producers' Room + send arrangement package**.
 - [ ] Swap placeholder images for final brand assets.
 
 > Still pre-launch, tracked separately on the Kanban board: Stripe connection (**t6**), the
@@ -212,11 +213,13 @@ Create recurring Skool events matching the live cadence in strategy §5 (titles 
 
 ---
 
-## 10. Open decisions to confirm
+## 10. Pricing (decided) & remaining open items
 
-1. **Free trial** on paid tiers — 7-day trial yes/no?
-2. **Annual price points** — exact annual figures per tier (default ≈ 10× monthly).
-3. **VIP cap** — final seat number (15? 20? 25?).
-4. **Level names** — keep the §6 set or adjust.
-5. **URL slug** — confirm the exact Deke-branded slug to secure.
-6. **Free group name** — "Sing with Deke" vs an alternative.
+**Pricing — locked:** Free funnel + one paid plan, **$49/mo (7-day trial)** or **$490/yr**; the
+**annual is VIP** (private Producers' Room + Deke's special-arrangements package).
+
+Still to confirm:
+1. **VIP package contents** — exactly what's in Deke's special-arrangements package.
+2. **Level names** — keep the §6 set or adjust.
+3. **URL slug** — confirm the exact Deke-branded slug to secure.
+4. **Free group name** — "Sing with Deke" vs an alternative.
