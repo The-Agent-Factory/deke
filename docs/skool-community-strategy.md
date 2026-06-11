@@ -2,7 +2,8 @@
 
 *A proposal to build, launch, and grow an a cappella membership community to $25,000/month in recurring revenue.*
 
-> **⚠️ Pricing finalized — read this first.** The launch pricing is now **decided** and differs from
+> **⚠️ Name & pricing finalized — read this first.** The community is branded **TotalVocal: All Things
+> A Cappella** (on **totalvocal.com**), led by Deke. The launch pricing is now **decided** and differs from
 > the $25k / 3-tier model described below (which remains the *longer-term vision*). The community
 > **launches** with a **Skool Freemium** setup: a free funnel + **one paid plan at $49/mo (7-day free
 > trial)** or **$490/yr**, where the **annual is the VIP tier** (private "Producers' Room" + Deke's

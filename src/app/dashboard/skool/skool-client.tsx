@@ -252,10 +252,10 @@ export function SkoolClient() {
               className="text-2xl font-bold text-[#1a1a1a]"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Skool Project
+              TotalVocal
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-[#888]">
-              Deke A Cappella — build, launch, and operate the membership community.
+              TotalVocal — build, launch, and operate the membership community.
               Free funnel + $49/mo membership ($490/yr VIP). First milestone: $10,000/month.
             </p>
           </div>

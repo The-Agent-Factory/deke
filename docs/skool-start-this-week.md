@@ -45,7 +45,7 @@ Hey [first name],
 For 30 years I've taught a cappella one room, one group, one arrangement at a time — Pitch Perfect,
 The Sing-Off, Broadway, thousands of singers. I've always wished I could bring everyone into one room.
 
-So I built it. It's called **Deke A Cappella** — a community where you learn contemporary a cappella
+So I built it. It's called **TotalVocal — all things a cappella** — a community where you learn contemporary
 directly from me: arranging, blend and tuning, performance, vocal percussion — plus live classes,
 feedback on your own work, and a room full of singers as obsessed as you are.
 

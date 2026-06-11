@@ -14,20 +14,20 @@
 
 ## 0. Branding principle (read first)
 
-**Deke Sharon is the brand.** Not a faceless "academy." His name, face, voice, and story are the
-product and the entire reason anyone joins. So, everywhere in this build:
+**The community is "TotalVocal" — a brand of its own, led by Deke Sharon.** TotalVocal (Deke owns
+**totalvocal.com**) is the named *third thing* — not just an extension of his personal site — while
+**Deke Sharon is the face, voice, and reason anyone joins.** So, everywhere in this build:
 
-- **The headline brand is "Deke Sharon."** *"Deke A Cappella"* is, at most, a descriptive
-  subtitle — never the standalone name.
+- **The community name is "TotalVocal: All Things A Cappella"** (short: **TotalVocal**). Deke Sharon is
+  the **person** front-and-center inside it — his name/face/story are the draw.
 - All member-facing copy is in **Deke's first-person voice** — *"Learn directly from me…"* — anchored
   to the positioning: **"Learn contemporary a cappella from the person who invented the modern sound."**
 - Use **his likeness** for branding (placeholder images already in the repo: `deke_hi.jpg`,
-  `IMG_8622.jpeg`, `IMG_8623.jpeg`), his signature, and the brand color **`#C05A3C`**.
-- The VIP tier is explicitly **"with Deke"** — proximity to him *is* the premium.
+  `IMG_8622.jpeg`, `IMG_8623.jpeg`), the TotalVocal wordmark once available, and brand color **`#C05A3C`**.
+- The VIP (annual) tier is explicitly **"with Deke"** — proximity to him *is* the premium.
 
-> Tier labels like *Ensemble / Soloists / Producers' Room* are useful **internal** names for the
-> three price points. The **brand a member sees and feels is Deke Sharon** — the tiers are just how
-> close they get to him.
+> **Domain:** `totalvocal.com` currently redirects to dekesharon.com — re-point it at the TotalVocal
+> community (the Skool group, or a simple landing page that funnels into it) so the brand stands alone.
 
 ---
 
@@ -46,7 +46,7 @@ A group is configured as **either** Tiers **or** Freemium — not both at once.
 | # | Group (member-facing name) | Plan model | Purpose |
 |---|---|---|---|
 | 1 | **Sing with Deke** *(free)* | Free group | Top-of-funnel. The audience lands here; clips, taster posts, and the waitlist live here. |
-| 2 | **Deke A Cappella** *(paid)* | **Freemium** → free preview + one paid plan: **$49/mo (7-day trial)** or **$490/yr** | The paid home. One simple membership; the **annual** option is the **VIP** tier (see §3). |
+| 2 | **TotalVocal: All Things A Cappella** *(paid)* | **Freemium** → free preview + one paid plan: **$49/mo (7-day trial)** or **$490/yr** | The paid home. One simple membership; the **annual** option is the **VIP** tier (see §3). |
 
 Two groups, cleanly: one **free funnel**, one **paid home** with a single membership billed monthly or
 annually. This is the simplest structure to launch with — no multi-tier setup to slow the doors opening.
@@ -63,10 +63,10 @@ annually. This is the simplest structure to launch with — no multi-tier setup 
 
 For **each** of the two groups above, set:
 
-| Setting | "Sing with Deke" (free) | "Deke A Cappella" (paid) |
+| Setting | "Sing with Deke" (free) | "TotalVocal" (paid) |
 |---|---|---|
-| **Name** | Sing with Deke | Deke A Cappella |
-| **URL slug** | `/sing-with-deke` | `/deke-sharon` *(secure the cleanest Deke-named slug available)* |
+| **Name** | Sing with Deke | TotalVocal: All Things A Cappella |
+| **URL slug** | `/sing-with-deke` | `/totalvocal` *(plus point **totalvocal.com** at it)* |
 | **Privacy** | Public (discoverable) | Private (paid) |
 | **Icon** | Deke headshot (`deke_hi.jpg`) | Deke headshot (`deke_hi.jpg`) |
 | **Cover image** | Deke performing / brand banner | Deke performing / brand banner |
@@ -194,9 +194,9 @@ Create recurring Skool events matching the live cadence in strategy §5 (titles 
 
 > Completing this discharges Kanban cards **t1** (create + brand groups) and **t2** (classroom outline).
 
-- [ ] Reserve the Deke-named URL slugs for both groups.
+- [ ] Reserve the `/totalvocal` Skool slug; point **totalvocal.com** at the community.
 - [ ] Create **"Sing with Deke"** (free) — icon, cover, color, description.
-- [ ] Create **"Deke A Cappella"** (paid) — same branding.
+- [ ] Create **"TotalVocal: All Things A Cappella"** (paid) — same branding.
 - [ ] Set the paid group to **Freemium**; add the paid plan **$49/mo with a 7-day trial** + **$490/yr** annual.
 - [ ] Create a **"VIP" member role/tag** + the gated **Producers' Room** category for annual buyers.
 - [ ] Create the **feed categories** (§4) in both groups; gate **Producers' Room** to the VIP role.
@@ -213,13 +213,15 @@ Create recurring Skool events matching the live cadence in strategy §5 (titles 
 
 ---
 
-## 10. Pricing (decided) & remaining open items
+## 10. Decided & remaining open items
 
-**Pricing — locked:** Free funnel + one paid plan, **$49/mo (7-day trial)** or **$490/yr**; the
-**annual is VIP** (private Producers' Room + Deke's special-arrangements package).
+**Decided:** Name = **TotalVocal: All Things A Cappella** (brand: TotalVocal, on **totalvocal.com**).
+Pricing = free funnel + one paid plan, **$49/mo (7-day trial)** or **$490/yr**; the **annual is VIP**
+(private Producers' Room + Deke's special-arrangements package).
 
 Still to confirm:
 1. **VIP package contents** — exactly what's in Deke's special-arrangements package.
-2. **Level names** — keep the §6 set or adjust.
-3. **URL slug** — confirm the exact Deke-branded slug to secure.
-4. **Free group name** — "Sing with Deke" vs an alternative.
+2. **Free group name** — keep **"Sing with Deke"** as the personal free hook, or unify it under
+   TotalVocal (e.g. "TotalVocal — Free")? *(Currently kept as "Sing with Deke".)*
+3. **Level names** — keep the §6 set or adjust.
+4. **Exact community subtitle** — "TotalVocal: All Things A Cappella" or a variant.

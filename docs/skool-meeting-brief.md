@@ -1,6 +1,7 @@
 # Deke × Denis — Meeting Brief
 
-**The game:** get Deke's Skool to **$10,000/month recurring (MRR)** — then keep climbing.
+**The community:** **TotalVocal — All Things A Cappella** (on Deke's own totalvocal.com), led by Deke.
+**The game:** get TotalVocal to **$10,000/month recurring (MRR)** — then keep climbing.
 **The play:** start **this week**, small and simple. Don't build the perfect academy — open the doors,
 get founding members paying, improve live.
 
