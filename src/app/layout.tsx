@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { ConditionalChrome } from "@/components/layout/conditional-chrome";
 import { HarmonyWidget } from "@/components/chat/harmony-widget";
 import { NotificationPopup } from "@/components/notification-popup";
 import { NewsletterPopup } from "@/components/newsletter-popup";
@@ -67,12 +68,19 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <Header />
-        <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
-        <Footer />
-        <HarmonyWidget />
-        <NotificationPopup />
-        <NewsletterPopup />
+        <ConditionalChrome
+          header={<Header />}
+          footer={<Footer />}
+          widgets={
+            <>
+              <HarmonyWidget />
+              <NotificationPopup />
+              <NewsletterPopup />
+            </>
+          }
+        >
+          {children}
+        </ConditionalChrome>
       </body>
     </html>
   );
