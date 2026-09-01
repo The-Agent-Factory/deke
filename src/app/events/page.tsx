@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { MapPin, Music, ArrowRight, Mic2, Calendar, Download } from "lucide-react";
+import { MapPin, Music, ArrowRight, Mic2, Calendar, Download, Ticket } from "lucide-react";
 import { format, isPast, isSameDay } from "date-fns";
 import { prisma } from "@/lib/db";
 import { generateGoogleCalendarUrl } from "@/lib/utils/ical";
@@ -65,6 +65,7 @@ interface PublicEvent {
   location: string | null;
   publicTitle: string | null;
   publicDescription: string | null;
+  ticketUrl: string | null;
 }
 
 async function getUpcomingEvents(): Promise<PublicEvent[]> {
@@ -92,6 +93,7 @@ async function getUpcomingEvents(): Promise<PublicEvent[]> {
         location: true,
         publicTitle: true,
         publicDescription: true,
+        ticketUrl: true,
       },
       orderBy: {
         startDate: "asc",
@@ -108,6 +110,7 @@ async function getUpcomingEvents(): Promise<PublicEvent[]> {
       location: b.location,
       publicTitle: b.publicTitle ?? null,
       publicDescription: b.publicDescription ?? null,
+      ticketUrl: b.ticketUrl ?? null,
     }));
   } catch (error) {
     console.error("Error fetching public events:", error);
@@ -323,6 +326,22 @@ function EventCard({
               <MapPin className="h-3.5 w-3.5 shrink-0 text-[#C05A3C]" />
               <span>{event.location}</span>
             </p>
+          )}
+
+          {/* Ticket link */}
+          {event.ticketUrl && (
+            <div className={`mt-3 flex ${isLeft ? "sm:justify-end" : ""}`}>
+              <a
+                href={event.ticketUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md bg-[#C05A3C] px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#a84d33] focus:outline-none focus:ring-2 focus:ring-[#C05A3C] focus:ring-offset-2"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                <Ticket className="h-3.5 w-3.5" />
+                Get Tickets
+              </a>
+            </div>
           )}
 
           {/* Calendar buttons */}

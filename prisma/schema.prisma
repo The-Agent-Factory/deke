@@ -228,6 +228,7 @@ model Booking {
   publicTitle       String?    // Public-facing event title, e.g. "A Cappella Workshop at UCLA"
   publicDescription String?    // Short description for the /events page
   organization      String?    // Per-booking organization/venue name (independent of lead)
+  ticketUrl         String?    // Public ticket/box-office link shown on the /events page
 
   // Relations
   campaigns     Campaign[]
