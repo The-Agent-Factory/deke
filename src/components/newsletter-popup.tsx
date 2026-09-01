@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Music, Loader2, CheckCircle } from "lucide-react";
+import { TurnstileWidget } from "@/components/turnstile";
 
 const STORAGE_KEY = "deke-newsletter-popup-dismissed";
 const NOTIFICATION_KEY = "deke-notification-dismissed";
@@ -23,6 +24,8 @@ export function NewsletterPopup() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isSuppressed) return;
@@ -61,6 +64,8 @@ export function NewsletterPopup() {
         body: JSON.stringify({
           email,
           source: "newsletter-popup",
+          website: honeypotRef.current?.value ?? "",
+          turnstileToken,
         }),
       });
 
@@ -140,30 +145,48 @@ export function NewsletterPopup() {
                   </p>
 
                   {/* Form */}
-                  <form onSubmit={handleSubmit} className="flex gap-2">
-                    <input
-                      type="email"
-                      required
-                      placeholder="Your email"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (status === "error") setStatus("idle");
-                      }}
-                      disabled={status === "loading"}
-                      className="flex-1 h-9 px-3 text-sm bg-[#141C26] border border-[#1E2A38] rounded-lg text-white placeholder:text-[#3A4A5A] outline-none focus:border-[hsl(42,60%,50%)]/40 focus:ring-1 focus:ring-[hsl(42,60%,50%)]/20 transition-colors disabled:opacity-50"
+                  <form onSubmit={handleSubmit} className="space-y-2">
+                    {/* Honeypot — invisible to humans, bots auto-fill it */}
+                    <div style={{ display: "none" }} aria-hidden="true">
+                      <input
+                        type="text"
+                        name="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        ref={honeypotRef}
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        required
+                        placeholder="Your email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (status === "error") setStatus("idle");
+                        }}
+                        disabled={status === "loading"}
+                        className="flex-1 h-9 px-3 text-sm bg-[#141C26] border border-[#1E2A38] rounded-lg text-white placeholder:text-[#3A4A5A] outline-none focus:border-[hsl(42,60%,50%)]/40 focus:ring-1 focus:ring-[hsl(42,60%,50%)]/20 transition-colors disabled:opacity-50"
+                      />
+                      <button
+                        type="submit"
+                        disabled={status === "loading"}
+                        className="h-9 px-4 bg-[hsl(42,60%,50%)] hover:bg-[hsl(42,60%,55%)] text-[#0D1117] text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap"
+                      >
+                        {status === "loading" ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          "Subscribe"
+                        )}
+                      </button>
+                    </div>
+
+                    <TurnstileWidget
+                      onVerify={setTurnstileToken}
+                      className="mt-2"
                     />
-                    <button
-                      type="submit"
-                      disabled={status === "loading"}
-                      className="h-9 px-4 bg-[hsl(42,60%,50%)] hover:bg-[hsl(42,60%,55%)] text-[#0D1117] text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap"
-                    >
-                      {status === "loading" ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        "Subscribe"
-                      )}
-                    </button>
                   </form>
 
                   {status === "error" && (

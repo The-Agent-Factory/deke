@@ -3,6 +3,10 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { handleApiError, ApiError } from '@/lib/api-error'
 import { sendSubscriberNotification } from '@/lib/notifications/subscriber-notification'
+import { logSpam } from '@/lib/spam-logger'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { verifyTurnstile } from '@/lib/turnstile'
+import { checkEmailQuality } from '@/lib/validations/email-quality'
 
 const subscriberSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -10,11 +14,58 @@ const subscriberSchema = z.object({
   location: z.string().min(1, 'Location is required'),
   groupName: z.string().optional(),
   newsletterOptIn: z.boolean().default(false),
+  website: z.string().optional(),
+  turnstileToken: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const ip = getClientIp(request)
+    const body = (await request.json()) as Record<string, unknown>
+
+    // ── Layer 1: Honeypot ──────────────────────────────────────────
+    if (body.website) {
+      logSpam('HONEYPOT', 'website field filled', String(body.email ?? ''), ip)
+      return NextResponse.json(
+        { success: true, message: "You're on the list!" },
+        { status: 200 }
+      )
+    }
+
+    // ── Layer 2: Rate limit ────────────────────────────────────────
+    const rl = checkRateLimit(ip)
+    if (rl.limited) {
+      logSpam('RATE_LIMIT', 'exceeded 5 req/hour', String(body.email ?? ''), ip)
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
+    // ── Layer 3: Turnstile verification ────────────────────────────
+    const turnstileResult = await verifyTurnstile(
+      body.turnstileToken as string | undefined,
+      ip
+    )
+    if (!turnstileResult.success) {
+      logSpam('TURNSTILE', turnstileResult.error ?? 'verification failed', String(body.email ?? ''), ip)
+      return NextResponse.json(
+        { error: 'Verification failed. Please try again.' },
+        { status: 403 }
+      )
+    }
+
+    // ── Layer 4: Email quality ─────────────────────────────────────
+    const emailCheck = checkEmailQuality(String(body.email ?? ''))
+    if (emailCheck.blocked) {
+      logSpam('EMAIL_QUALITY', emailCheck.reason ?? 'blocked', String(body.email ?? ''), ip)
+      return NextResponse.json(
+        { success: true, message: "You're on the list!" },
+        { status: 200 }
+      )
+    }
+
+    // ── Layer 5: Zod validation ────────────────────────────────────
     const result = subscriberSchema.safeParse(body)
 
     if (!result.success) {

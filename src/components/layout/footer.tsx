@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Mail, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -34,6 +37,13 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Landing pages with their own chrome (e.g. Total Vocal) hide the global footer.
+  if (pathname?.startsWith("/total-vocal")) {
+    return null;
+  }
+
   return (
     <footer className="bg-background border-t border-border">
       <div className="container px-4 md:px-6 py-16 md:py-20">

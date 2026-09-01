@@ -7,12 +7,37 @@ import {
   type CreateGroupRequestInput
 } from '@/lib/validations/group-request'
 import { sendSignupNotification } from '@/lib/notifications/signup-notification'
+import { logSpam } from '@/lib/spam-logger'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { checkEmailQuality } from '@/lib/validations/email-quality'
 
 // POST /api/group-requests - Create a new group request
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const ip = getClientIp(request)
+    const body = (await request.json()) as Record<string, unknown>
 
+    // ── Layer 1: Rate limit ────────────────────────────────────────
+    const rl = checkRateLimit(ip)
+    if (rl.limited) {
+      logSpam('RATE_LIMIT', 'exceeded 5 req/hour', String(body.email ?? ''), ip)
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
+    // ── Layer 2: Email quality ─────────────────────────────────────
+    const emailCheck = checkEmailQuality(String(body.email ?? ''))
+    if (emailCheck.blocked) {
+      logSpam('EMAIL_QUALITY', emailCheck.reason ?? 'blocked', String(body.email ?? ''), ip)
+      return NextResponse.json(
+        { success: true },
+        { status: 200 }
+      )
+    }
+
+    // ── Layer 3: Zod validation ────────────────────────────────────
     // Validate input
     const validatedData: CreateGroupRequestInput = createGroupRequestSchema.parse(body)
 

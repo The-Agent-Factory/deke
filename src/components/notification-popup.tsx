@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
   Dialog,
@@ -21,6 +21,7 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
+import { TurnstileWidget } from "@/components/turnstile";
 
 const STORAGE_KEY = "deke-notification-dismissed";
 const SUPPRESSED_ROUTES = ["/services", "/find-group"];
@@ -52,6 +53,8 @@ export function NotificationPopup() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const honeypotRef = useRef<HTMLInputElement>(null);
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "success" | "duplicate" | "error"
   >("idle");
@@ -105,6 +108,8 @@ export function NotificationPopup() {
           location: formData.location,
           groupName: formData.isGroup ? formData.groupName : undefined,
           newsletterOptIn: formData.newsletter,
+          website: honeypotRef.current?.value ?? "",
+          turnstileToken,
         }),
       });
 
@@ -177,6 +182,17 @@ export function NotificationPopup() {
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+              {/* Honeypot — invisible to humans, bots auto-fill it */}
+              <div style={{ display: "none" }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  ref={honeypotRef}
+                />
+              </div>
+
               {submitStatus === "error" && (
                 <div
                   role="alert"
@@ -295,6 +311,11 @@ export function NotificationPopup() {
                   </div>
                 )}
               </div>
+
+              <TurnstileWidget
+                onVerify={setTurnstileToken}
+                className="mt-1"
+              />
 
               <Button
                 type="submit"

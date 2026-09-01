@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import { handleApiError, ApiError } from "@/lib/api-error";
 import { sendSignupNotification } from "@/lib/notifications/signup-notification";
 import { sendCloudflareNotification } from "@/lib/notifications/cloudflare-notify";
+import { logSpam } from "@/lib/spam-logger";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { checkEmailQuality } from "@/lib/validations/email-quality";
 
 const ContactFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -15,9 +18,30 @@ const ContactFormSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const ip = getClientIp(request);
+    const body = (await request.json()) as Record<string, unknown>;
 
-    // Validate request body
+    // ── Layer 1: Rate limit ────────────────────────────────────────
+    const rl = checkRateLimit(ip);
+    if (rl.limited) {
+      logSpam("RATE_LIMIT", "exceeded 5 req/hour", String(body.email ?? ""), ip);
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
+    // ── Layer 2: Email quality ─────────────────────────────────────
+    const emailCheck = checkEmailQuality(String(body.email ?? ""));
+    if (emailCheck.blocked) {
+      logSpam("EMAIL_QUALITY", emailCheck.reason ?? "blocked", String(body.email ?? ""), ip);
+      return NextResponse.json(
+        { success: true, message: "Thank you for your message. We'll be in touch soon!" },
+        { status: 200 }
+      );
+    }
+
+    // ── Layer 3: Zod validation ────────────────────────────────────
     const result = ContactFormSchema.safeParse(body);
     if (!result.success) {
       return ApiError.badRequest(result.error.issues[0].message);
