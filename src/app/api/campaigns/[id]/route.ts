@@ -33,6 +33,7 @@ export async function GET(
                 organization: true,
                 contactTitle: true,
                 website: true,
+                editorialSummary: true,
               }
             },
             outreachLogs: true,
@@ -109,6 +110,9 @@ export async function PATCH(
         }),
         ...(validatedData.endDate !== undefined && {
           endDate: validatedData.endDate ? new Date(validatedData.endDate) : null
+        }),
+        ...(validatedData.includeOffSeason !== undefined && {
+          includeOffSeason: validatedData.includeOffSeason
         }),
       },
       include: {

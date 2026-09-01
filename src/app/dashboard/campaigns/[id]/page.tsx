@@ -75,6 +75,7 @@ interface Campaign {
       emailVerified?: boolean;
       needsEnrichment?: boolean;
       website: string | null;
+      editorialSummary: string | null;
     };
     outreachLogs: Array<{
       id: string;
@@ -175,7 +176,9 @@ export default function CampaignDetailPage({
       const result = await response.json();
 
       // Show success message with details
-      alert(`Campaign launched! Sent: ${result.sent}, Failed: ${result.failed}`);
+      const sent = result.outreach?.sent ?? result.sent ?? 0;
+      const failed = result.outreach?.failed ?? result.failed ?? 0;
+      alert(`Campaign launched! Sent: ${sent}, Failed: ${failed}`);
 
       // Refresh campaign data to show new status and outreach logs
       await fetchCampaign();
@@ -941,6 +944,7 @@ export default function CampaignDetailPage({
 
         <TabsContent value="messages">
           <MessagesTab
+            campaignId={campaign.id}
             outreachLogs={campaign.leads.flatMap(cl =>
               cl.outreachLogs.map(ol => ({
                 ...ol,
@@ -948,6 +952,7 @@ export default function CampaignDetailPage({
                 leadEmail: cl.lead.email
               }))
             )}
+            onRefresh={fetchCampaign}
           />
         </TabsContent>
 

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deke Sharon · How We Build Your Skool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --brand:#C05A3C; --brand-dk:#9E4128; --gold:#E8A33D; --teal:#13988e; --plum:#7C5A8F;
+    --cream:#F5F1E9; --surface:#ECE6D9; --charcoal:#2A2521; --warm:#6B6258; --border:#E2DACB;
+    --grad-hero:linear-gradient(135deg,#15152C 0%,#7A3326 58%,#C05A3C 118%);
+    --grad-cta:linear-gradient(90deg,#C05A3C 0%,#E8A33D 100%);
+    --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+    --body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    --shadow:0 10px 30px rgba(42,37,33,.12); --shadow-sm:0 2px 12px rgba(42,37,33,.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);background:var(--cream);color:var(--charcoal);line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;letter-spacing:.2px;line-height:1.15}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  a{color:var(--brand);font-weight:800}
+  .kicker{font-size:.74rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--brand)}
+
+  /* Hero */
+  header.hero{background:var(--grad-hero);color:#fff;padding:54px 0 60px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 88% 0%,rgba(255,255,255,.22),transparent 45%);pointer-events:none}
+  .hero-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:28px;align-items:center;position:relative;z-index:2}
+  .badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:6px 14px;border-radius:999px;font-weight:900;font-size:.72rem;letter-spacing:1px;text-transform:uppercase}
+  header.hero h1{font-size:clamp(2.3rem,5vw,3.7rem);margin:16px 0 6px;text-shadow:0 2px 18px rgba(0,0,0,.18)}
+  header.hero .tag{font-family:var(--display);font-size:clamp(1.05rem,2.2vw,1.5rem);opacity:.97;font-weight:500}
+  header.hero p.sub{font-size:1.02rem;max-width:560px;opacity:.95;font-weight:700;margin-top:12px}
+  .meta{margin-top:22px;font-size:.82rem;font-weight:800;display:flex;gap:12px;flex-wrap:wrap}
+  .meta span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:6px 13px;border-radius:9px}
+  .hero-photo{position:relative;z-index:2;justify-self:center}
+  .hero-photo img{width:230px;height:230px;object-fit:cover;border-radius:50%;border:6px solid rgba(255,255,255,.55);box-shadow:0 14px 40px rgba(0,0,0,.28)}
+  .hero-photo .sig{text-align:center;margin-top:14px;font-family:var(--display);font-size:1.05rem;color:#fff;opacity:.95}
+  @media(max-width:780px){.hero-grid{grid-template-columns:1fr}.hero-photo{order:-1}.hero-photo img{width:150px;height:150px}}
+
+  /* Intro card */
+  .leadcard{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 28px;margin:-34px 0 8px;position:relative;z-index:3}
+  .leadcard p{font-size:1.06rem;font-weight:700;margin:0}
+  .leadcard b{color:var(--brand-dk)}
+
+  /* Sections */
+  section{padding:42px 0 6px}
+  section h2{font-size:clamp(1.5rem,3vw,2.15rem);margin:6px 0 6px}
+  section .intro{color:var(--warm);font-weight:700;max-width:760px;margin-bottom:20px}
+  .divider{height:1px;background:var(--border);margin:8px 0}
+
+  /* Topology */
+  .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin:6px 0 8px}
+  .gcard{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);position:relative}
+  .gcard.free{border-top:7px solid var(--teal)} .gcard.paid{border-top:7px solid var(--brand)}
+  .gcard .pill{font-size:.68rem;font-weight:900;letter-spacing:.6px;text-transform:uppercase;padding:4px 10px;border-radius:999px;display:inline-block}
+  .gcard.free .pill{background:#e3f4f2;color:var(--teal)} .gcard.paid .pill{background:#f6e4dc;color:var(--brand-dk)}
+  .gcard h3{font-size:1.35rem;margin:10px 0 4px}
+  .gcard .desc{font-size:.92rem;color:var(--warm);font-weight:700}
+  .gcard ul{list-style:none;margin:12px 0 0;display:flex;flex-direction:column;gap:7px}
+  .gcard ul li{padding-left:22px;position:relative;font-weight:700;font-size:.9rem}
+  .gcard ul li::before{content:"♪";position:absolute;left:0;color:var(--brand);font-weight:900}
+  .arrow{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--brand);font-size:1rem;text-align:center;min-width:96px}
+  .arrow span{display:block;background:var(--surface);border:1px dashed var(--brand);border-radius:12px;padding:10px 12px;font-size:.78rem;line-height:1.3}
+  @media(max-width:780px){.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);min-width:0;padding:6px 0}}
+
+  /* Tiers */
+  .tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:6px 0 4px}
+  .tier{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+  .tier.free{border-top:6px solid var(--teal)} .tier.low{border-top:6px solid var(--gold)}
+  .tier.med{border-top:6px solid var(--brand)} .tier.vip{border-top:6px solid var(--plum);position:relative}
+  .tier.vip::before{content:"Capped · with Deke";position:absolute;top:-11px;right:12px;background:var(--plum);color:#fff;font-size:.62rem;font-weight:900;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  .tier .nm{font-family:var(--display);font-size:1.12rem}
+  .tier .pr{font-family:var(--display);font-size:1.9rem;margin:2px 0 2px}
+  .tier .pr small{font-size:.8rem;color:var(--warm);font-family:var(--body);font-weight:800}
+  .tier .who{font-size:.74rem;color:var(--warm);font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px}
+  .tier ul{list-style:none;margin:6px 0 0;display:flex;flex-direction:column;gap:6px}
+  .tier ul li{padding-left:18px;position:relative;font-size:.84rem;font-weight:700}
+  .tier ul li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:900}
+  .tier ul li.add{color:var(--brand-dk)}
+  @media(max-width:780px){.tiers{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.tiers{grid-template-columns:1fr}}
+
+  /* Classroom mock */
+  .mock{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm)}
+  .mockbar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .mockbar .dot{width:11px;height:11px;border-radius:50%} .mockbar .dot:nth-child(1){background:#ff6058}.mockbar .dot:nth-child(2){background:#ffbd2e}.mockbar .dot:nth-child(3){background:#28c840}
+  .mockbar .url{margin-left:8px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:4px 12px;font-size:.78rem;font-weight:800;color:var(--warm)}
+  .courses{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .course{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+  .course .thumb{height:96px;background:var(--grad-hero) center/cover;position:relative;display:flex;align-items:flex-end;padding:8px}
+  .course .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92}
+  .course .thumb .lock{position:relative;z-index:2;background:rgba(0,0,0,.55);color:#fff;font-size:.64rem;font-weight:900;letter-spacing:.4px;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+  .course .body{padding:11px 13px}
+  .course .body h4{font-size:.96rem;margin:0 0 3px}
+  .course .body p{font-size:.8rem;color:var(--warm);font-weight:700;margin:0}
+  @media(max-width:780px){.courses{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.courses{grid-template-columns:1fr}}
+
+  /* Levels ladder */
+  .levels{display:grid;grid-template-columns:repeat(9,1fr);gap:7px;margin:6px 0 4px}
+  .lvl{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 6px;text-align:center;box-shadow:var(--shadow-sm);position:relative}
+  .lvl .n{font-family:var(--display);font-size:1.15rem;color:var(--brand)}
+  .lvl .nm{font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.2px;margin-top:2px;line-height:1.2}
+  .lvl:nth-child(n+7){background:linear-gradient(180deg,#fff, #faf3ec)}
+  .lvl:nth-child(9) .n{color:var(--plum)}
+  @media(max-width:780px){.levels{grid-template-columns:repeat(3,1fr)}}
+
+  /* two-col feature */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  @media(max-width:780px){.cols{grid-template-columns:1fr}}
+  .cats{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .cats li{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:11px;padding:9px 13px;font-weight:800;font-size:.9rem;box-shadow:var(--shadow-sm)}
+  .cats li .ic{width:26px;height:26px;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+  .cats li .gate{margin-left:auto;font-size:.64rem;font-weight:900;text-transform:uppercase;letter-spacing:.3px;color:var(--warm);background:var(--surface);padding:3px 8px;border-radius:999px}
+  .cats li .gate.vip{color:#fff;background:var(--plum)}
+
+  /* DM / welcome */
+  .dm{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-sm)}
+  .dm .from{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .dm .from img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+  .dm .from .nm{font-family:var(--display);font-size:.98rem} .dm .from .nm small{display:block;font-family:var(--body);font-size:.72rem;color:var(--warm);font-weight:800}
+  .bubble{background:var(--surface);border-radius:4px 14px 14px 14px;padding:12px 14px;font-size:.9rem;font-weight:600;line-height:1.55}
+  .bubble b{color:var(--brand-dk)}
+
+  /* stat band */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0}
+  .stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px 14px;text-align:center;box-shadow:var(--shadow-sm)}
+  .stat .v{font-family:var(--display);font-size:1.85rem;color:var(--brand)} .stat:nth-child(2) .v{color:var(--gold)} .stat:nth-child(3) .v{color:var(--teal)} .stat:nth-child(4) .v{color:var(--plum)}
+  .stat .l{font-size:.72rem;color:var(--warm);font-weight:900;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+  @media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* timeline */
+  .phases{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .phase{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);border-top:6px solid var(--brand)}
+  .phase:nth-child(2){border-top-color:var(--gold)} .phase:nth-child(3){border-top-color:var(--teal)}
+  .phase .wk{font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--warm)}
+  .phase h4{font-size:1.12rem;margin:3px 0 8px}
+  .phase ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .phase ul li{padding-left:18px;position:relative;font-size:.86rem;font-weight:700}
+  .phase ul li::before{content:"→";position:absolute;left:0;color:var(--brand);font-weight:900}
+  @media(max-width:780px){.phases{grid-template-columns:1fr}}
+
+  /* decisions */
+  .decisions{background:#fff;border:2px solid var(--border);border-left:7px solid var(--gold);border-radius:0 16px 16px 0;padding:18px 20px;box-shadow:var(--shadow-sm)}
+  .decisions h3{font-size:1.1rem;margin-bottom:8px}
+  .decisions ol{margin:0 0 0 18px;font-weight:700;font-size:.92rem;display:flex;flex-direction:column;gap:5px}
+
+  .cta{background:var(--grad-cta);color:#fff;border-radius:var(--radius);padding:28px 30px;margin:30px 0 8px;box-shadow:var(--shadow);text-align:center}
+  .cta h3{color:#fff;font-size:1.6rem;margin-bottom:6px} .cta p{font-weight:800;opacity:.97;max-width:620px;margin:0 auto}
+
+  footer{padding:30px 0 60px;color:var(--warm);font-weight:700;font-size:.82rem;text-align:center}
+  .printbtn{position:fixed;bottom:22px;right:22px;background:var(--grad-cta);color:#fff;border:none;border-radius:999px;padding:13px 22px;font-family:var(--body);font-weight:900;font-size:.9rem;cursor:pointer;box-shadow:var(--shadow);z-index:99}
+  .printbtn:hover{transform:translateY(-1px)}
+  @media print{
+    .printbtn{display:none}header.hero{padding:24px 0}.leadcard{box-shadow:none;margin-top:14px}
+    section{break-inside:avoid;padding:20px 0}.cta,.mock,.tier,.gcard,.course,.stat{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="badge">How we build your Skool</span>
+      <h1>Deke Sharon</h1>
+      <p class="tag">Your a cappella community — designed, structured, and ready to build.</p>
+      <p class="sub">We've already laid out the whole thing: the groups, the tiers, the classroom, the levels, and the launch. Here's exactly what it looks like.</p>
+      <div class="meta">
+        <span>Target · $25,000 / month</span>
+        <span>2 groups · 3 tiers</span>
+        <span>Platform · Skool</span>
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="/images/deke/deke_hi.jpg" alt="Deke Sharon" />
+      <div class="sig">— built around you</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="leadcard">
+    <p>This isn't a course platform with your name slapped on it. <b>You are the brand.</b> Every group,
+    course, and level leads with you — your voice, your face, your story — so a member joins to learn
+    a cappella <b>from the person who invented the modern sound.</b> Here's how the whole thing is structured.</p>
+  </div>
+
+  <!-- 1. Big picture -->
+  <section id="topology">
+    <span class="kicker">The big picture</span>
+    <h2>Two groups, one funnel</h2>
+    <p class="intro">A free group catches your 25,000+ audience and warms them up. One paid group — with
+    three tiers inside it — is where they learn, level up, and get closer to you.</p>
+    <div class="flow">
+      <div class="gcard free">
+        <span class="pill">Free · top of funnel</span>
+        <h3>Sing with Deke</h3>
+        <p class="desc">The front door. Free tips, clips, and a taste of the community — public and discoverable.</p>
+        <ul>
+          <li>Community feed &amp; intro</li>
+          <li>Monthly open Q&amp;A clip</li>
+          <li>Founding-member waitlist</li>
+        </ul>
+      </div>
+      <div class="arrow"><span>upgrade&nbsp;→<br>inside the<br>community</span></div>
+      <div class="gcard paid">
+        <span class="pill">Paid · the academy</span>
+        <h3>Deke A Cappella</h3>
+        <p class="desc">The paid home. Three tiers in one group: courses, live classes, coaching, and — at the top — you.</p>
+        <ul>
+          <li>Full course classroom</li>
+          <li>Weekly live classes &amp; coaching</li>
+          <li>VIP room with Deke</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Tiers -->
+  <section id="tiers">
+    <span class="kicker">Membership</span>
+    <h2>Three tiers — how close they get to you</h2>
+    <p class="intro">Priced as an easy yes, a serious commitment, and a genuine VIP. The math: about 2% of
+    your audience across these tiers reaches the $25k/month goal.</p>
+    <div class="tiers">
+      <div class="tier free">
+        <div class="nm">The Singalong</div>
+        <div class="pr">Free</div>
+        <div class="who">The audience</div>
+        <ul>
+          <li>Community feed</li>
+          <li>Intro module</li>
+          <li>Monthly Q&amp;A clip</li>
+        </ul>
+      </div>
+      <div class="tier low">
+        <div class="nm">The Ensemble</div>
+        <div class="pr">$29<small>/mo</small></div>
+        <div class="who">~400 members</div>
+        <ul>
+          <li>Full course library</li>
+          <li>Monthly live class</li>
+          <li>Challenges &amp; leaderboard</li>
+          <li>Resource drops</li>
+        </ul>
+      </div>
+      <div class="tier med">
+        <div class="nm">The Soloists</div>
+        <div class="pr">$99<small>/mo</small></div>
+        <div class="who">~100 members</div>
+        <ul>
+          <li class="add">+ Weekly live classes</li>
+          <li class="add">+ Monthly group coaching</li>
+          <li class="add">+ Arrangement teardowns</li>
+          <li class="add">+ Batched song feedback</li>
+        </ul>
+      </div>
+      <div class="tier vip">
+        <div class="nm">Producers' Room</div>
+        <div class="pr">$497<small>/mo</small></div>
+        <div class="who">8–25 · capped</div>
+        <ul>
+          <li class="add">+ Monthly call with Deke</li>
+          <li class="add">+ Personal review / mo</li>
+          <li class="add">+ Service discounts</li>
+        </ul>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v">$25,476</div><div class="l">Target MRR</div></div>
+      <div class="stat"><div class="v">$305,712</div><div class="l">Target ARR</div></div>
+      <div class="stat"><div class="v">508</div><div class="l">Paying members</div></div>
+      <div class="stat"><div class="v">8+ hrs</div><div class="l">Deke live / month</div></div>
+    </div>
+  </section>
+
+  <!-- 3. Classroom -->
+  <section id="classroom">
+    <span class="kicker">The classroom</span>
+    <h2>Your courses, your face on every one</h2>
+    <p class="intro">We launch with a Start Here welcome plus three flagship courses, then add one new
+    masterclass every month — so there's always a reason to stay subscribed.</p>
+    <div class="mock">
+      <div class="mockbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="url">skool.com/deke-sharon · Classroom</span></div>
+      <div class="courses">
+        <div class="course"><div class="thumb"><img src="/images/deke/deke_hi.jpg" alt=""><span class="lock">Free</span></div>
+          <div class="body"><h4>Start Here — Meet Deke</h4><p>Who I am &amp; how to get the most from this community.</p></div></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/riffoff2.jpg" alt=""><span class="lock">Ensemble+</span></div>
+          <div class="body"><h4>Arranging in 10 Steps</h4><p>My exact process — start to finish.</p></div></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-20.jpg" alt=""><span class="lock">Ensemble+</span></div>
+          <div class="body"><h4>Blend &amp; Tuning</h4><p>Make any group sound like one instrument.</p></div></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-31.jpg" alt=""><span class="lock">Ensemble+</span></div>
+          <div class="body"><h4>Performance &amp; Stage Presence</h4><p>The difference between singing and performing.</p></div></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-15.jpg" alt=""><span class="lock">Drips monthly</span></div>
+          <div class="body"><h4>Monthly Masterclass Library</h4><p>One new recorded class every month.</p></div></div>
+        <div class="course"><div class="thumb"><img src="/images/deke/big-img-41.jpg" alt=""><span class="lock">Soloists</span></div>
+          <div class="body"><h4>Arrangement Teardowns</h4><p>Deep-dive breakdowns + toolkits.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Levels -->
+  <section id="levels">
+    <span class="kicker">Gamification</span>
+    <h2>Nine levels that keep them coming back</h2>
+    <p class="intro">Skool gives every member a 9-level ladder — they earn points when the community
+    likes their posts. We rename it as an a cappella journey, with perks unlocking as they climb.</p>
+    <div class="levels">
+      <div class="lvl"><div class="n">1</div><div class="nm">Listener</div></div>
+      <div class="lvl"><div class="n">2</div><div class="nm">Singer</div></div>
+      <div class="lvl"><div class="n">3</div><div class="nm">Section</div></div>
+      <div class="lvl"><div class="n">4</div><div class="nm">Soloist</div></div>
+      <div class="lvl"><div class="n">5</div><div class="nm">Arranger</div></div>
+      <div class="lvl"><div class="n">6</div><div class="nm">Beatboxer</div></div>
+      <div class="lvl"><div class="n">7</div><div class="nm">Director</div></div>
+      <div class="lvl"><div class="n">8</div><div class="nm">Producer</div></div>
+      <div class="lvl"><div class="n">9</div><div class="nm">Maestro</div></div>
+    </div>
+  </section>
+
+  <!-- 5. Community + onboarding -->
+  <section id="community">
+    <span class="kicker">The community &amp; the welcome</span>
+    <h2>Where they hang out — and how you greet them</h2>
+    <div class="cols">
+      <div>
+        <ul class="cats">
+          <li><span class="ic">👋</span> Start Here — Meet Deke <span class="gate">All</span></li>
+          <li><span class="ic">📣</span> Announcements <span class="gate">All</span></li>
+          <li><span class="ic">🏆</span> Wins &amp; Performances <span class="gate">All</span></li>
+          <li><span class="ic">🎼</span> Arranging <span class="gate">All</span></li>
+          <li><span class="ic">🎯</span> Vocal Technique <span class="gate">All</span></li>
+          <li><span class="ic">🥁</span> Vocal Percussion <span class="gate">All</span></li>
+          <li><span class="ic">🔎</span> Find a Group <span class="gate">All</span></li>
+          <li><span class="ic">💎</span> Producers' Room <span class="gate vip">VIP</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="dm">
+          <div class="from"><img src="/images/deke/deke_hi.jpg" alt="Deke">
+            <div class="nm">Deke Sharon <small>Welcome message · auto-sent</small></div></div>
+          <div class="bubble">Hey — <b>Deke</b> here. So glad you joined. 🎵 Start in <b>“Start Here — Meet Deke”</b>
+          for the lay of the land, then drop an intro in <b>Wins &amp; Performances</b> so we can welcome you.
+          Live class is every week — can't wait to sing with you. <b>— Deke</b></div>
+        </div>
+        <p style="margin-top:14px;color:var(--warm);font-weight:700;font-size:.9rem">The About page, this
+        welcome DM, the pinned intro post, and community guidelines are all drafted in your voice — ready to paste in.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Build plan -->
+  <section id="plan">
+    <span class="kicker">How we build it</span>
+    <h2>From zero to live in ~4 weeks</h2>
+    <div class="phases">
+      <div class="phase"><div class="wk">Weeks 1–3</div><h4>Pre-launch</h4>
+        <ul><li>Stand up &amp; brand both groups</li><li>Record 3 flagship courses</li><li>Open free group + waitlist</li><li>Warm the 25k list</li></ul></div>
+      <div class="phase"><div class="wk">Week 4</div><h4>Launch</h4>
+        <ul><li>Founding-member promo</li><li>Free live kickoff event</li><li>Open the capped VIP cohort</li><li>First weekly live class</li></ul></div>
+      <div class="phase"><div class="wk">Months 2–3+</div><h4>Scale</h4>
+        <ul><li>Repurpose every live 3 ways</li><li>Guest interview series</li><li>Annual plans + referrals</li><li>Optimize conversion</li></ul></div>
+    </div>
+    <div class="divider" style="margin:22px 0"></div>
+    <div class="decisions">
+      <h3>To make it yours, we just need you to confirm:</h3>
+      <ol>
+        <li>7-day free trial on paid tiers — yes or no?</li>
+        <li>Annual prices (default ≈ 2 months free).</li>
+        <li>VIP cap — 15, 20, or 25 seats?</li>
+        <li>The 9 level names — keep or tweak.</li>
+        <li>Your Skool URL and the free-group name.</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h3>This is how we build your Skool.</h3>
+    <p>The structure is done. Say the word on the five decisions above and we start standing it up — your
+    founding-member launch can be live within the month.</p>
+  </div>
+
+  <footer>
+    Deke A Cappella — Skool build overview. Companion to the full strategy &amp; revenue planner.
+  </footer>
+</div>
+
+<button class="printbtn" onclick="window.print()">⤓ Save as PDF</button>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deke Sharon · Skool Launch Brief — Start This Week</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --brand:#C05A3C; --brand-dk:#9E4128; --gold:#E8A33D; --teal:#13988e; --plum:#7C5A8F;
+    --cream:#F5F1E9; --surface:#ECE6D9; --charcoal:#2A2521; --warm:#6B6258; --border:#E2DACB;
+    --grad-hero:linear-gradient(135deg,#15152C 0%,#7A3326 58%,#C05A3C 118%);
+    --grad-cta:linear-gradient(90deg,#C05A3C 0%,#E8A33D 100%);
+    --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+    --body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    --shadow:0 10px 30px rgba(42,37,33,.12); --shadow-sm:0 2px 12px rgba(42,37,33,.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);background:var(--cream);color:var(--charcoal);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.display{font-family:var(--display);font-weight:600;letter-spacing:.2px;line-height:1.15}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  .kicker{font-size:.72rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--brand)}
+
+  header.hero{background:var(--grad-hero);color:#fff;padding:34px 0 38px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 90% 0%,rgba(255,255,255,.2),transparent 45%)}
+  .hero-grid{display:flex;align-items:center;gap:20px;position:relative;z-index:2}
+  .hero-grid img{width:84px;height:84px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.55);box-shadow:0 8px 22px rgba(0,0,0,.25)}
+  .badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:5px 13px;border-radius:999px;font-weight:900;font-size:.7rem;letter-spacing:1px;text-transform:uppercase}
+  header.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:8px 0 2px}
+  header.hero p{font-weight:800;opacity:.96;font-size:1rem}
+
+  .goalbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;position:relative;z-index:2}
+  .goalbar span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:6px 13px;border-radius:9px;font-weight:800;font-size:.82rem}
+
+  section{padding:26px 0 6px}
+  h2.sec{font-size:1.5rem;margin:4px 0 12px;display:flex;align-items:baseline;gap:10px}
+  h2.sec .num{font-size:.9rem;color:#fff;background:var(--brand);width:26px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .divider{height:1px;background:var(--border);margin:18px 0}
+
+  table{border-collapse:collapse;width:100%;font-size:.9rem;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);margin:6px 0 10px}
+  th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--border)}
+  th{background:var(--charcoal);color:#fff;font-weight:800;font-size:.8rem}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  tr.total td{background:var(--surface);font-weight:900}
+  tr.total td .big{font-family:var(--display);color:var(--brand);font-size:1.05rem}
+
+  .note{background:#fff;border:2px solid var(--border);border-left:6px solid var(--gold);border-radius:0 12px 12px 0;padding:12px 16px;margin:10px 0;font-weight:700;font-size:.92rem;box-shadow:var(--shadow-sm)}
+  .note b{color:var(--brand-dk)}
+
+  ol.asks,ul.clean{margin:6px 0 6px 2px;list-style:none;display:flex;flex-direction:column;gap:7px}
+  ol.asks{counter-reset:a}
+  ol.asks li{counter-increment:a;padding-left:34px;position:relative;font-weight:800;font-size:.94rem}
+  ol.asks li::before{content:counter(a);position:absolute;left:0;top:-1px;background:var(--brand);color:#fff;width:23px;height:23px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-family:var(--display)}
+  ul.clean li{padding-left:22px;position:relative;font-weight:700;font-size:.92rem}
+  ul.clean li::before{content:"♪";position:absolute;left:0;color:var(--brand);font-weight:900}
+
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:8px 0}
+  .day{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 9px;box-shadow:var(--shadow-sm);border-top:5px solid var(--brand)}
+  .day:nth-child(6){border-top-color:var(--gold)} .day:nth-child(7){border-top-color:var(--teal)}
+  .day .d{font-family:var(--display);font-size:.82rem;color:var(--brand)} .day .t{font-size:.74rem;font-weight:800;color:var(--warm);margin-top:3px;line-height:1.35}
+  @media(max-width:760px){.week{grid-template-columns:1fr 1fr}}
+
+  .panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);margin:10px 0}
+  .panel h3{font-size:1.08rem;margin-bottom:6px}
+  .copy{background:var(--surface);border:1px dashed var(--brand);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:.9rem;font-weight:600;line-height:1.6}
+  .copy .lbl{font-size:.68rem;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--brand);display:block;margin-bottom:6px}
+  .copy b{color:var(--brand-dk)}
+  .subj{font-weight:800;margin:2px 0}
+
+  .ros{counter-reset:r;list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:4px}
+  .ros li{counter-increment:r;padding-left:30px;position:relative;font-weight:700;font-size:.9rem}
+  .ros li::before{content:counter(r);position:absolute;left:0;background:var(--gold);color:#fff;width:21px;height:21px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-family:var(--display)}
+
+  .cta{background:var(--grad-cta);color:#fff;border-radius:var(--radius);padding:22px 26px;margin:22px 0 6px;text-align:center;box-shadow:var(--shadow)}
+  .cta h3{color:#fff;font-size:1.35rem;margin-bottom:4px} .cta p{font-weight:800;opacity:.97}
+  footer{padding:24px 0 60px;color:var(--warm);font-weight:700;font-size:.8rem;text-align:center}
+  .printbtn{position:fixed;bottom:20px;right:20px;background:var(--grad-cta);color:#fff;border:none;border-radius:999px;padding:12px 20px;font-family:var(--body);font-weight:900;font-size:.88rem;cursor:pointer;box-shadow:var(--shadow);z-index:99}
+  @media print{.printbtn{display:none}header.hero{padding:18px 0}section{break-inside:avoid;padding:14px 0}.panel,.day,.cta,.note,.copy,table{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <img src="/images/deke/deke_hi.jpg" alt="Deke Sharon" />
+    <div>
+      <span class="badge">Meeting brief · Launch this week</span>
+      <h1>Deke Sharon — Skool</h1>
+      <p>The game is simple: get to $10,000 / month. Start this week.</p>
+    </div>
+  </div>
+  <div class="wrap"><div class="goalbar">
+    <span>🎯 $10,000 / month MRR</span><span>🚀 First payers by the weekend</span><span>🎬 1 hour of Deke on camera</span>
+  </div></div>
+</header>
+
+<div class="wrap">
+
+  <!-- PART 1: BRIEF -->
+  <section>
+    <span class="kicker">The brief</span>
+    <h2 class="sec"><span class="num">1</span>The plan, in one breath</h2>
+    <p style="font-weight:700;margin-bottom:8px">Don't build the perfect academy. <b>Open the doors, get founding members paying, improve live.</b>
+    Launch with two paid tiers + a free group. The middle tier and full library come later — they won't slow us down.</p>
+
+    <h3 style="margin:14px 0 4px;font-size:1.05rem">The math to $10k/month — about 1% of Deke's 25k list</h3>
+    <table>
+      <tr><th>Tier</th><th class="num">Price</th><th class="num">Members</th><th class="num">MRR</th></tr>
+      <tr><td><b>The Ensemble</b> — core</td><td class="num">$29/mo</td><td class="num">250</td><td class="num">$7,250</td></tr>
+      <tr><td><b>Producers' Room</b> — VIP, <i>with Deke</i></td><td class="num">$497/mo</td><td class="num">6</td><td class="num">$2,982</td></tr>
+      <tr class="total"><td>Total</td><td class="num"></td><td class="num">256</td><td class="num"><span class="big">$10,232</span></td></tr>
+    </table>
+    <div class="note"><b>VIP is the cheat code.</b> 6 people = $3k/month. Filling those 6 seats is the single highest-leverage move we make.</div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">2</span>What we need from Deke today — 5 quick yeses</h2>
+    <ol class="asks">
+      <li>Green-light a <b>founding-member launch this week</b>.</li>
+      <li><b>Price:</b> keep Ensemble at $29 — or a founding rate (e.g. $19) that rises later?</li>
+      <li><b>VIP cap:</b> 6 seats to start? (scarcity = urgency)</li>
+      <li><b>One hour on camera:</b> a 5-min welcome video + one live kickoff. That's all we need to open.</li>
+      <li><b>Go-ahead to email the list.</b> The audience is the engine — nothing happens without it.</li>
+    </ol>
+    <div class="note">Everything else is on the team: Skool + Stripe, branding, the free group, the email, the posts,
+    onboarding, logistics, repurposing. <b>Deke teaches and shows up. We do the rest.</b></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PART 2: THIS WEEK -->
+  <section>
+    <span class="kicker">Start this week</span>
+    <h2 class="sec"><span class="num">3</span>The 7-day launch</h2>
+    <div class="week">
+      <div class="day"><div class="d">Mon</div><div class="t">Create 2 groups, brand them, connect Stripe</div></div>
+      <div class="day"><div class="d">Tue</div><div class="t">Set tiers $29 + $497 (cap 6); build free group</div></div>
+      <div class="day"><div class="d">Wed</div><div class="t">Deke records 5-min welcome; open free group</div></div>
+      <div class="day"><div class="d">Thu</div><div class="t">Founding email to 25k list; social teasers</div></div>
+      <div class="day"><div class="d">Fri</div><div class="t">Reminder email + DMs; push VIP scarcity</div></div>
+      <div class="day"><div class="d">Sat</div><div class="t">Live kickoff → convert on the call; open VIP</div></div>
+      <div class="day"><div class="d">Sun</div><div class="t">Welcome members; schedule weekly class; tally MRR</div></div>
+    </div>
+    <div class="note"><b>The hook — “Founding 50”:</b> first 50 members lock in founding pricing for life + a founding badge;
+    VIP capped at 6 seats; deadline is the kickoff call. Real scarcity, real deadline.</div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">4</span>The launch email — ready to send</h2>
+    <div class="panel">
+      <p class="subj">Subject options:</p>
+      <ul class="clean">
+        <li>I'm finally doing this — come build a cappella with me</li>
+        <li>The thing you've asked me for, for years</li>
+        <li>Founding 50: learn a cappella directly from me</li>
+      </ul>
+      <div class="copy">
+        <span class="lbl">Email body</span>
+        Hey [first name],<br><br>
+        For 30 years I've taught a cappella one room at a time — Pitch Perfect, The Sing-Off, Broadway,
+        thousands of singers. I always wished I could bring everyone into one room.<br><br>
+        So I built it. It's called <b>Deke A Cappella</b> — learn contemporary a cappella directly from me:
+        arranging, blend &amp; tuning, performance, vocal percussion — plus live classes, feedback on your own
+        work, and a room full of singers as obsessed as you are.<br><br>
+        I'm opening this week with <b>Founding 50</b> — the first 50 lock in founding pricing for life:<br>
+        • <b>The Ensemble — $29/mo:</b> full course library, monthly live class with me, challenges &amp; resources.<br>
+        • <b>Producers' Room — $497/mo (only 6 seats):</b> all of that, plus a monthly small-group call with me
+        and a personal review of your arrangement or performance every month.<br><br>
+        I'm kicking off with a <b>free live class this Saturday</b> — come sing, ask me anything, grab a founding spot.<br><br>
+        👉 [Join the free group] · [RSVP to Saturday's live class]<br><br>
+        Can't wait to make music with you.<br>— Deke
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">5</span>Community posts &amp; welcome DM</h2>
+    <div class="copy"><span class="lbl">Pinned · Start Here</span>
+      Welcome — I'm so glad you're here. 🎵 This is the room I always wished existed: learn a cappella directly
+      from me, with a community of singers around you. Watch my welcome video above, then say hello below —
+      where are you from and what do you sing? First live class is [date].</div>
+    <div class="copy"><span class="lbl">Free group · The offer</span>
+      Founding 50 is open. First 50 members lock in founding pricing for life, and there are only <b>6 VIP seats</b>
+      (monthly calls + personal feedback from me). Free live kickoff this Saturday — [RSVP]. Founding pricing
+      closes when we hit 50.</div>
+    <div class="copy"><span class="lbl">Welcome DM · auto-send</span>
+      Hey — Deke here. So glad you joined. 🎵 Start in <b>“Start Here”</b>, then say hello in <b>Wins &amp; Performances</b>.
+      Free live class is [date] — bring a question. — Deke</div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">6</span>Live kickoff — run of show (30–40 min)</h2>
+    <div class="panel"><ol class="ros">
+      <li><b>Warm-up sing (5 min)</b> — Deke leads a quick vocal moment. Sets the tone instantly.</li>
+      <li><b>Story (5 min)</b> — why he built this and who it's for.</li>
+      <li><b>Teach something real (10 min)</b> — one genuinely useful tip so people feel the value live.</li>
+      <li><b>The offer (5 min)</b> — Founding 50, the two tiers, 6 VIP seats, the deadline.</li>
+      <li><b>Q&amp;A + close (10 min)</b> — answer live, drop the join link, convert on the call.</li>
+    </ol></div>
+    <div class="note"><b>Only setup that matters this week:</b> Stripe connected · free group live with welcome video + offer ·
+    paid group with 2 tiers &amp; VIP cap 6 · one scheduled Saturday event. Skip the full library, middle tier,
+    automations, fancy branding. <b>Open first, polish live.</b></div>
+  </section>
+
+  <div class="cta">
+    <h3>This week we open the doors.</h3>
+    <p>Five yeses from Deke and the first founding members are paying by the weekend — on the road to $10k/month.</p>
+  </div>
+
+  <footer>Deke A Cappella — Skool launch brief. Companion to the full build overview, strategy &amp; revenue planner.</footer>
+</div>
+
+<button class="printbtn" onclick="window.print()">⤓ Save as PDF</button>
+</body>
+</html>

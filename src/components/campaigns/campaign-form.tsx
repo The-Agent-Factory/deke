@@ -41,6 +41,7 @@ const campaignFormSchema = z.object({
     "SPEAKING",
   ]),
   targetOrgTypes: z.array(z.string()).optional(),
+  includeOffSeason: z.boolean().optional(),
 }).refine((data) => {
   const start = new Date(data.startDate);
   const end = new Date(data.endDate);
@@ -145,6 +146,7 @@ export function CampaignForm({
       endDate: computedInitialValues?.endDate || "",
       serviceType: computedInitialValues?.serviceType || "COACHING",
       targetOrgTypes: [],
+      includeOffSeason: computedInitialValues?.includeOffSeason ?? false,
     },
   });
 
@@ -430,6 +432,33 @@ export function CampaignForm({
             )}
           </div>
         )}
+
+        {/* Seasonal filter override */}
+        <FormField
+          control={form.control}
+          name="includeOffSeason"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 bg-muted/30">
+              <FormControl>
+                <Checkbox
+                  checked={field.value || false}
+                  onCheckedChange={field.onChange}
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="text-sm font-medium">
+                  Include off-season groups
+                </FormLabel>
+                <FormDescription className="text-xs">
+                  By default, collegiate, school, and youth groups are skipped during summer break
+                  (and similar off-seasons). Enable this to build pipeline ahead of an upcoming
+                  active season.
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
 
         <div className="flex gap-4 pt-4">
           <Button

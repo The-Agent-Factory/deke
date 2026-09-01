@@ -33,7 +33,7 @@ export function BulkActionsToolbar({
       if (!response.ok) throw new Error('Failed to generate drafts')
 
       const result = await response.json()
-      alert(`Generated ${result.created} drafts (${result.skipped} already existed)`)
+      alert(`Generated ${result.created} draft${result.created !== 1 ? 's' : ''}${result.skipped > 0 ? ` (${result.skipped} already existed)` : ''}`)
       onActionComplete()
     } catch (error) {
       alert('Failed to generate drafts')

@@ -32,6 +32,7 @@ interface EmailDraftEditorProps {
     overrideEmail: string | null
     ccEmail: string | null
     attachments: AttachmentInfo[] | null
+    errorMessage?: string | null
     lead: {
       firstName: string
       lastName: string
@@ -244,6 +245,15 @@ export function EmailDraftEditor({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
+          {/* Previous send error */}
+          {draft.status === 'FAILED' && draft.errorMessage && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+              <p className="font-medium">Previous send failed</p>
+              <p className="mt-0.5 text-red-700">{draft.errorMessage}</p>
+              <p className="mt-1 text-xs text-red-600">Edit the draft and save to retry.</p>
+            </div>
+          )}
+
           {/* To Email */}
           <div className="space-y-2">
             <Label htmlFor="draft-to-email">To</Label>

@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Mail, Phone } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Mail, Phone, RotateCcw } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface MessageCardProps {
@@ -18,9 +20,14 @@ interface MessageCardProps {
     leadName: string
     leadEmail: string
   }
+  campaignId?: string
+  onResent?: () => void
 }
 
-export function MessageCard({ message }: MessageCardProps) {
+export function MessageCard({ message, campaignId, onResent }: MessageCardProps) {
+  const [isResending, setIsResending] = useState(false)
+  const [resendError, setResendError] = useState<string | null>(null)
+
   const ChannelIcon = message.channel === 'EMAIL' ? Mail : Phone
 
   const statusColors: Record<string, string> = {
@@ -33,6 +40,31 @@ export function MessageCard({ message }: MessageCardProps) {
     BOUNCED: 'bg-red-100 text-red-800',
   }
 
+  const handleResend = async () => {
+    if (!campaignId) return
+    setIsResending(true)
+    setResendError(null)
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}/resend-failed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logIds: [message.id] }),
+      })
+      const data = await res.json()
+      if (data.resent > 0) {
+        onResent?.()
+      } else if (data.skipped > 0) {
+        setResendError('No draft content found to resend')
+      } else {
+        setResendError('Resend failed — check error message above')
+      }
+    } catch {
+      setResendError('Network error, please try again')
+    } finally {
+      setIsResending(false)
+    }
+  }
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -41,9 +73,23 @@ export function MessageCard({ message }: MessageCardProps) {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-1">
               <p className="font-medium">{message.leadName}</p>
-              <Badge className={statusColors[message.status]}>
-                {message.status}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge className={statusColors[message.status]}>
+                  {message.status}
+                </Badge>
+                {message.status === 'FAILED' && campaignId && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResend}
+                    disabled={isResending}
+                    className="h-6 px-2 text-xs"
+                  >
+                    <RotateCcw className={`h-3 w-3 mr-1 ${isResending ? 'animate-spin' : ''}`} />
+                    {isResending ? 'Resending…' : 'Resend'}
+                  </Button>
+                )}
+              </div>
             </div>
             <p className="text-sm text-muted-foreground mb-3">
               {message.leadEmail}
@@ -71,6 +117,11 @@ export function MessageCard({ message }: MessageCardProps) {
               {message.errorMessage && (
                 <div className="text-red-600">
                   ✗ Error: {message.errorMessage}
+                </div>
+              )}
+              {resendError && (
+                <div className="text-orange-600">
+                  ⚠ {resendError}
                 </div>
               )}
             </div>

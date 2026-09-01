@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
         endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
         bookingId: validatedData.bookingId ?? null,
         targetOrgTypes: validatedData.targetOrgTypes ?? null,
+        includeOffSeason: validatedData.includeOffSeason ?? false,
       },
       include: {
         booking: true,

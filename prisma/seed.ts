@@ -372,11 +372,61 @@ async function main() {
     },
   })
 
+  // -----------------------------------------------------------
+  // Seasonal rules — defaults for which org types are contactable
+  // in each season. Per-lead overrides live on Lead.activeSeasons,
+  // and Campaign.includeOffSeason can disable the filter entirely.
+  // -----------------------------------------------------------
+  const ACADEMIC_SEASONS = JSON.stringify(['FALL', 'WINTER', 'SPRING'])
+  const YEAR_ROUND = JSON.stringify(['FALL', 'WINTER', 'SPRING', 'SUMMER'])
+
+  const seasonalRules: Array<{ orgType: string; activeSeasons: string; notes: string }> = [
+    // Academic-year orgs: dark in summer
+    { orgType: 'COLLEGE', activeSeasons: ACADEMIC_SEASONS, notes: 'Dark mid-May through August (summer break)' },
+    { orgType: 'UNIVERSITY', activeSeasons: ACADEMIC_SEASONS, notes: 'Dark mid-May through August (summer break)' },
+    { orgType: 'HIGH_SCHOOL', activeSeasons: ACADEMIC_SEASONS, notes: 'Dark mid-June through mid-August' },
+    { orgType: 'MIDDLE_SCHOOL', activeSeasons: ACADEMIC_SEASONS, notes: 'Dark mid-June through mid-August' },
+    { orgType: 'ELEMENTARY_SCHOOL', activeSeasons: ACADEMIC_SEASONS, notes: 'Dark mid-June through mid-August' },
+    { orgType: 'YOUTH_CHOIR', activeSeasons: ACADEMIC_SEASONS, notes: 'Most run on the school-year calendar' },
+    { orgType: 'MUSIC_SCHOOL', activeSeasons: ACADEMIC_SEASONS, notes: 'Run on the academic year' },
+    { orgType: 'CONSERVATORY', activeSeasons: ACADEMIC_SEASONS, notes: 'Run on the academic year' },
+    { orgType: 'PERFORMING_ARTS', activeSeasons: ACADEMIC_SEASONS, notes: 'Run on the academic year' },
+
+    // Year-round orgs
+    { orgType: 'CHURCH', activeSeasons: YEAR_ROUND, notes: 'Year-round (Easter/Christmas peaks)' },
+    { orgType: 'SYNAGOGUE', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'MOSQUE', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'TEMPLE', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'CHOIR', activeSeasons: YEAR_ROUND, notes: 'Year-round (most community choirs)' },
+    { orgType: 'COMMUNITY_CHORUS', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'BARBERSHOP', activeSeasons: YEAR_ROUND, notes: 'Year-round (BHS/SAI)' },
+    { orgType: 'A_CAPPELLA_GROUP', activeSeasons: YEAR_ROUND, notes: 'Year-round (post-collegiate)' },
+    { orgType: 'GOSPEL_CHOIR', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'THEATRE', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'THEATER', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'ARTS_CENTER', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'COMMUNITY_CENTER', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'FESTIVAL', activeSeasons: YEAR_ROUND, notes: 'Planning happens year-round' },
+    { orgType: 'CONFERENCE', activeSeasons: YEAR_ROUND, notes: 'Planning happens year-round' },
+    { orgType: 'CONVENTION', activeSeasons: YEAR_ROUND, notes: 'Planning happens year-round' },
+    { orgType: 'CORPORATE', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+    { orgType: 'NONPROFIT', activeSeasons: YEAR_ROUND, notes: 'Year-round' },
+  ]
+
+  for (const rule of seasonalRules) {
+    await prisma.seasonalRule.upsert({
+      where: { orgType: rule.orgType },
+      update: { activeSeasons: rule.activeSeasons, notes: rule.notes, enabled: true },
+      create: { ...rule, enabled: true },
+    })
+  }
+
   console.log('Seed data created:')
   console.log('  - 4 public bookings (Boston, LA, NYC, Chicago)')
   console.log('  - 1 private booking (Nashville)')
   console.log('  - 12 leads (5 won clients + 7 dormant prospects)')
   console.log('  - 2 message templates')
+  console.log(`  - ${seasonalRules.length} seasonal rules`)
 }
 
 main()

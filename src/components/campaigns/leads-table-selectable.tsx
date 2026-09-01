@@ -20,7 +20,8 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import { ArrowUpDown, UserMinus, UserPlus, CheckCircle, AlertCircle, ExternalLink, Phone, Mail, Globe, Building2, MapPin, Star, RotateCw } from 'lucide-react'
+import { ArrowUpDown, UserMinus, UserPlus, CheckCircle, AlertCircle, ExternalLink, Phone, Mail, Globe, Building2, MapPin, Star, RotateCw, Tag } from 'lucide-react'
+import { classifyOrganization, getOrgTypeLabel } from '@/lib/discovery/org-classifier'
 
 interface CampaignLead {
   id: string
@@ -41,6 +42,7 @@ interface CampaignLead {
     score: number
     emailVerified?: boolean
     needsEnrichment?: boolean
+    editorialSummary: string | null
   }
   outreachLogs: Array<{
     id: string
@@ -149,6 +151,8 @@ export function LeadsTableSelectable({ leads, campaignId, onSelectionChange, onL
         const displayName = isPlaceholderName ? null : `${lead.firstName} ${lead.lastName}`
         const primaryLabel = lead.organization || displayName || 'Unknown'
         const secondaryLabel = lead.organization && displayName ? displayName : null
+        const orgType = lead.organization ? classifyOrganization(lead.organization) : 'UNKNOWN'
+        const styleLabel = orgType !== 'UNKNOWN' ? getOrgTypeLabel(orgType) : null
 
         return (
           <button
@@ -168,6 +172,16 @@ export function LeadsTableSelectable({ leads, campaignId, onSelectionChange, onL
             {(secondaryLabel || lead.contactTitle) && (
               <span className="text-[11px] text-muted-foreground block truncate max-w-[180px]">
                 {secondaryLabel}{secondaryLabel && lead.contactTitle ? ' · ' : ''}{lead.contactTitle || ''}
+              </span>
+            )}
+            {styleLabel && (
+              <span className="text-[10px] text-muted-foreground/80 block truncate max-w-[180px]">
+                {styleLabel}
+              </span>
+            )}
+            {lead.editorialSummary && (
+              <span className="text-[10px] text-muted-foreground/80 block truncate max-w-[220px] italic">
+                {lead.editorialSummary}
               </span>
             )}
           </button>
@@ -411,6 +425,33 @@ export function LeadsTableSelectable({ leads, campaignId, onSelectionChange, onL
                       <p className="text-xs text-muted-foreground">Organization</p>
                       <p className="font-medium text-sm">{previewLead.lead.organization}</p>
                     </div>
+                  </div>
+                )}
+
+                {/* Group Style / Type */}
+                {(() => {
+                  const orgType = previewLead.lead.organization
+                    ? classifyOrganization(previewLead.lead.organization)
+                    : 'UNKNOWN'
+                  if (orgType === 'UNKNOWN') return null
+                  return (
+                    <div className="flex items-start gap-3">
+                      <Tag className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Style</p>
+                        <p className="font-medium text-sm">{getOrgTypeLabel(orgType)}</p>
+                      </div>
+                    </div>
+                  )
+                })()}
+
+                {/* Blurb / About */}
+                {previewLead.lead.editorialSummary && (
+                  <div className="rounded-md border bg-muted/40 px-3 py-2">
+                    <p className="text-xs text-muted-foreground mb-1">About</p>
+                    <p className="text-sm italic leading-snug">
+                      {previewLead.lead.editorialSummary}
+                    </p>
                   </div>
                 )}
 

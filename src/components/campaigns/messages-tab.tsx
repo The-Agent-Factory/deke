@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { MessageCard } from './message-card'
-import { Mail } from 'lucide-react'
+import { Mail, RefreshCw, RotateCcw } from 'lucide-react'
 
 interface MessagesTabProps {
+  campaignId: string
   outreachLogs: Array<{
     id: string
     channel: string
@@ -19,11 +21,16 @@ interface MessagesTabProps {
     leadName: string
     leadEmail: string
   }>
+  onRefresh?: () => void
 }
 
-export function MessagesTab({ outreachLogs }: MessagesTabProps) {
+export function MessagesTab({ campaignId, outreachLogs, onRefresh }: MessagesTabProps) {
   const [channelFilter, setChannelFilter] = useState('ALL')
   const [statusFilter, setStatusFilter] = useState('ALL')
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [verifyResult, setVerifyResult] = useState<{ verified: number; updated: number } | null>(null)
+  const [isResendingAll, setIsResendingAll] = useState(false)
+  const [resendResult, setResendResult] = useState<{ resent: number; failed: number; skipped: number } | null>(null)
 
   const filtered = outreachLogs.filter(log => {
     if (channelFilter !== 'ALL' && log.channel !== channelFilter) return false
@@ -41,6 +48,46 @@ export function MessagesTab({ outreachLogs }: MessagesTabProps) {
     return acc
   }, {} as Record<string, typeof outreachLogs>)
 
+  const failedCount = outreachLogs.filter(l => l.status === 'FAILED').length
+
+  const handleVerify = async () => {
+    setIsVerifying(true)
+    setVerifyResult(null)
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}/verify-emails`, { method: 'POST' })
+      const data = await res.json()
+      setVerifyResult(data)
+      if (data.updated > 0) {
+        onRefresh?.()
+      }
+    } catch {
+      setVerifyResult({ verified: 0, updated: 0 })
+    } finally {
+      setIsVerifying(false)
+    }
+  }
+
+  const handleResendAllFailed = async () => {
+    setIsResendingAll(true)
+    setResendResult(null)
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}/resend-failed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      setResendResult(data)
+      if (data.resent > 0) {
+        onRefresh?.()
+      }
+    } catch {
+      setResendResult({ resent: 0, failed: 0, skipped: 0 })
+    } finally {
+      setIsResendingAll(false)
+    }
+  }
+
   if (outreachLogs.length === 0) {
     return (
       <Card>
@@ -57,8 +104,8 @@ export function MessagesTab({ outreachLogs }: MessagesTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Filters */}
-      <div className="flex gap-4">
+      {/* Filters + Actions */}
+      <div className="flex gap-4 items-center flex-wrap">
         <Select value={channelFilter} onValueChange={setChannelFilter}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -84,6 +131,45 @@ export function MessagesTab({ outreachLogs }: MessagesTabProps) {
             <SelectItem value="FAILED">Failed</SelectItem>
           </SelectContent>
         </Select>
+
+        <div className="ml-auto flex items-center gap-3 flex-wrap">
+          {resendResult && (
+            <p className="text-sm text-muted-foreground">
+              {resendResult.resent > 0
+                ? `Resent ${resendResult.resent} message${resendResult.resent !== 1 ? 's' : ''}${resendResult.failed > 0 ? `, ${resendResult.failed} still failed` : ''}`
+                : resendResult.skipped > 0
+                  ? `Skipped ${resendResult.skipped} (no draft content)`
+                  : 'All resends failed'}
+            </p>
+          )}
+          {verifyResult && (
+            <p className="text-sm text-muted-foreground">
+              {verifyResult.updated > 0
+                ? `Updated ${verifyResult.updated} of ${verifyResult.verified} emails`
+                : `All ${verifyResult.verified} emails already up to date`}
+            </p>
+          )}
+          {failedCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResendAllFailed}
+              disabled={isResendingAll}
+            >
+              <RotateCcw className={`h-4 w-4 mr-2 ${isResendingAll ? 'animate-spin' : ''}`} />
+              {isResendingAll ? 'Resending…' : `Resend Failed (${failedCount})`}
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleVerify}
+            disabled={isVerifying}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isVerifying ? 'animate-spin' : ''}`} />
+            {isVerifying ? 'Verifying…' : 'Verify Send Status'}
+          </Button>
+        </div>
       </div>
 
       {/* Grouped messages */}
@@ -92,7 +178,12 @@ export function MessagesTab({ outreachLogs }: MessagesTabProps) {
           <h3 className="text-sm font-medium text-muted-foreground">{date}</h3>
           <div className="space-y-2">
             {messages.map(msg => (
-              <MessageCard key={msg.id} message={msg} />
+              <MessageCard
+                key={msg.id}
+                message={msg}
+                campaignId={campaignId}
+                onResent={onRefresh}
+              />
             ))}
           </div>
         </div>

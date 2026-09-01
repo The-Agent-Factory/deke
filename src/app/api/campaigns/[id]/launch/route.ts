@@ -46,19 +46,11 @@ export async function POST(
     }
 
     // Validate campaign can be launched
-    if (campaign.status !== 'APPROVED') {
+    if (campaign.status !== 'APPROVED' && campaign.status !== 'READY') {
       throw new ApiError(
         400,
-        'Only approved campaigns can be launched',
+        'Only approved or ready campaigns can be launched',
         'INVALID_STATUS'
-      )
-    }
-
-    if (!campaign.approvedAt) {
-      throw new ApiError(
-        400,
-        'Campaign must be approved before launching',
-        'NOT_APPROVED'
       )
     }
 

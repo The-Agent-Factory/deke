@@ -112,7 +112,7 @@ function generateAdminEmailHtml(data: GroupRequestNotificationData): string {
     ` : ''}
 
     <div style="margin-top: 30px; padding: 20px; background: #1a1a2e; border-radius: 8px; text-align: center;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/groups"
+      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://dekesharon.com'}/dashboard/groups"
          style="display: inline-block; background: #c9a227; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
         View in Dashboard
       </a>

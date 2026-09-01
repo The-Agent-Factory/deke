@@ -23,6 +23,7 @@ export const createCampaignSchema = z.object({
   endDate: z.string().datetime().optional().nullable(),
   bookingId: z.string().optional().nullable(),
   targetOrgTypes: z.string().optional().nullable(), // JSON array of org type strings
+  includeOffSeason: z.boolean().optional().default(false),
 })
 
 // Update campaign schema (all fields optional)
@@ -35,6 +36,7 @@ export const updateCampaignSchema = z.object({
   status: campaignStatusSchema.optional(),
   startDate: z.string().datetime().optional().nullable(),
   endDate: z.string().datetime().optional().nullable(),
+  includeOffSeason: z.boolean().optional(),
 })
 
 // Query filters for listing campaigns

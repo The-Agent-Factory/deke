@@ -67,6 +67,7 @@ function NewCampaignContent() {
         radius: values.radiusMiles, // API expects radius, not radiusMiles
         startDate: startDateTime,
         endDate: endDateTime,
+        includeOffSeason: values.includeOffSeason ?? false,
         ...(bookingId && { bookingId }), // Include bookingId if present
         ...(values.targetOrgTypes && values.targetOrgTypes.length > 0 && {
           targetOrgTypes: JSON.stringify(values.targetOrgTypes),
