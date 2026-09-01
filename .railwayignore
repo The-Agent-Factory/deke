@@ -1,0 +1,45 @@
+# Railway uploads this folder to build the site.
+# Everything below is local working material, not part of the website,
+# and must never be uploaded. Keeping it out is the difference between
+# a small upload and a multi-gigabyte one that fails to compress.
+
+# Build artifacts and dependencies (Railway rebuilds these itself)
+node_modules
+.next
+.turbo
+
+# Video and audio source material
+*.mov
+*.mp4
+*.m4v
+*.avi
+*.wav
+*.mp3
+*.aif
+*.aiff
+
+# Working folders: footage, renders, and content production
+total-vocal-skool/
+my-video/
+interview-audio-repair/
+newsletter-landing/
+reports/
+covers-review/
+deke-design/
+deke-form-notifications/
+
+# Large local documents and exports
+*.docx
+*.pdf
+*.zip
+*.pen
+
+# Local tooling and scratch
+.agents/
+plugins/
+.claude/
+
+# Exception: public/ holds real site assets that must always ship,
+# including the artwork PDF referenced by src/lib/artwork-data.ts.
+!public/
+!public/**
