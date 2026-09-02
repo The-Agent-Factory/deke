@@ -121,7 +121,7 @@ export async function evaluateLeadBatch(
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-haiku-4-5',
       max_tokens: 2048,
       system: SYSTEM_PROMPT,
       messages: [
