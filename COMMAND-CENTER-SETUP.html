@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Command Center — Setup Guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+  body{max-width:860px;margin:0 auto;padding:40px 24px 80px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.65;color:#1f2937;background:#fff}
+  h1{font-size:30px;line-height:1.25;margin:0 0 6px;color:#111827;letter-spacing:-.02em}
+  h2{font-size:21px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid #e5e7eb;color:#111827}
+  h3{font-size:16px;margin:26px 0 8px;color:#374151}
+  .meta{color:#6b7280;font-size:14px;margin:0 0 28px}
+  table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14.5px}
+  th{background:#f9fafb;text-align:left;padding:10px 12px;border:1px solid #e5e7eb;font-weight:600}
+  td{padding:10px 12px;border:1px solid #e5e7eb;vertical-align:top}
+  code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:#1f2937;color:#e5e7eb;padding:18px 20px;border-radius:8px;overflow-x:auto;font-size:13.5px;line-height:1.6}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid #d1d5db;margin:18px 0;padding:2px 0 2px 18px;color:#4b5563}
+  ol,ul{padding-left:24px}li{margin:6px 0}
+  strong{color:#111827}
+  .warn{background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .ok{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .gap{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px 18px;margin:18px 0}
+  hr{border:0;border-top:1px solid #e5e7eb;margin:36px 0}
+
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Command Center — Setup Guide</h1>
+</header>
+<h1 id="command-center--how-to-switch-it-on">Command Center — how to
+switch it on</h1>
+<p>Built 2026-09-02. Updated 2026-09-03: <strong>messaging intake is
+suspended.</strong> The board takes work from the dashboard composer
+only. The board itself is live and working with 23 real cards, and one
+optional step remains if you want the "Do it for me" buttons to actually
+run.</p>
+<hr />
+<h2 id="what-this-is">What this is</h2>
+<p>One page, <code>/dashboard/command</code>, where every activity is a
+card.</p>
+<ul>
+<li><strong>You type one line into the box at the top.</strong> An agent
+reads it, works out what it is, who owns it, and when it is due, and
+drops a sorted card on the board. Type it the way you would say it; it
+does the filing.</li>
+<li><strong>WhatsApp, SMS and email intake are switched off</strong>
+(your call, 2026-09-03). The plumbing is still there and tested, just
+gated. See "Turning messaging back on" at the bottom.</li>
+<li><strong>The board shows five columns</strong> in plain language:
+New, Today, In progress, Waiting, Done. Drag a card to move it.</li>
+<li><strong>Each card has "Do it for me" buttons</strong> that run the
+real automation on your machine: check Dropbox, run the content
+pipeline, dry-run the posts, and so on.</li>
+<li><strong>A "Coming up" rail</strong> across the top reads the real
+bookings, so the board can never disagree with the calendar.</li>
+</ul>
+<p>Nothing publishes itself. The one action that reaches the public asks
+twice.</p>
+<hr />
+<h2 id="step-1--register-the-runner-optional">Step 1 — Register the
+runner (optional)</h2>
+<p>Railway cannot reach your laptop, so the laptop pulls work instead.
+The runner polls for queued jobs and executes them via a headless Claude
+session.</p>
+<p>Paste this once in a normal PowerShell window (I am
+permission-blocked from registering scheduled tasks):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>schtasks <span class="op">/</span>create <span class="op">/</span>tn <span class="st">&quot;DekeSkillRunner&quot;</span> <span class="op">/</span>tr <span class="st">&quot;pwsh.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\lafla\claude_projects\deke\scripts\skill-runner.ps1&quot;</span> <span class="op">/</span><span class="fu">sc</span> minute <span class="op">/</span>mo <span class="dv">5</span> <span class="op">/</span>f</span></code></pre></div>
+<p>Then apply the battery fix, or it will silently skip runs the way the
+other scheduled tasks did:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Set-ScheduledTask <span class="op">-</span>TaskName <span class="st">&quot;DekeSkillRunner&quot;</span> <span class="op">-</span>Settings <span class="op">(</span>New-ScheduledTaskSettingsSet <span class="op">-</span>StartWhenAvailable <span class="op">-</span>AllowStartIfOnBatteries <span class="op">-</span>DontStopIfGoingOnBatteries<span class="op">)</span></span></code></pre></div>
+<p>Test it by hand first:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pwsh <span class="op">-</span>File C<span class="op">:</span>\Users\lafla\claude_projects\deke\scripts\skill-runner<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Once</span></code></pre></div>
+<p>Logs land in <code>scripts\logs\</code>.</p>
+<hr />
+<h2 id="what-the-buttons-actually-do">What the buttons actually do</h2>
+<table>
+<thead>
+<tr>
+<th>Button on the card</th>
+<th>What runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Check for new footage</td>
+<td><code>dropbox-ingest.mjs check</code>, reports only, pulls
+nothing</td>
+</tr>
+<tr>
+<td>How are the channels doing?</td>
+<td>The channel-pulse skill</td>
+</tr>
+<tr>
+<td>Turn footage into content</td>
+<td>The content-pipeline skill, stops at the first approval gate</td>
+</tr>
+<tr>
+<td>Build a branded video</td>
+<td>The deke-video skill</td>
+</tr>
+<tr>
+<td>Check the posts before sending</td>
+<td>Postiz publisher in dry-run, sends nothing</td>
+</tr>
+<tr>
+<td>Schedule the posts for real</td>
+<td>Postiz publish, <strong>asks for confirmation first</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The last one is the only action that reaches the public. The
+interface asks twice, and the API refuses it outright without an
+explicit confirmation. The runner also refuses to publish a batch that
+has no clean dry run on record.</p>
+<hr />
+<h2 id="where-things-live">Where things live</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The board</td>
+<td><code>src/app/dashboard/command/</code></td>
+</tr>
+<tr>
+<td>Message triage</td>
+<td><code>src/lib/triage/</code></td>
+</tr>
+<tr>
+<td>Skill catalogue</td>
+<td><code>src/lib/skills/catalog.ts</code></td>
+</tr>
+<tr>
+<td>Activity API</td>
+<td><code>src/app/api/activities/</code></td>
+</tr>
+<tr>
+<td>Job queue API</td>
+<td><code>src/app/api/jobs/</code></td>
+</tr>
+<tr>
+<td>Email intake</td>
+<td><code>src/app/api/webhooks/inbound-email/route.ts</code></td>
+</tr>
+<tr>
+<td>WhatsApp and SMS intake</td>
+<td><code>src/app/api/webhooks/twilio/route.ts</code></td>
+</tr>
+<tr>
+<td>The runner</td>
+<td><code>scripts/skill-runner.ps1</code></td>
+</tr>
+<tr>
+<td>Card seeder</td>
+<td><code>scripts/seed-command-center.ts</code></td>
+</tr>
+</tbody>
+</table>
+<p>Re-running the seeder is safe. It updates existing cards rather than
+duplicating them, and it never drags a card back out of the column you
+moved it to.</p>
+<hr />
+<h2 id="before-you-deploy">Before you deploy</h2>
+<p>The local repo was 42 commits behind GitLab, so <code>git pull</code>
+first. Nothing has been committed or deployed. The database changes are
+already applied to <code>deke-production</code>, and they are additive
+only, so the running site is unaffected until you ship the code.</p>
+<p>New environment variables to set in Railway:</p>
+<pre><code>COMMAND_INTAKE_SENDERS    Deke&#39;s number and email, comma-separated
+COMMAND_INTAKE_SECRET     any long random string, for the email webhook
+COMMAND_RUNNER_URL        the public app URL the runner polls
+TWILIO_WEBHOOK_URL        the public webhook URL, only if behind a proxy</code></pre>
+<p><code>CRON_SECRET</code> already exists and guards the runner
+endpoints too.</p>
+<hr />
+<h2 id="one-thing-i-fixed-while-in-there">One thing I fixed while in
+there</h2>
+<p>The public marketing header, footer, newsletter popup and
+notification popup were rendering on top of every dashboard page,
+including the existing ones. A logged-in admin was being asked to
+subscribe to a newsletter. The mechanism to prevent this already existed
+and simply had not been pointed at the dashboard.
+<code>/dashboard</code> and <code>/login</code> are now excluded.</p>
+<hr />
+<h2 id="turning-messaging-back-on">Turning messaging back on</h2>
+<p>Nothing was deleted. The Twilio webhook, the signature check, the
+sender allow-list and the triage agent are all still in place and still
+tested. One flag gates the whole thing, so there is a single place to
+change your mind:</p>
+<ol type="1">
+<li>Set <code>COMMAND_INTAKE_ENABLED="true"</code> in Railway.</li>
+<li>Set <code>COMMAND_INTAKE_SENDERS</code> to Deke's number, digits
+only is fine (<code>COMMAND_INTAKE_SENDERS="16175551234"</code>). Empty
+still rejects everyone.</li>
+<li>In the Twilio console, point the WhatsApp sandbox's "when a message
+comes in" at <code>https://&lt;your-app&gt;/api/webhooks/twilio</code>
+(POST).</li>
+</ol>
+<p>Until step 1 is done, every inbound message is refused no matter what
+else is configured. Verified 2026-09-03: with the flag unset, WhatsApp,
+SMS and email addresses are all rejected, and an unsigned webhook call
+gets a 403 before it reaches the intake path at all.</p>
+</body>
+</html>

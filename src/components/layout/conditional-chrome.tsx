@@ -4,11 +4,18 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 /**
- * Standalone, full-bleed landing surfaces that should NOT render the global
- * Deke Sharon site chrome (header, footer, popups). The Total Vocal page is a
- * sibling-brand landing page that ships its own nav + footer.
+ * Surfaces that should NOT render the global Deke Sharon site chrome
+ * (header, footer, newsletter + notification popups, chat widget).
+ *
+ * Two kinds live here:
+ *  - Sibling-brand landing pages that ship their own nav and footer
+ *    (/total-vocal).
+ *  - Private, signed-in surfaces. The dashboard has its own sidebar layout,
+ *    and the marketing popups are aimed at visitors, so firing them at the
+ *    operator covers the board and asks a logged-in admin to subscribe to a
+ *    newsletter.
  */
-const STANDALONE_PREFIXES = ["/total-vocal"];
+const STANDALONE_PREFIXES = ["/total-vocal", "/dashboard", "/login"];
 
 export function ConditionalChrome({
   header,

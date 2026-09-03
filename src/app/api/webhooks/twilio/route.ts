@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import {
+  isAllowedSender,
+  recordInboundMessage,
+  verifyTwilioSignature,
+} from '@/lib/triage/intake'
 
 /**
  * Webhook handler for Twilio SMS events
@@ -19,17 +24,34 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
 
-    // TODO: Verify Twilio signature for security
-    // const signature = request.headers.get('x-twilio-signature')
-    // if (!verifyTwilioSignature(formData, signature)) {
-    //   return new Response('Invalid signature', { status: 401 })
-    // }
+    // Flatten the form for both signature verification and field access.
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => {
+      if (typeof value === 'string') params[key] = value
+    })
 
-    const messageStatus = formData.get('MessageStatus') as string
-    const messageSid = formData.get('MessageSid') as string
-    const to = formData.get('To') as string
-    const from = formData.get('From') as string
-    const body = formData.get('Body') as string
+    // Verify Twilio's signature. This endpoint is public (see middleware
+    // PUBLIC_API_ROUTES) and now creates tasks, so an unsigned request must
+    // never reach the intake path. Skipped only when no auth token is
+    // configured, which is the local-development case.
+    const signature = request.headers.get('x-twilio-signature')
+    if (process.env.TWILIO_AUTH_TOKEN) {
+      const url = process.env.TWILIO_WEBHOOK_URL || request.url
+      if (!verifyTwilioSignature(url, params, signature)) {
+        console.error('Twilio webhook: invalid signature')
+        return new Response('Invalid signature', { status: 403 })
+      }
+    }
+
+    const messageStatus = params['MessageStatus']
+    const messageSid = params['MessageSid']
+    const to = params['To']
+    const from = params['From']
+    const body = params['Body']
+
+    // WhatsApp and SMS arrive on this same webhook; WhatsApp prefixes the
+    // addresses with "whatsapp:".
+    const channel = from?.startsWith('whatsapp:') ? 'whatsapp' : 'sms'
 
     // Handle incoming messages (replies)
     if (body && from) {
@@ -67,6 +89,37 @@ export async function POST(request: NextRequest) {
         return new Response('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', {
           headers: { 'Content-Type': 'text/xml' },
         })
+      }
+
+      // Command Center intake: a message from an allow-listed sender (Deke or
+      // Denis) becomes a task card rather than a campaign reply.
+      if (isAllowedSender(from)) {
+        const mediaCount = parseInt(params['NumMedia'] || '0', 10)
+        const mediaUrls: string[] = []
+        for (let i = 0; i < mediaCount; i++) {
+          const url = params[`MediaUrl${i}`]
+          if (url) mediaUrls.push(url)
+        }
+
+        const result = await recordInboundMessage({
+          channel,
+          fromAddress: from,
+          fromName: params['ProfileName'] || null,
+          body,
+          mediaUrls,
+          externalId: messageSid || null,
+        })
+
+        const reply = result.duplicate
+          ? 'Already got that one.'
+          : result.activityId
+            ? 'Got it. Added to your board.'
+            : 'Got it. Saved to your inbox.'
+
+        return new Response(
+          `<?xml version="1.0" encoding="UTF-8"?><Response><Message>${reply}</Message></Response>`,
+          { headers: { 'Content-Type': 'text/xml' } },
+        )
       }
 
       // Handle regular reply

@@ -22,6 +22,16 @@ async function getNewGroupRequestCount(): Promise<number> {
   }
 }
 
+async function getNewActivityCount(): Promise<number> {
+  try {
+    return await prisma.activity.count({
+      where: { lane: "INBOX", archivedAt: null },
+    });
+  } catch {
+    return 0;
+  }
+}
+
 async function getPendingInquiryCount(): Promise<number> {
   try {
     return await prisma.inquiry.count({
@@ -34,6 +44,12 @@ async function getPendingInquiryCount(): Promise<number> {
 
 const primaryNav = [
   { href: "/dashboard", label: "TODAY", icon: "Zap" as const, badgeKey: "today" as const },
+  {
+    href: "/dashboard/command",
+    label: "COMMAND",
+    icon: "LayoutDashboard" as const,
+    badgeKey: "command" as const,
+  },
   { href: "/dashboard/bookings", label: "BOOKINGS", icon: "Calendar" as const },
   { href: "/dashboard/campaigns", label: "CAMPAIGNS", icon: "Megaphone" as const },
   { href: "/dashboard/leads", label: "LEADS", icon: "Target" as const, badgeKey: "leads" as const },
@@ -49,17 +65,20 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [session, newRequestCount, pendingInquiryCount] = await Promise.all([
-    auth(),
-    getNewGroupRequestCount(),
-    getPendingInquiryCount(),
-  ]);
+  const [session, newRequestCount, pendingInquiryCount, newActivityCount] =
+    await Promise.all([
+      auth(),
+      getNewGroupRequestCount(),
+      getPendingInquiryCount(),
+      getNewActivityCount(),
+    ]);
 
   const userName = session?.user?.name || session?.user?.email || "Admin";
 
   const badgeCounts = {
     leads: newRequestCount,
     today: pendingInquiryCount,
+    command: newActivityCount,
   };
 
   return (

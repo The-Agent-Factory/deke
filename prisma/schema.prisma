@@ -37,32 +37,32 @@ model User {
 // ============================================
 
 model Lead {
-  id            String    @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String    @unique
-  phone         String?
-  organization  String?
-  source        String?   // website, referral, social, etc.
-  status        String    @default("NEW") // NEW, CONTACTED, QUALIFIED, PROPOSAL_SENT, NEGOTIATING, WON, LOST, DORMANT, CONVERTED
-  score         Int       @default(0)  // Lead scoring
+  id           String  @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String  @unique
+  phone        String?
+  organization String?
+  source       String? // website, referral, social, etc.
+  status       String  @default("NEW") // NEW, CONTACTED, QUALIFIED, PROPOSAL_SENT, NEGOTIATING, WON, LOST, DORMANT, CONVERTED
+  score        Int     @default(0) // Lead scoring
 
   // Geographic coordinates for opportunity finder
-  latitude      Float?
-  longitude     Float?
+  latitude        Float?
+  longitude       Float?
   lastContactedAt DateTime?
 
   // Enrichment fields
-  website           String?
-  emailVerified     Boolean   @default(false)
-  needsEnrichment   Boolean   @default(false)
-  enrichmentSource  String?   // "website_scrape", "manual", "google_places"
-  contactTitle      String?   // "Music Director", "President", etc.
-  editorialSummary  String?   // Google's one-line description for email personalization
-  googleRating      Float?    // Google Places rating (1-5)
+  website          String?
+  emailVerified    Boolean @default(false)
+  needsEnrichment  Boolean @default(false)
+  enrichmentSource String? // "website_scrape", "manual", "google_places"
+  contactTitle     String? // "Music Director", "President", etc.
+  editorialSummary String? // Google's one-line description for email personalization
+  googleRating     Float? // Google Places rating (1-5)
 
   // Conversion tracking
-  convertedAt   DateTime?
+  convertedAt DateTime?
 
   // Seasonal contactability override (per-lead). When set, overrides the
   // SeasonalRule defaults for this lead's classified org type.
@@ -70,8 +70,8 @@ model Lead {
   // null = use SeasonalRule defaults; empty array = always off-season.
   activeSeasons String?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   inquiries     Inquiry[]
@@ -79,7 +79,7 @@ model Lead {
   orders        Order[]
   campaignLeads CampaignLead[]
   emailDrafts   EmailDraft[]
-  contacts      Contact[]  // Contacts created from this lead
+  contacts      Contact[] // Contacts created from this lead
 
   @@index([email])
   @@index([status])
@@ -88,34 +88,34 @@ model Lead {
 }
 
 model Contact {
-  id            String    @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String    @unique
-  phone         String?
-  organization  String?
-  source        String?
-  contactTitle  String?   // "Music Director", "President", etc.
+  id           String  @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String  @unique
+  phone        String?
+  organization String?
+  source       String?
+  contactTitle String? // "Music Director", "President", etc.
 
   // Geographic coordinates
-  latitude      Float?
-  longitude     Float?
+  latitude  Float?
+  longitude Float?
 
   // Enrichment fields (carried from lead)
-  website           String?
-  emailVerified     Boolean   @default(false)
-  editorialSummary  String?
-  googleRating      Float?
+  website          String?
+  emailVerified    Boolean @default(false)
+  editorialSummary String?
+  googleRating     Float?
 
   // Link back to original lead (nullable — contacts can exist without a lead origin)
-  leadId        String?
-  lead          Lead?     @relation(fields: [leadId], references: [id])
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id])
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  bookings      Booking[]
+  bookings Booking[]
 
   @@index([email])
   @@index([leadId])
@@ -128,21 +128,21 @@ model Contact {
 // ============================================
 
 model Trip {
-  id            String    @id @default(cuid())
-  name          String    // e.g., "Montreal Weekend", "California Tour"
-  location      String    // Primary city/region
-  startDate     DateTime
-  endDate       DateTime
-  status        String    @default("upcoming") // upcoming, in-progress, completed, cancelled
+  id        String   @id @default(cuid())
+  name      String // e.g., "Montreal Weekend", "California Tour"
+  location  String // Primary city/region
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("upcoming") // upcoming, in-progress, completed, cancelled
 
   // Notes
-  notes         String?
+  notes String?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  bookings      Booking[]
+  bookings Booking[]
 
   @@index([status])
   @@index([startDate])
@@ -153,25 +153,25 @@ model Trip {
 // ============================================
 
 model Inquiry {
-  id            String      @id @default(cuid())
-  leadId        String
-  lead          Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  serviceType   String      // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
-  status        String      @default("PENDING") // PENDING, QUOTED, ACCEPTED, DECLINED, EXPIRED
+  id          String @id @default(cuid())
+  leadId      String
+  lead        Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  serviceType String // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
+  status      String @default("PENDING") // PENDING, QUOTED, ACCEPTED, DECLINED, EXPIRED
 
   // Service-specific details (JSON for flexibility)
-  details       String?     // JSON string
-  message       String?
+  details String? // JSON string
+  message String?
 
   // Quote info (from MAESTRO agent)
-  quotedAmount  Float?
-  quotedAt      DateTime?
-  quoteExpiry   DateTime?
+  quotedAmount Float?
+  quotedAt     DateTime?
+  quoteExpiry  DateTime?
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  booking       Booking?
+  booking Booking?
 
   @@index([leadId])
   @@index([serviceType])
@@ -182,62 +182,61 @@ model Inquiry {
 // Removed enum InquiryStatus - now using String with validation comments
 
 model Booking {
-  id            String        @id @default(cuid())
-  contactId     String?       // Temporarily optional during migration, will be made required after data migration
-  contact       Contact?      @relation(fields: [contactId], references: [id])
-  inquiryId     String?       @unique
-  inquiry       Inquiry?      @relation(fields: [inquiryId], references: [id])
+  id        String   @id @default(cuid())
+  contactId String? // Temporarily optional during migration, will be made required after data migration
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  inquiryId String?  @unique
+  inquiry   Inquiry? @relation(fields: [inquiryId], references: [id])
 
   // Trip relation
-  tripId        String?
-  trip          Trip?         @relation(fields: [tripId], references: [id])
+  tripId String?
+  trip   Trip?   @relation(fields: [tripId], references: [id])
 
-  serviceType   String        // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
-  status        String        @default("PENDING") // PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED
+  serviceType String // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
+  status      String @default("PENDING") // PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED, RESCHEDULED
 
   // Scheduling
-  startDate     DateTime?
-  endDate       DateTime?
-  timezone      String?
-  location      String?       // Address or "Virtual"
+  startDate DateTime?
+  endDate   DateTime?
+  timezone  String?
+  location  String? // Address or "Virtual"
 
   // Geographic coordinates for opportunity finder
-  latitude      Float?
-  longitude     Float?
+  latitude  Float?
+  longitude Float?
 
   // Financials
   amount        Float?
   depositPaid   Float?
   balanceDue    Float?
-  paymentStatus String        @default("UNPAID") // UNPAID, DEPOSIT_PAID, PAID_IN_FULL, REFUNDED, OVERDUE
+  paymentStatus String @default("UNPAID") // UNPAID, DEPOSIT_PAID, PAID_IN_FULL, REFUNDED, OVERDUE
 
   // Notes
   internalNotes String?
   clientNotes   String?
 
   // Availability window for nearby gig discovery
-  availabilityBefore  Int?   // Days available before booking for nearby gigs
-  availabilityAfter   Int?   // Days available after booking for nearby gigs
+  availabilityBefore Int? // Days available before booking for nearby gigs
+  availabilityAfter  Int? // Days available after booking for nearby gigs
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Engagement tracking
-  engagementStatus  String?   // PREP, READY, DELIVERED, FOLLOW_UP
-  prepNotes         String?   // What needs to happen before the gig
-  deliverables      String?   // JSON: checklist of deliverables
-  followUpNotes     String?   // Post-gig follow-up items
+  engagementStatus String? // PREP, READY, DELIVERED, FOLLOW_UP
+  prepNotes        String? // What needs to happen before the gig
+  deliverables     String? // JSON: checklist of deliverables
+  followUpNotes    String? // Post-gig follow-up items
 
   // Public visibility for events page
-  isPublic          Boolean  @default(false)
-  publicTitle       String?    // Public-facing event title, e.g. "A Cappella Workshop at UCLA"
-  publicDescription String?    // Short description for the /events page
-  organization      String?    // Per-booking organization/venue name (independent of lead)
-  ticketUrl         String?    // Public ticket/box-office link shown on the /events page
+  isPublic          Boolean @default(false)
+  publicTitle       String? // Public-facing event title, e.g. "A Cappella Workshop at UCLA"
+  publicDescription String? // Short description for the /events page
+  organization      String? // Per-booking organization/venue name (independent of lead)
+  ticketUrl         String? // Public ticket/box-office link shown on the /events page
 
   // Relations
-  campaigns     Campaign[]
+  campaigns Campaign[]
 
   @@index([contactId])
   @@index([tripId])
@@ -251,40 +250,39 @@ model Booking {
 // Removed enum BookingStatus - now using String with validation comments
 // Removed enum PaymentStatus - now using String with validation comments
 
-
 // ============================================
 // ARRANGEMENTS & ORDERS
 // ============================================
 
 model Order {
-  id              String      @id @default(cuid())
-  leadId          String
-  lead            Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  orderNumber     String      @unique
-  status          String      @default("PENDING") // PENDING, IN_PROGRESS, REVIEW, REVISION, COMPLETED, DELIVERED, CANCELLED
+  id          String @id @default(cuid())
+  leadId      String
+  lead        Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  orderNumber String @unique
+  status      String @default("PENDING") // PENDING, IN_PROGRESS, REVIEW, REVISION, COMPLETED, DELIVERED, CANCELLED
 
   // Arrangement details
-  songTitle       String?
-  songArtist      String?
-  voiceParts      Int?
-  packageTier     String?     // Essential, Professional, Premium
+  songTitle   String?
+  songArtist  String?
+  voiceParts  Int?
+  packageTier String? // Essential, Professional, Premium
 
   // Pricing
-  basePrice       Float?
-  rushFee         Float?
-  totalAmount     Float?
+  basePrice   Float?
+  rushFee     Float?
+  totalAmount Float?
 
   // Delivery
-  dueDate         DateTime?
-  deliveredAt     DateTime?
-  downloadUrl     String?
+  dueDate     DateTime?
+  deliveredAt DateTime?
+  downloadUrl String?
 
   // Revisions
-  revisionsUsed   Int         @default(0)
-  revisionsMax    Int         @default(1)
+  revisionsUsed Int @default(0)
+  revisionsMax  Int @default(1)
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([leadId])
   @@index([status])
@@ -298,24 +296,24 @@ model Order {
 // ============================================
 
 model ChatSession {
-  id          String    @id @default(cuid())
-  leadId      String?
-  lead        Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  id     String  @id @default(cuid())
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
   // Session metadata
-  sessionId   String    @unique  // For anonymous tracking
-  source      String?   // Page URL where chat started
-  userAgent   String?
-  ipAddress   String?
+  sessionId String  @unique // For anonymous tracking
+  source    String? // Page URL where chat started
+  userAgent String?
+  ipAddress String?
 
   // Status
-  status      String     @default("ACTIVE") // ACTIVE, IDLE, ENDED, TRANSFERRED
+  status String @default("ACTIVE") // ACTIVE, IDLE, ENDED, TRANSFERRED
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  endedAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  endedAt   DateTime?
 
-  messages    ChatMessage[]
+  messages ChatMessage[]
 
   @@index([leadId])
   @@index([sessionId])
@@ -324,18 +322,18 @@ model ChatSession {
 // Removed enum ChatStatus - now using String with validation comments
 
 model ChatMessage {
-  id            String      @id @default(cuid())
-  sessionId     String
-  session       ChatSession @relation(fields: [sessionId], references: [id])
+  id        String      @id @default(cuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id])
 
-  role          String      // user, assistant, system
-  content       String
+  role    String // user, assistant, system
+  content String
 
   // Agent tracking
-  agentId       String?     // Which agent responded
-  toolsUsed     String?     // JSON array of tools/actions taken
+  agentId   String? // Which agent responded
+  toolsUsed String? // JSON array of tools/actions taken
 
-  createdAt     DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([sessionId])
 }
@@ -345,27 +343,27 @@ model ChatMessage {
 // ============================================
 
 model ContentPiece {
-  id            String        @id @default(cuid())
-  type          String        // BLOG_POST, SOCIAL_POST, EMAIL, NEWSLETTER, VIDEO_SCRIPT, PODCAST_NOTES
-  title         String
-  content       String
-  excerpt       String?
+  id      String  @id @default(cuid())
+  type    String // BLOG_POST, SOCIAL_POST, EMAIL, NEWSLETTER, VIDEO_SCRIPT, PODCAST_NOTES
+  title   String
+  content String
+  excerpt String?
 
   // Metadata
-  status        String        @default("DRAFT") // DRAFT, SCHEDULED, PUBLISHED, ARCHIVED
-  publishedAt   DateTime?
-  scheduledFor  DateTime?
+  status       String    @default("DRAFT") // DRAFT, SCHEDULED, PUBLISHED, ARCHIVED
+  publishedAt  DateTime?
+  scheduledFor DateTime?
 
   // SEO
-  slug          String?       @unique
-  metaTitle     String?
-  metaDesc      String?
+  slug      String? @unique
+  metaTitle String?
+  metaDesc  String?
 
   // Social
-  socialCopy    String?       // JSON string: { twitter, instagram, linkedin, etc. }
+  socialCopy String? // JSON string: { twitter, instagram, linkedin, etc. }
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
   @@index([status])
@@ -380,16 +378,16 @@ model ContentPiece {
 // ============================================
 
 model AnalyticsEvent {
-  id          String    @id @default(cuid())
-  eventType   String    // page_view, chat_started, booking_completed, etc.
-  eventData   String?   // JSON string
+  id        String  @id @default(cuid())
+  eventType String // page_view, chat_started, booking_completed, etc.
+  eventData String? // JSON string
 
   // Context
-  leadId      String?
-  sessionId   String?
-  source      String?
+  leadId    String?
+  sessionId String?
+  source    String?
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([eventType])
   @@index([leadId])
@@ -397,18 +395,18 @@ model AnalyticsEvent {
 }
 
 model RevenueMetric {
-  id            String    @id @default(cuid())
-  period        String    // YYYY-MM format
-  serviceType   String    // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
+  id          String @id @default(cuid())
+  period      String // YYYY-MM format
+  serviceType String // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
 
   // Metrics
-  inquiries     Int       @default(0)
-  bookings      Int       @default(0)
-  revenue       Float     @default(0)
+  inquiries      Int    @default(0)
+  bookings       Int    @default(0)
+  revenue        Float  @default(0)
   conversionRate Float?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([period, serviceType])
   @@index([period])
@@ -419,16 +417,16 @@ model RevenueMetric {
 // ============================================
 
 model AgentLog {
-  id          String    @id @default(cuid())
-  agentId     String    // harmony, maestro, tempo, etc.
-  actionType  String
-  input       String?   // JSON string
-  output      String?   // JSON string
-  success     Boolean
-  errorMsg    String?
-  durationMs  Int?
+  id         String  @id @default(cuid())
+  agentId    String // harmony, maestro, tempo, etc.
+  actionType String
+  input      String? // JSON string
+  output     String? // JSON string
+  success    Boolean
+  errorMsg   String?
+  durationMs Int?
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([agentId])
   @@index([actionType])
@@ -436,16 +434,16 @@ model AgentLog {
 }
 
 model AgentMemory {
-  id          String    @id @default(cuid())
-  agentId     String
-  memoryType  String    // preference, context, pattern
-  key         String
-  value       String    // JSON string
-  importance  Int       @default(5)  // 1-10 scale
+  id         String @id @default(cuid())
+  agentId    String
+  memoryType String // preference, context, pattern
+  key        String
+  value      String // JSON string
+  importance Int    @default(5) // 1-10 scale
 
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([agentId, key])
   @@index([agentId])
@@ -457,41 +455,41 @@ model AgentMemory {
 // ============================================
 
 model Campaign {
-  id            String         @id @default(cuid())
-  name          String
-  baseLocation  String         // e.g., "Los Angeles, CA"
-  latitude      Float
-  longitude     Float
-  radius        Float          @default(100) // miles, default 100 per user request
-  status        String         @default("DRAFT") // DRAFT, APPROVED, ACTIVE, PAUSED, COMPLETED, CANCELLED
-  startDate     DateTime?
-  endDate       DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  approvedAt    DateTime?
-  launchedAt    DateTime?
+  id           String    @id @default(cuid())
+  name         String
+  baseLocation String // e.g., "Los Angeles, CA"
+  latitude     Float
+  longitude    Float
+  radius       Float     @default(100) // miles, default 100 per user request
+  status       String    @default("DRAFT") // DRAFT, APPROVED, ACTIVE, PAUSED, COMPLETED, CANCELLED
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  approvedAt   DateTime?
+  launchedAt   DateTime?
 
-  leads         CampaignLead[]
-  outreachLogs  OutreachLog[]
-  emailDrafts   EmailDraft[]
+  leads        CampaignLead[]
+  outreachLogs OutreachLog[]
+  emailDrafts  EmailDraft[]
 
   // Background discovery job tracking
-  discoveryStatus    String?      // null, "RUNNING", "COMPLETED", "FAILED"
+  discoveryStatus    String? // null, "RUNNING", "COMPLETED", "FAILED"
   discoveryStartedAt DateTime?
   discoveryError     String?
 
   // Prospect mode: target org types without requiring a booking
-  targetOrgTypes  String?      // JSON array: ["CHOIR", "BARBERSHOP", "MUSIC_SCHOOL"]
+  targetOrgTypes String? // JSON array: ["CHOIR", "BARBERSHOP", "MUSIC_SCHOOL"]
 
   // Seasonal filter escape hatch: when true, the discovery pipeline will not
   // skip leads whose classified org type is currently off-season. Useful for
   // building a pipeline ahead of an upcoming active season (e.g. planning a
   // collegiate tour in July for a September launch).
-  includeOffSeason Boolean     @default(false)
+  includeOffSeason Boolean @default(false)
 
   // Optional: Link to booking that triggered campaign
-  booking       Booking?       @relation(fields: [bookingId], references: [id])
-  bookingId     String?        @unique
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+  bookingId String?  @unique
 
   @@index([status])
   @@index([startDate])
@@ -501,64 +499,64 @@ model Campaign {
 // Removed enum CampaignStatus - now using String with validation comments
 
 model CampaignLead {
-  id            String              @id @default(cuid())
-  campaign      Campaign            @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId    String
-  lead          Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId        String
-  score         Int                 @default(50) // 0-100
-  distance      Float?              // miles from campaign base location (null if no coordinates)
-  source        String              // PAST_CLIENT, DORMANT, SIMILAR_ORG, AI_RESEARCH, MANUAL_IMPORT
-  status        String              @default("PENDING") // PENDING, CONTACTED, OPENED, CLICKED, RESPONDED, BOOKED, DECLINED, REMOVED
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  id         String   @id @default(cuid())
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId     String
+  score      Int      @default(50) // 0-100
+  distance   Float? // miles from campaign base location (null if no coordinates)
+  source     String // PAST_CLIENT, DORMANT, SIMILAR_ORG, AI_RESEARCH, MANUAL_IMPORT
+  status     String   @default("PENDING") // PENDING, CONTACTED, OPENED, CLICKED, RESPONDED, BOOKED, DECLINED, REMOVED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // Phase 3: Service Recommendation Engine
-  recommendedServices  String?  // JSON array of service types to pitch
-  recommendationReason String?  // Why these services? (for template variables)
-  recommendationScore  Int?     // 0-15 bonus from recommendations
+  recommendedServices  String? // JSON array of service types to pitch
+  recommendationReason String? // Why these services? (for template variables)
+  recommendationScore  Int? // 0-15 bonus from recommendations
 
   // Lead quality evaluation (CURATOR agent)
-  qualityScore        Int?         // 0-100 AI-assessed quality
-  qualityReason       String?      // Why this quality score
-  qualityPassed       Boolean?     // Passes minimum quality gate
-  qualityEvaluatedAt  DateTime?    // When CURATOR last evaluated
+  qualityScore       Int? // 0-100 AI-assessed quality
+  qualityReason      String? // Why this quality score
+  qualityPassed      Boolean? // Passes minimum quality gate
+  qualityEvaluatedAt DateTime? // When CURATOR last evaluated
 
   // Phase 6: Follow-up automation
-  scheduledFollowUpDate  DateTime?  // When next follow-up should be sent
-  followUpCount          Int        @default(0)  // How many follow-ups sent (0, 1, 2)
-  followUpsPaused        Boolean    @default(false)  // Auto or manual pause
-  followUpPauseReason    String?    // "clicked", "responded", "booked", "manual"
-  followUpPausedAt       DateTime?  // When paused
+  scheduledFollowUpDate DateTime? // When next follow-up should be sent
+  followUpCount         Int       @default(0) // How many follow-ups sent (0, 1, 2)
+  followUpsPaused       Boolean   @default(false) // Auto or manual pause
+  followUpPauseReason   String? // "clicked", "responded", "booked", "manual"
+  followUpPausedAt      DateTime? // When paused
 
-  outreachLogs  OutreachLog[]
-  emailDraft    EmailDraft?
+  outreachLogs OutreachLog[]
+  emailDraft   EmailDraft?
 
   @@unique([campaignId, leadId]) // prevent duplicates
   @@index([campaignId, status])
   @@index([score])
-  @@index([scheduledFollowUpDate, followUpsPaused])  // For cron queries
+  @@index([scheduledFollowUpDate, followUpsPaused]) // For cron queries
 }
 
 // Removed enum LeadSource - now using String with validation comments
 // Removed enum CampaignLeadStatus - now using String with validation comments
 
 model OutreachLog {
-  id              String          @id @default(cuid())
-  campaignLead    CampaignLead    @relation(fields: [campaignLeadId], references: [id], onDelete: Cascade)
-  campaignLeadId  String
-  campaign        Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignId      String
-  channel           String          // EMAIL, SMS, LINKEDIN
-  status            String          @default("PENDING") // PENDING, SENT, DELIVERED, OPENED, CLICKED, RESPONDED, FAILED, BOUNCED
-  providerMessageId String?         // Resend email ID for status verification
+  id                String       @id @default(cuid())
+  campaignLead      CampaignLead @relation(fields: [campaignLeadId], references: [id], onDelete: Cascade)
+  campaignLeadId    String
+  campaign          Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId        String
+  channel           String // EMAIL, SMS, LINKEDIN
+  status            String       @default("PENDING") // PENDING, SENT, DELIVERED, OPENED, CLICKED, RESPONDED, FAILED, BOUNCED
+  providerMessageId String? // Resend email ID for status verification
   sentAt            DateTime?
   openedAt          DateTime?
   clickedAt         DateTime?
   respondedAt       DateTime?
   errorMessage      String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   @@index([campaignLeadId, channel])
   @@index([campaignId, status])
@@ -573,37 +571,37 @@ model OutreachLog {
 // ============================================
 
 model EmailDraft {
-  id              String        @id @default(cuid())
-  campaignId      String
-  campaign        Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  campaignLeadId  String        @unique
-  campaignLead    CampaignLead  @relation(fields: [campaignLeadId], references: [id], onDelete: Cascade)
-  leadId          String
-  lead            Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid())
+  campaignId     String
+  campaign       Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignLeadId String       @unique
+  campaignLead   CampaignLead @relation(fields: [campaignLeadId], references: [id], onDelete: Cascade)
+  leadId         String
+  lead           Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
-  subject         String
-  body            String        // Pre-rendered HTML from template
-  status          String        @default("DRAFT") // DRAFT, APPROVED, SENT, FAILED
-  editedByUser    Boolean       @default(false)
-  overrideEmail   String?       // User-corrected recipient email (used instead of lead.email)
-  ccEmail         String?       // Optional CC recipient
-  attachments     Json?         // JSON array of { filename, path, size } objects
-  sentAt          DateTime?
-  errorMessage    String?
+  subject       String
+  body          String // Pre-rendered HTML from template
+  status        String    @default("DRAFT") // DRAFT, APPROVED, SENT, FAILED
+  editedByUser  Boolean   @default(false)
+  overrideEmail String? // User-corrected recipient email (used instead of lead.email)
+  ccEmail       String? // Optional CC recipient
+  attachments   Json? // JSON array of { filename, path, size } objects
+  sentAt        DateTime?
+  errorMessage  String?
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([campaignId, campaignLeadId]) // One draft per lead per campaign
   @@index([campaignId, status])
   @@index([campaignLeadId])
-  @@unique([campaignId, campaignLeadId]) // One draft per lead per campaign
 }
 
 model GeoPreference {
   id            String   @id @default(cuid())
   country       String   @unique
-  defaultRadius Float    // miles or km depending on country
-  unit          String   // "miles" or "km"
+  defaultRadius Float // miles or km depending on country
+  unit          String // "miles" or "km"
   enabled       Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -612,19 +610,19 @@ model GeoPreference {
 }
 
 model MessageTemplate {
-  id          String          @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  serviceType String?         // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
-  subject     String?         // for emails
+  serviceType String? // ARRANGEMENT, FESTIVAL, GROUP_COACHING, INDIVIDUAL_COACHING, WORKSHOP, SPEAKING, MASTERCLASS, SINGALONG, CONCERT, CONSULTATION
+  subject     String? // for emails
   body        String
-  channel     String          @default("EMAIL") // EMAIL, SMS, LINKEDIN
-  variables   String?         // JSON: ["firstName", "location", "dates", etc.]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  channel     String   @default("EMAIL") // EMAIL, SMS, LINKEDIN
+  variables   String? // JSON: ["firstName", "location", "dates", etc.]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Phase 3: Service Recommendation Engine
-  recommendationContext String?  // "upsell", "cross-sell", "org-specific"
-  targetOrgTypes        String?  // JSON array of OrgType values
+  recommendationContext String? // "upsell", "cross-sell", "org-specific"
+  targetOrgTypes        String? // JSON array of OrgType values
 
   @@index([serviceType, channel])
 }
@@ -635,9 +633,9 @@ model MessageTemplate {
 model SeasonalRule {
   id            String   @id @default(cuid())
   orgType       String   @unique // matches OrgType values from org-classifier.ts
-  activeSeasons String   // JSON array: ["FALL","WINTER","SPRING","SUMMER"]
+  activeSeasons String // JSON array: ["FALL","WINTER","SPRING","SUMMER"]
   enabled       Boolean  @default(true)
-  notes         String?  // human-readable rationale (e.g. "Aug 15 – May 15")
+  notes         String? // human-readable rationale (e.g. "Aug 15 – May 15")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -648,8 +646,8 @@ model Suppression {
   id        String   @id @default(cuid())
   email     String?  @unique
   phone     String?  @unique
-  reason    String   // opt_out, bounce, complaint, manual
-  source    String   // which campaign triggered suppression
+  reason    String // opt_out, bounce, complaint, manual
+  source    String // which campaign triggered suppression
   createdAt DateTime @default(now())
 
   @@index([email])
@@ -665,27 +663,27 @@ model Suppression {
 // ============================================
 
 model GroupRequest {
-  id            String    @id @default(cuid())
+  id String @id @default(cuid())
 
   // Contact info
-  name          String
-  email         String
-  location      String
-  age           Int?
+  name     String
+  email    String
+  location String
+  age      Int?
 
   // Preferences
-  experience    String    // beginner, intermediate, advanced, professional
-  commitment    String    // casual, regular, intensive, flexible
-  genres        String[]  // Array of genre preferences
-  performanceInterest Boolean @default(false)
-  message       String?
+  experience          String // beginner, intermediate, advanced, professional
+  commitment          String // casual, regular, intensive, flexible
+  genres              String[] // Array of genre preferences
+  performanceInterest Boolean  @default(false)
+  message             String?
 
   // Status tracking
-  status        String    @default("PENDING") // PENDING, REVIEWING, MATCHED, CLOSED
-  notes         String?   // Admin notes
+  status String  @default("PENDING") // PENDING, REVIEWING, MATCHED, CLOSED
+  notes  String? // Admin notes
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
   @@index([status])
@@ -693,30 +691,30 @@ model GroupRequest {
 }
 
 model ServiceRecommendation {
-  id                String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Rule definition
-  name              String   // "Workshop → Masterclass", "University → Group Coaching"
-  triggerServiceType String?  // Service that triggers recommendation (null = org-based)
-  recommendedService String  // Service to recommend
+  name               String // "Workshop → Masterclass", "University → Group Coaching"
+  triggerServiceType String? // Service that triggers recommendation (null = org-based)
+  recommendedService String // Service to recommend
 
   // Organization targeting
-  orgTypes          String?  // JSON array of OrgType values
-  minOrgSize        Int?     // Minimum organization size
-  maxOrgSize        Int?     // Maximum organization size
+  orgTypes   String? // JSON array of OrgType values
+  minOrgSize Int? // Minimum organization size
+  maxOrgSize Int? // Maximum organization size
 
   // Recommendation strength
-  weight            Float    @default(1.0) // 0.5-2.0, affects scoring
-  priority          Int      @default(5)   // 1-10, higher = more important
+  weight   Float @default(1.0) // 0.5-2.0, affects scoring
+  priority Int   @default(5) // 1-10, higher = more important
 
   // Messaging
-  messageTemplate   String?  // Custom message template ID
-  pitchPoints       String?  // JSON array of key selling points
+  messageTemplate String? // Custom message template ID
+  pitchPoints     String? // JSON array of key selling points
 
   // Metadata
-  active            Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([triggerServiceType])
   @@index([recommendedService])
@@ -728,16 +726,16 @@ model ServiceRecommendation {
 // ============================================
 
 model EmailSubscriber {
-  id               String    @id @default(cuid())
+  id               String   @id @default(cuid())
   firstName        String
-  email            String    @unique
+  email            String   @unique
   location         String
   groupName        String?
-  newsletterOptIn  Boolean   @default(false)
-  unsubscribeToken String?   @unique @default(cuid())
-  source           String    @default("popup")
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  newsletterOptIn  Boolean  @default(false)
+  unsubscribeToken String?  @unique @default(cuid())
+  source           String   @default("popup")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@index([email])
   @@index([location])
@@ -749,15 +747,15 @@ model EmailSubscriber {
 // ============================================
 
 model NewsletterIdea {
-  id        String            @id @default(cuid())
+  id        String           @id @default(cuid())
   title     String
   body      String?
-  section   String            @default("UNCATEGORIZED")
-  status    String            @default("IDEA")
+  section   String           @default("UNCATEGORIZED")
+  status    String           @default("IDEA")
   issueId   String?
-  issue     NewsletterIssue?  @relation(fields: [issueId], references: [id])
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  issue     NewsletterIssue? @relation(fields: [issueId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   @@index([section])
   @@index([status])
@@ -765,19 +763,19 @@ model NewsletterIdea {
 }
 
 model NewsletterIssue {
-  id               String               @id @default(cuid())
-  issueNumber      Int                  @unique
+  id               String              @id @default(cuid())
+  issueNumber      Int                 @unique
   title            String
   subject          String?
   storyContent     String?
   craftContent     String?
   communityContent String?
   noteContent      String?
-  status           String               @default("DRAFT")
+  status           String              @default("DRAFT")
   sentAt           DateTime?
   subscriberCount  Int?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
   ideas            NewsletterIdea[]
   comments         NewsletterComment[]
 
@@ -798,4 +796,106 @@ model NewsletterComment {
   @@index([issueId])
   @@index([approved])
   @@index([createdAt])
+}
+
+// ============================================
+// COMMAND CENTER — activity management
+// Cards, inbound message intake, and the skill job queue.
+// Strings + comments instead of enums, matching every model above.
+// ============================================
+
+model Activity {
+  id    String  @id @default(cuid())
+  title String
+  body  String?
+
+  lane     String  @default("INBOX") // INBOX, TODAY, DOING, WAITING, DONE
+  kind     String  @default("ADMIN") // GIG, CONTENT, ADMIN, IDEA, FOLLOWUP
+  owner    String? // Denis, Deke  (null = unassigned)
+  priority String  @default("NORMAL") // LOW, NORMAL, HIGH
+
+  dueAt     DateTime?
+  sortIndex Int       @default(0)
+
+  source String @default("web") // whatsapp, sms, email, web, auto
+
+  // Soft links to existing records. No cascade: a card outlives its source row.
+  bookingId String?
+  inquiryId String?
+  leadId    String?
+
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  notes    ActivityNote[]
+  messages InboundMessage[]
+  jobs     SkillJob[]
+
+  @@index([lane, sortIndex])
+  @@index([owner])
+  @@index([dueAt])
+  @@index([bookingId])
+  @@index([archivedAt])
+}
+
+model ActivityNote {
+  id         String   @id @default(cuid())
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  author String @default("system") // Denis, Deke, system, agent
+  body   String
+  kind   String @default("note") // note, status, job, intake
+
+  createdAt DateTime @default(now())
+
+  @@index([activityId, createdAt])
+}
+
+model InboundMessage {
+  id String @id @default(cuid())
+
+  channel     String // whatsapp, sms, email, web
+  fromAddress String
+  fromName    String?
+  body        String
+  mediaUrls   String? // JSON array of URLs
+
+  // Provider message id. Unique so a webhook retry cannot double-create.
+  externalId String? @unique
+
+  triageStatus String  @default("PENDING") // PENDING, TRIAGED, IGNORED, FAILED
+  triageError  String?
+
+  activityId String?
+  activity   Activity? @relation(fields: [activityId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([triageStatus, createdAt])
+  @@index([channel, fromAddress])
+}
+
+model SkillJob {
+  id    String  @id @default(cuid())
+  skill String // dropbox-check, content-pipeline, postiz-dry-run, postiz-publish, channel-pulse, deke-video
+  args  String? // JSON string
+
+  status String  @default("QUEUED") // QUEUED, CLAIMED, RUNNING, DONE, FAILED
+  log    String?
+  error  String?
+
+  requestedBy String? // Denis, Deke
+  claimedAt   DateTime?
+  finishedAt  DateTime?
+
+  activityId String?
+  activity   Activity? @relation(fields: [activityId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([activityId])
 }
