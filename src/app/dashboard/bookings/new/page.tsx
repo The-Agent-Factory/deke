@@ -28,9 +28,10 @@ function NewBookingForm() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contactId: values.contactId,
+        contactId: values.contactId || null,
         serviceType: values.serviceType,
-        startDate: values.startDate || null,
+        status: values.status,
+        startDate: values.startDate,
         endDate: values.endDate || null,
         timezone: values.timezone || null,
         location: values.location || null,
@@ -44,6 +45,7 @@ function NewBookingForm() {
         publicTitle: values.publicTitle || null,
         publicDescription: values.publicDescription || null,
         organization: values.organization || null,
+        ticketUrl: values.ticketUrl || null,
       }),
     });
 
@@ -66,7 +68,9 @@ function NewBookingForm() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold">New Booking</h1>
-          <p className="text-muted-foreground">Pick an existing contact or create a new one.</p>
+          <p className="text-muted-foreground">
+            A title and a date are all you need. Everything else can wait.
+          </p>
         </div>
       </div>
 

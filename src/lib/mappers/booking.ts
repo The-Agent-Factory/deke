@@ -1,7 +1,8 @@
 import type { Booking, Contact, Inquiry } from '@prisma/client';
 
 type BookingWithRelations = Booking & {
-  contact: Contact;
+  // Bookings can exist without a contact (fast date entry), so this is nullable.
+  contact: Contact | null;
   inquiry?: Inquiry | null;
   campaigns: Array<{
     id: string;

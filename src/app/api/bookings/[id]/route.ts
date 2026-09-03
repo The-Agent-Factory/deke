@@ -132,6 +132,7 @@ export async function PATCH(
         publicTitle: validatedData.publicTitle,
         publicDescription: validatedData.publicDescription,
         organization: validatedData.organization,
+        ticketUrl: validatedData.ticketUrl,
       },
       include: {
         contact: {

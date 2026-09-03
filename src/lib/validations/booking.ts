@@ -35,11 +35,13 @@ export const paymentStatusSchema = z.enum([
 
 // Create booking schema
 export const createBookingSchema = z.object({
-  contactId: z.string().min(1, 'Contact ID is required'),
+  // Contact is optional so a date can be entered fast with just a title + start date.
+  contactId: z.string().optional().nullable(),
   inquiryId: z.string().optional().nullable(),
   tripId: z.string().optional().nullable(),
-  serviceType: serviceTypeSchema,
-  startDate: z.string().optional().nullable(),
+  serviceType: serviceTypeSchema.default('CONCERT'),
+  status: bookingStatusSchema.optional(),
+  startDate: z.string().min(1, 'Start date is required'),
   endDate: z.string().optional().nullable(),
   timezone: z.string().optional().nullable(),
   location: z.string().optional().nullable(),
@@ -53,9 +55,10 @@ export const createBookingSchema = z.object({
   availabilityBefore: z.number().int().min(0).max(30).optional().nullable(),
   availabilityAfter: z.number().int().min(0).max(30).optional().nullable(),
   isPublic: z.boolean().optional(),
-  publicTitle: z.string().max(200).optional().nullable(),
+  publicTitle: z.string().min(1, 'Title is required').max(200),
   publicDescription: z.string().max(1000).optional().nullable(),
   organization: z.string().max(200).optional().nullable(),
+  ticketUrl: z.string().max(500).optional().nullable(),
 })
 
 // Query filters for listing bookings
@@ -89,6 +92,7 @@ export const updateBookingSchema = z.object({
   publicTitle: z.string().max(200).optional().nullable(),
   publicDescription: z.string().max(1000).optional().nullable(),
   organization: z.string().max(200).optional().nullable(),
+  ticketUrl: z.string().max(500).optional().nullable(),
 })
 
 // Type exports

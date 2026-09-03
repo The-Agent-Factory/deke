@@ -45,7 +45,8 @@ interface SerializedBooking {
   prepNotes: string | null
   deliverables: string | null
   followUpNotes: string | null
-  contact: BookingLead
+  // Null for quick date entries created without a contact attached.
+  contact: BookingLead | null
 }
 
 interface EngagementsClientProps {

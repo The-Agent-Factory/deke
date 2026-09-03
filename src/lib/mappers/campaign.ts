@@ -9,10 +9,11 @@ type CampaignWithCount = PrismaCampaign & {
     id: string;
     serviceType: string;
     location: string | null;
+    // Null for bookings created without a contact attached.
     contact: {
       firstName: string;
       lastName: string;
-    };
+    } | null;
   } | null;
 };
 

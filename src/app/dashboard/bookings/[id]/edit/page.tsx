@@ -56,6 +56,7 @@ export default function EditBookingPage({
         publicTitle: values.publicTitle || null,
         publicDescription: values.publicDescription || null,
         organization: values.organization || null,
+        ticketUrl: values.ticketUrl || null,
       };
 
       const response = await fetch(`/api/bookings/${id}`, {
@@ -141,7 +142,10 @@ export default function EditBookingPage({
               isPublic: booking.isPublic ?? false,
               publicTitle: booking.publicTitle || '',
               publicDescription: booking.publicDescription || '',
+              organization: booking.organization || '',
+              ticketUrl: booking.ticketUrl || '',
             }}
+            requireCoreFields={false}
             onSubmit={handleSubmit}
             isLoading={isSaving}
             submitLabel="Save Changes"

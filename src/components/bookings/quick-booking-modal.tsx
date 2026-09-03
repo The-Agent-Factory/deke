@@ -44,9 +44,10 @@ export function QuickBookingModal({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contactId: values.contactId,
+        contactId: values.contactId || null,
         serviceType: values.serviceType,
-        startDate: values.startDate || null,
+        status: values.status,
+        startDate: values.startDate,
         endDate: values.endDate || null,
         timezone: values.timezone || null,
         location: values.location || null,
@@ -60,6 +61,7 @@ export function QuickBookingModal({
         publicTitle: values.publicTitle || null,
         publicDescription: values.publicDescription || null,
         organization: values.organization || null,
+        ticketUrl: values.ticketUrl || null,
       }),
     });
 

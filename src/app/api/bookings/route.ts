@@ -17,13 +17,16 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData: CreateBookingInput = createBookingSchema.parse(body)
 
-    // Check if contact exists
-    const contact = await prisma.contact.findUnique({
-      where: { id: validatedData.contactId }
-    })
+    // Contact is optional: a date can be logged with just a title + start date.
+    // Only verify it when one was actually supplied.
+    if (validatedData.contactId) {
+      const contact = await prisma.contact.findUnique({
+        where: { id: validatedData.contactId }
+      })
 
-    if (!contact) {
-      throw new ApiError(404, 'Contact not found', 'CONTACT_NOT_FOUND')
+      if (!contact) {
+        throw new ApiError(404, 'Contact not found', 'CONTACT_NOT_FOUND')
+      }
     }
 
     // Geocode location if provided but coordinates missing
@@ -75,10 +78,11 @@ export async function POST(request: NextRequest) {
     // Create booking
     const booking = await prisma.booking.create({
       data: {
-        contactId: validatedData.contactId,
+        contactId: validatedData.contactId || null,
         inquiryId: validatedData.inquiryId ?? null,
         tripId: validatedData.tripId ?? null,
         serviceType: validatedData.serviceType,
+        ...(validatedData.status ? { status: validatedData.status } : {}),
         startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
         endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
         timezone: validatedData.timezone ?? null,
@@ -96,6 +100,7 @@ export async function POST(request: NextRequest) {
         publicTitle: validatedData.publicTitle ?? null,
         publicDescription: validatedData.publicDescription ?? null,
         organization: validatedData.organization ?? null,
+        ticketUrl: validatedData.ticketUrl ?? null,
       },
       include: {
         contact: {
@@ -112,22 +117,27 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Send booking notification emails (async - don't block response)
-    sendBookingNotification({
-      bookingId: booking.id,
-      contactName: booking.contact ? `${booking.contact.firstName} ${booking.contact.lastName}` : 'Unknown Contact',
-      contactEmail: booking.contact?.email ?? '',
-      contactPhone: booking.contact?.phone ?? null,
-      organization: booking.contact?.organization ?? null,
-      serviceType: booking.serviceType,
-      startDate: booking.startDate,
-      endDate: booking.endDate,
-      location: booking.location,
-      amount: booking.amount,
-      clientNotes: booking.clientNotes,
-    }).catch((error) => {
-      console.error('Failed to send booking notification:', error)
-    })
+    // Send booking notification emails (async - don't block response).
+    // Skipped for quick date entries that have no contact attached - there is
+    // nobody to confirm to, and Deke does not need a "New Booking Request"
+    // email for a date he just typed in himself.
+    if (booking.contact?.email) {
+      sendBookingNotification({
+        bookingId: booking.id,
+        contactName: `${booking.contact.firstName} ${booking.contact.lastName}`,
+        contactEmail: booking.contact.email,
+        contactPhone: booking.contact.phone ?? null,
+        organization: booking.contact.organization ?? null,
+        serviceType: booking.serviceType,
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        location: booking.location,
+        amount: booking.amount,
+        clientNotes: booking.clientNotes,
+      }).catch((error) => {
+        console.error('Failed to send booking notification:', error)
+      })
+    }
 
     return NextResponse.json(booking, { status: 201 })
   } catch (error) {

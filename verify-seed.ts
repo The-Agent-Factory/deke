@@ -61,7 +61,7 @@ async function verify() {
   });
 
   futureBookings.forEach(booking => {
-    console.log(`${booking.serviceType} - ${booking.contact.organization}`);
+    console.log(`${booking.serviceType} - ${booking.contact?.organization ?? 'No contact'}`);
     console.log(`  Date: ${booking.startDate?.toLocaleDateString()}, Amount: $${booking.amount}`);
     console.log(`  Location: ${booking.location}\n`);
   });
