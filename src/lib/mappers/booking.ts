@@ -25,6 +25,11 @@ export type ComponentBooking = {
   internalNotes: string | null;
   clientNotes: string | null;
 
+  // Event identity. A booking can exist without a contact, so the title is the
+  // headline and the contact is supporting detail.
+  publicTitle: string | null;
+  organization: string | null;
+
   // Contact info (flattened for easy display)
   contactName: string;
   contactEmail: string;
@@ -57,8 +62,12 @@ export function mapBookingToComponent(
     internalNotes: booking.internalNotes,
     clientNotes: booking.clientNotes,
 
+    publicTitle: booking.publicTitle,
+    // Per-booking organization, falling back to the contact's.
+    organization: booking.organization ?? booking.contact?.organization ?? null,
+
     // Flatten contact info
-    contactName: booking.contact ? `${booking.contact.firstName} ${booking.contact.lastName}` : 'Unknown Contact',
+    contactName: booking.contact ? `${booking.contact.firstName} ${booking.contact.lastName}`.trim() : '',
     contactEmail: booking.contact?.email ?? '',
     contactPhone: booking.contact?.phone ?? null,
     contactOrganization: booking.contact?.organization ?? null,

@@ -37,6 +37,8 @@ export default async function EngagementsPage() {
     prepNotes: b.prepNotes ?? null,
     deliverables: b.deliverables ?? null,
     followUpNotes: b.followUpNotes ?? null,
+    publicTitle: b.publicTitle ?? null,
+    organization: b.organization ?? null,
     contact: b.contact,
   }))
 

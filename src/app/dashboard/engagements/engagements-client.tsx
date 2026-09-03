@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { bookingTitle } from "@/lib/booking-display"
 import {
   Select,
   SelectContent,
@@ -45,6 +46,8 @@ interface SerializedBooking {
   prepNotes: string | null
   deliverables: string | null
   followUpNotes: string | null
+  publicTitle: string | null
+  organization: string | null
   // Null for quick date entries created without a contact attached.
   contact: BookingLead | null
 }
@@ -160,10 +163,12 @@ function EngagementCard({ booking }: { booking: SerializedBooking }) {
         {/* Client */}
         <div>
           <p className="text-sm font-medium text-[#1a1a1a]">
-            {booking.contact?.firstName ?? 'Unknown'} {booking.contact?.lastName ?? ''}
+            {bookingTitle(booking)}
           </p>
-          {booking.contact?.organization && (
-            <p className="text-xs text-[#666666]">{booking.contact?.organization}</p>
+          {(booking.organization || booking.contact?.organization) && (
+            <p className="text-xs text-[#666666]">
+              {booking.organization || booking.contact?.organization}
+            </p>
           )}
         </div>
 
@@ -413,7 +418,7 @@ export function EngagementsClient({ bookings }: EngagementsClientProps) {
                   {/* Client */}
                   <div>
                     <p className="text-sm text-[#1a1a1a]">
-                      {booking.contact?.firstName ?? 'Unknown'} {booking.contact?.lastName ?? ''}
+                      {bookingTitle(booking)}
                     </p>
                     {booking.contact?.organization && (
                       <p className="text-xs text-[#666666] truncate">

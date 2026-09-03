@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { bookingTitle, contactName } from '@/lib/booking-display';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -218,7 +219,7 @@ export default function BookingDetailPage({
           </Button>
           <div>
             <h1 className="text-3xl font-bold">
-              {booking.contact?.firstName ?? 'Unknown'} {booking.contact?.lastName ?? ''} - {booking.serviceType.replace('_', ' ')}
+              {bookingTitle(booking)} - {booking.serviceType.replace('_', ' ')}
             </h1>
             <p className="text-muted-foreground">Booking Details</p>
           </div>
@@ -429,7 +430,9 @@ export default function BookingDetailPage({
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Name</p>
                 <p className="text-base">
-                  {booking.contact?.firstName ?? 'Unknown'} {booking.contact?.lastName ?? ''}
+                  {contactName(booking.contact) || (
+                    <span className="text-muted-foreground">No contact attached</span>
+                  )}
                 </p>
               </div>
               <div>

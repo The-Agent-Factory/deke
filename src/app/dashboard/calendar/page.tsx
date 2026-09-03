@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { bookingTitle } from '@/lib/booking-display';
 import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
@@ -40,11 +41,14 @@ interface CalendarBooking {
   location: string | null;
   availabilityBefore: number | null;
   availabilityAfter: number | null;
+  publicTitle: string | null;
+  organization: string | null;
+  // Null for dates entered without a contact attached.
   contact: {
     id: string;
     firstName: string;
     lastName: string;
-  };
+  } | null;
   campaigns: { id: string; status: string }[];
 }
 
@@ -250,8 +254,8 @@ export default function CalendarPage() {
           handleBookingClick(booking.id);
         }}
         className={`w-full truncate border px-1.5 py-0.5 text-left text-[11px] font-medium leading-tight transition-opacity hover:opacity-80 ${roundingClass} ${style.bg} ${style.text} ${style.border} ${isMiddle ? "opacity-60 border-x-0" : ""}`}
-        title={`${serviceLabel(booking.serviceType)} - ${booking.contact?.firstName ?? 'Unknown'} ${booking.contact?.lastName ?? ''} (${booking.status})${position !== "single" ? ` [${position}]` : ""}`}
-        aria-label={`${serviceLabel(booking.serviceType)} with ${booking.contact?.firstName ?? 'Unknown'} ${booking.contact?.lastName ?? ''}, status ${booking.status}`}
+        title={`${serviceLabel(booking.serviceType)} - ${bookingTitle(booking)} (${booking.status})${position !== "single" ? ` [${position}]` : ""}`}
+        aria-label={`${serviceLabel(booking.serviceType)}: ${bookingTitle(booking)}, status ${booking.status}`}
       >
         {position === "middle" ? (
           <span className="block truncate text-[10px]">&nbsp;</span>
@@ -263,7 +267,7 @@ export default function CalendarPage() {
             </span>
             {position !== "end" && (
               <span className="block truncate opacity-75">
-                {booking.contact?.firstName ?? 'Unknown'} {booking.contact?.lastName?.charAt(0) ?? ''}.
+                {bookingTitle(booking)}
               </span>
             )}
           </>
@@ -335,7 +339,7 @@ export default function CalendarPage() {
                       key={booking.id}
                       onClick={() => handleBookingClick(booking.id)}
                       className={`flex w-full items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors hover:opacity-80 ${style.bg} ${style.border}`}
-                      aria-label={`${serviceLabel(booking.serviceType)} with ${booking.contact?.firstName ?? 'Unknown'} ${booking.contact?.lastName ?? ''}`}
+                      aria-label={`${serviceLabel(booking.serviceType)}: ${bookingTitle(booking)}`}
                     >
                       <div className="min-w-0 flex-1">
                         <p className={`text-sm font-medium ${style.text}`}>
@@ -347,7 +351,7 @@ export default function CalendarPage() {
                           )}
                         </p>
                         <p className="truncate text-xs text-[#666]">
-                          {booking.contact?.firstName ?? 'Unknown'} {booking.contact?.lastName ?? ''}
+                          {bookingTitle(booking)}
                           {booking.location ? ` - ${booking.location}` : ""}
                         </p>
                       </div>

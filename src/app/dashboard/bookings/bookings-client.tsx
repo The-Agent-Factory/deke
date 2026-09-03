@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { BookingStatusBadge } from '@/components/bookings/booking-status-badge';
 import { Plus, Search, MapPin, Calendar, CalendarRange, DollarSign } from 'lucide-react';
 import type { ComponentBooking } from '@/lib/mappers/booking';
+import { bookingTitle } from '@/lib/booking-display';
 
 interface BookingsClientProps {
   initialBookings: ComponentBooking[];
@@ -80,8 +81,10 @@ export function BookingsClient({ initialBookings }: BookingsClientProps) {
   const filteredBookings = initialBookings.filter((booking) => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch =
+      booking.publicTitle?.toLowerCase().includes(searchLower) ||
       booking.contactName.toLowerCase().includes(searchLower) ||
       booking.contactEmail.toLowerCase().includes(searchLower) ||
+      booking.organization?.toLowerCase().includes(searchLower) ||
       booking.contactOrganization?.toLowerCase().includes(searchLower) ||
       booking.location?.toLowerCase().includes(searchLower);
 
@@ -171,7 +174,7 @@ export function BookingsClient({ initialBookings }: BookingsClientProps) {
               key={booking.id}
               role="button"
               tabIndex={0}
-              aria-label={`Booking for ${booking.contactName} - ${formatServiceType(booking.serviceType)}`}
+              aria-label={`${bookingTitle(booking)} - ${formatServiceType(booking.serviceType)}`}
               onClick={() => handleCardClick(booking.id)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -197,11 +200,16 @@ export function BookingsClient({ initialBookings }: BookingsClientProps) {
                     <BookingStatusBadge status={booking.status} />
                   </div>
                   <p className="font-semibold text-slate-900 truncate">
-                    {booking.contactName}
+                    {bookingTitle(booking)}
                   </p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    {booking.contactOrganization && (
-                      <span className="truncate">{booking.contactOrganization}</span>
+                    {/* Contact only appears here when it is not already the
+                        headline, so a titled booking still shows who it is with. */}
+                    {booking.publicTitle && booking.contactName && (
+                      <span className="truncate">{booking.contactName}</span>
+                    )}
+                    {booking.organization && (
+                      <span className="truncate">{booking.organization}</span>
                     )}
                     {booking.location && (
                       <span className="flex items-center gap-1 truncate">

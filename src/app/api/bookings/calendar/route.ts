@@ -60,6 +60,8 @@ export async function GET(request: NextRequest) {
       location: booking.location,
       availabilityBefore: booking.availabilityBefore,
       availabilityAfter: booking.availabilityAfter,
+      publicTitle: booking.publicTitle,
+      organization: booking.organization,
       contact: booking.contact,
       campaigns: booking.campaigns,
     }))
