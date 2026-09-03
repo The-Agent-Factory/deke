@@ -2,6 +2,41 @@
 **Last updated:** 2026-09-03 (local)
 **Status:** active
 
+## 🆕 2026-09-03 (later) — CARDS: DUE DATES, NOTES, EMAIL HANDOFF
+
+Denis's asks: due dates, writable notes, and "send the task to someone by email
+/ label who's responsible". All three shipped. Commit `dadd4a4`.
+
+- **Due date + priority editable inline** on the expanded card.
+- **Owner is now FREE TEXT**, not a Denis/Deke enum — real work waits on venue
+  contacts, guests, organisers. Names already on the board become datalist
+  suggestions. Validation centralised in NEW `src/lib/activity-fields.ts`
+  (`canonicalizeOwner` folds "denis" → "Denis", caps at 60 chars, strips
+  newlines) and consumed by both activity routes + the triage agent's constants.
+- **Notes writable:** NEW `POST/GET /api/activities/[id]/notes`. Full timeline
+  shown newest-first; agent intake notes and hand-typed notes are one history.
+- **Email handoff:** NEW `POST /api/activities/[id]/email` via Resend (from
+  `deke@dekesharon.com`, replyTo = logged-in user). Refuses without
+  `confirm: true`, validates the address, fails loudly (503) if Resend is
+  unconfigured rather than silently no-op'ing, and writes the send (or the
+  failure) to the card timeline.
+- **BUG FIXED (pre-existing):** hydration mismatch — the board used
+  `toLocaleDateString(undefined, …)`, which resolves to the SERVER locale in SSR
+  and the BROWSER locale on hydration, so React discarded and re-rendered the
+  whole tree ("1 Issue" badge). Dates now pinned to `en-CA` /
+  `America/Toronto`. Console is clean.
+- **Layout fixes found only by screenshot:** date input was clipped to "2026-1"
+  in the narrow column (2-up grid → stacked); note Save button overflowed the
+  card (`min-w-0` + `shrink-0`).
+
+**Verified (run, not claimed):** due date + owner "Tawnya" (outside the old enum)
+persisted; note created with correct author; empty note → 400; email without
+confirm → refused; bad address → refused; REAL send succeeded (Resend id
+`9a8bf11d…`) and logged to the timeline; unicode round-trip exact for
+`— Renée Šuto 你好` (the earlier mangling was the test shell, not the app);
+Playwright confirmed all 5 controls render and Send stays disabled until an
+address is typed; tsc clean; test rows deleted (Activity back to its real set).
+
 ## 🆕 2026-09-03 — COMMAND CENTER: MESSAGING INTAKE SUSPENDED, CHAT INTAKE LIVE
 
 Denis's call: "suspend the input through WhatsApp and simply have chat input
