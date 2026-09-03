@@ -3,10 +3,7 @@ import { prisma } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-guard'
 import { classifyMessage } from '@/lib/triage/triage-message'
 
-const LANES = ['INBOX', 'TODAY', 'DOING', 'WAITING', 'DONE']
-const KINDS = ['GIG', 'CONTENT', 'ADMIN', 'IDEA', 'FOLLOWUP']
-const PRIORITIES = ['LOW', 'NORMAL', 'HIGH']
-const OWNERS = ['Denis', 'Deke']
+import { LANES, KINDS, PRIORITIES, canonicalizeOwner } from '@/lib/activity-fields'
 
 /** GET /api/activities — all live cards, board order. */
 export async function GET() {
@@ -61,10 +58,10 @@ export async function POST(request: NextRequest) {
     let resolved = {
       title: text.slice(0, 200),
       body: typeof body === 'string' && body.trim() ? body.trim() : null,
-      kind: typeof kind === 'string' && KINDS.includes(kind) ? kind : 'ADMIN',
-      owner: typeof owner === 'string' && OWNERS.includes(owner) ? owner : null,
+      kind: typeof kind === 'string' && (KINDS as readonly string[]).includes(kind) ? kind : 'ADMIN',
+      owner: canonicalizeOwner(owner),
       priority:
-        typeof priority === 'string' && PRIORITIES.includes(priority) ? priority : 'NORMAL',
+        typeof priority === 'string' && (PRIORITIES as readonly string[]).includes(priority) ? priority : 'NORMAL',
       dueAt: typeof dueAt === 'string' && dueAt ? new Date(dueAt) : null,
     }
     let triageNote: string | null = null
@@ -90,7 +87,7 @@ export async function POST(request: NextRequest) {
     const activity = await prisma.activity.create({
       data: {
         ...resolved,
-        lane: typeof lane === 'string' && LANES.includes(lane) ? lane : 'INBOX',
+        lane: typeof lane === 'string' && (LANES as readonly string[]).includes(lane) ? lane : 'INBOX',
         source: 'web',
         ...(triageNote
           ? { notes: { create: { author: 'Denis', kind: 'intake', body: triageNote } } }

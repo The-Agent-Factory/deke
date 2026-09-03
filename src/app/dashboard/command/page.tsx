@@ -18,7 +18,7 @@ export default async function CommandPage() {
       where: { archivedAt: null },
       orderBy: [{ sortIndex: 'asc' }, { createdAt: 'desc' }],
       include: {
-        notes: { orderBy: { createdAt: 'desc' }, take: 3 },
+        notes: { orderBy: { createdAt: 'desc' }, take: 20 },
         jobs: { orderBy: { createdAt: 'desc' }, take: 1 },
       },
     }),
@@ -52,9 +52,22 @@ export default async function CommandPage() {
     source: a.source,
     sortIndex: a.sortIndex,
     lastNote: a.notes[0]?.body ?? null,
+    notes: a.notes.map((n) => ({
+      id: n.id,
+      author: n.author,
+      kind: n.kind,
+      body: n.body,
+      createdAt: n.createdAt.toISOString(),
+    })),
     lastJobStatus: a.jobs[0]?.status ?? null,
     lastJobSkill: a.jobs[0]?.skill ?? null,
   }))
+
+  // Names the board has seen before become the quick-pick suggestions. Owner is
+  // free text, so this is how it stays convenient without a users table.
+  const knownOwners = Array.from(
+    new Set(activities.map((a) => a.owner).filter((o): o is string => Boolean(o))),
+  ).sort()
 
   const upcomingDTOs: UpcomingDTO[] = upcoming.map((b) => ({
     id: b.id,
@@ -70,6 +83,7 @@ export default async function CommandPage() {
       upcoming={upcomingDTOs}
       pendingInquiries={pendingInquiries}
       queuedJobs={queuedJobs}
+      knownOwners={knownOwners}
     />
   )
 }

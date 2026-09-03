@@ -7,6 +7,14 @@ import { SKILLS, skillsForKind, type SkillDef } from "@/lib/skills/catalog";
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 
+export type NoteDTO = {
+  id: string;
+  author: string;
+  kind: string;
+  body: string;
+  createdAt: string;
+};
+
 export type ActivityDTO = {
   id: string;
   title: string;
@@ -21,6 +29,7 @@ export type ActivityDTO = {
   lastNote: string | null;
   lastJobStatus: string | null;
   lastJobSkill: string | null;
+  notes: NoteDTO[];
 };
 
 export type UpcomingDTO = {
@@ -66,6 +75,13 @@ const OWNER_STYLES: Record<string, string> = {
   Deke: "bg-rose-100 text-rose-900 border-rose-200",
 };
 
+const PRIORITY_CHOICES = ["LOW", "NORMAL", "HIGH"] as const;
+const PRIORITY_LABELS: Record<string, string> = {
+  LOW: "Low",
+  NORMAL: "Normal",
+  HIGH: "Urgent",
+};
+
 const SOURCE_LABELS: Record<string, string> = {
   whatsapp: "WhatsApp",
   sms: "Text",
@@ -78,18 +94,32 @@ const SOURCE_LABELS: Record<string, string> = {
 /* Date helpers                                                        */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Dates are rendered in one fixed locale and zone on purpose.
+ *
+ * `toLocaleDateString(undefined, ...)` resolves to the SERVER's locale during
+ * SSR and the BROWSER's on hydration, which made React discard and re-render
+ * the whole board. Deke's calendar is run out of Toronto, so that is the zone
+ * the board speaks in, everywhere, for everyone.
+ */
+const DISPLAY_LOCALE = "en-CA";
+const DISPLAY_TZ = "America/Toronto";
+
 function formatDue(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  return new Date(iso).toLocaleDateString(DISPLAY_LOCALE, {
+    month: "short",
+    day: "numeric",
+    timeZone: DISPLAY_TZ,
+  });
 }
 
 function formatWhen(iso: string | null): string {
   if (!iso) return "Date to be set";
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(DISPLAY_LOCALE, {
     weekday: "short",
     month: "short",
     day: "numeric",
+    timeZone: DISPLAY_TZ,
   });
 }
 
@@ -118,11 +148,13 @@ export function CommandClient({
   upcoming,
   pendingInquiries,
   queuedJobs,
+  knownOwners,
 }: {
   initialActivities: ActivityDTO[];
   upcoming: UpcomingDTO[];
   pendingInquiries: number;
   queuedJobs: number;
+  knownOwners: string[];
 }) {
   const [activities, setActivities] = useState<ActivityDTO[]>(initialActivities);
   const [dragId, setDragId] = useState<string | null>(null);
@@ -135,6 +167,8 @@ export function CommandClient({
     activityId: string;
     skill: SkillDef;
   } | null>(null);
+  const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
+  const [emailFor, setEmailFor] = useState<ActivityDTO | null>(null);
 
   const byLane = useMemo(() => {
     const map: Record<string, ActivityDTO[]> = {};
@@ -218,6 +252,7 @@ export function CommandClient({
           lastNote: `Typed: "${text.slice(0, 120)}"`,
           lastJobStatus: null,
           lastJobSkill: null,
+          notes: [],
         },
         ...prev,
       ]);
@@ -229,6 +264,57 @@ export function CommandClient({
       setBusy(false);
     }
   }, [composer, busy, flash]);
+
+  /* ---------------- edit a card ---------------- */
+
+  // One writer for every inline field edit (due date, owner, priority).
+  // Optimistic like moveCard, and reverts loudly for the same reason.
+  const patchCard = useCallback(
+    async (id: string, patch: Partial<ActivityDTO>) => {
+      const before = activities;
+      setActivities((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+      try {
+        const res = await fetch(`/api/activities/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        });
+        if (!res.ok) throw new Error(`Save failed (${res.status})`);
+      } catch (err) {
+        setActivities(before);
+        flash("bad", err instanceof Error ? err.message : "Could not save that change.");
+      }
+    },
+    [activities, flash],
+  );
+
+  const addNote = useCallback(
+    async (id: string) => {
+      const text = (noteDraft[id] ?? "").trim();
+      if (!text || busy) return;
+      setBusy(true);
+      try {
+        const res = await fetch(`/api/activities/${id}/notes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ body: text }),
+        });
+        if (!res.ok) throw new Error(`Could not save that note (${res.status})`);
+        const { note } = await res.json();
+        setActivities((prev) =>
+          prev.map((a) =>
+            a.id === id ? { ...a, notes: [note, ...a.notes], lastNote: note.body } : a,
+          ),
+        );
+        setNoteDraft((d) => ({ ...d, [id]: "" }));
+      } catch (err) {
+        flash("bad", err instanceof Error ? err.message : "Could not save that note.");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [noteDraft, busy, flash],
+  );
 
   /* ---------------- run a skill ---------------- */
 
@@ -492,9 +578,114 @@ export function CommandClient({
                               {card.body}
                             </p>
                           )}
-                          {card.lastNote && (
-                            <p className="text-[11px] italic text-neutral-500">{card.lastNote}</p>
-                          )}
+
+                          {/* --- editable fields --- */}
+                          <div className="grid gap-2">
+                            <label className="block">
+                              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+                                Due
+                              </span>
+                              <input
+                                type="date"
+                                value={card.dueAt ? card.dueAt.slice(0, 10) : ""}
+                                onChange={(e) =>
+                                  patchCard(card.id, {
+                                    dueAt: e.target.value
+                                      ? new Date(`${e.target.value}T12:00:00Z`).toISOString()
+                                      : null,
+                                  })
+                                }
+                                className="w-full min-w-0 rounded-md border border-neutral-300 px-2 py-1.5 text-xs outline-none focus:border-neutral-900"
+                              />
+                            </label>
+
+                            <label className="block">
+                              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+                                Who has it
+                              </span>
+                              <input
+                                type="text"
+                                list="known-owners"
+                                defaultValue={card.owner ?? ""}
+                                placeholder="Anyone — type a name"
+                                onBlur={(e) => {
+                                  const v = e.target.value.trim();
+                                  if (v !== (card.owner ?? "")) {
+                                    patchCard(card.id, { owner: v || null });
+                                  }
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") e.currentTarget.blur();
+                                }}
+                                className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-xs outline-none focus:border-neutral-900"
+                              />
+                            </label>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+                              Priority
+                            </span>
+                            {PRIORITY_CHOICES.map((pr) => (
+                              <button
+                                key={pr}
+                                type="button"
+                                onClick={() => patchCard(card.id, { priority: pr })}
+                                className={`rounded-md border px-2 py-0.5 text-[11px] ${
+                                  card.priority === pr
+                                    ? "border-neutral-900 bg-neutral-900 text-white"
+                                    : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50"
+                                }`}
+                              >
+                                {PRIORITY_LABELS[pr]}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* --- notes --- */}
+                          <div>
+                            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+                              Notes
+                            </p>
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text"
+                                value={noteDraft[card.id] ?? ""}
+                                onChange={(e) =>
+                                  setNoteDraft((d) => ({ ...d, [card.id]: e.target.value }))
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") addNote(card.id);
+                                }}
+                                placeholder="Add a note"
+                                className="min-w-0 flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-xs outline-none focus:border-neutral-900"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => addNote(card.id)}
+                                disabled={busy || !(noteDraft[card.id] ?? "").trim()}
+                                className="shrink-0 rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white disabled:opacity-40"
+                              >
+                                Save
+                              </button>
+                            </div>
+
+                            {card.notes.length > 0 && (
+                              <ul className="mt-2 space-y-1.5">
+                                {card.notes.map((n) => (
+                                  <li
+                                    key={n.id}
+                                    className="rounded-md bg-neutral-50 px-2 py-1.5 text-[11px] leading-relaxed text-neutral-700"
+                                  >
+                                    <span className="whitespace-pre-wrap">{n.body}</span>
+                                    <span className="mt-0.5 block text-[10px] text-neutral-400">
+                                      {n.author} · {formatWhen(n.createdAt)}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
 
                           <div>
                             <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
@@ -533,6 +724,13 @@ export function CommandClient({
                             ))}
                             <button
                               type="button"
+                              onClick={() => setEmailFor(card)}
+                              className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-[11px] text-neutral-700 hover:bg-neutral-50"
+                            >
+                              Email this to someone
+                            </button>
+                            <button
+                              type="button"
                               onClick={() => archiveCard(card.id)}
                               className="rounded-md border border-neutral-200 bg-white px-2 py-1 text-[11px] text-neutral-500 hover:bg-rose-50 hover:text-rose-700"
                             >
@@ -549,6 +747,33 @@ export function CommandClient({
           );
         })}
       </section>
+
+      <datalist id="known-owners">
+        {Array.from(new Set([...knownOwners, "Denis", "Deke"]))
+          .sort()
+          .map((n) => (
+            <option key={n} value={n} />
+          ))}
+      </datalist>
+
+      {emailFor && (
+        <EmailDialog
+          card={emailFor}
+          onClose={() => setEmailFor(null)}
+          onSent={(note) => {
+            setActivities((prev) =>
+              prev.map((a) =>
+                a.id === emailFor.id
+                  ? { ...a, notes: [note, ...a.notes], lastNote: note.body }
+                  : a,
+              ),
+            );
+            setEmailFor(null);
+            flash("ok", "Sent.");
+          }}
+          onError={(m) => flash("bad", m)}
+        />
+      )}
 
       {confirmSkill && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -603,5 +828,119 @@ function StatPill({
     <span className={`rounded-full border px-3 py-1.5 font-medium ${tones[tone]}`}>
       {label}: {value}
     </span>
+  );
+}
+
+/**
+ * Hand a task to someone by email.
+ *
+ * Prefilled from the card so the common case is: open, type an address, send.
+ * The body stays editable because a task title is rarely what you would
+ * actually say to a person. Sending is the one action here that leaves the
+ * board, so it confirms and the result is written to the card timeline.
+ */
+function EmailDialog({
+  card,
+  onClose,
+  onSent,
+  onError,
+}: {
+  card: ActivityDTO;
+  onClose: () => void;
+  onSent: (note: NoteDTO) => void;
+  onError: (message: string) => void;
+}) {
+  const [to, setTo] = useState("");
+  const [subject, setSubject] = useState(card.title);
+  const [message, setMessage] = useState(() => {
+    const lines = [card.title];
+    if (card.body) lines.push("", card.body);
+    if (card.dueAt) lines.push("", `Needed by: ${formatDue(card.dueAt)}`);
+    return lines.join("\n");
+  });
+  const [sending, setSending] = useState(false);
+
+  const send = async () => {
+    if (sending || !to.trim() || !message.trim()) return;
+    setSending(true);
+    try {
+      const res = await fetch(`/api/activities/${card.id}/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to, subject, message, confirm: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Send failed (${res.status})`);
+      onSent(data.note);
+    } catch (err) {
+      onError(err instanceof Error ? err.message : "Could not send that.");
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-lg rounded-xl bg-white p-5 shadow-xl">
+        <h3 className="text-lg font-semibold text-neutral-900">Email this to someone</h3>
+        <p className="mt-1 text-xs text-neutral-500">
+          Goes out from deke@dekesharon.com. Replies come back to you.
+        </p>
+
+        <label className="mt-4 block">
+          <span className="mb-1 block text-xs font-medium text-neutral-700">To</span>
+          <input
+            type="email"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            placeholder="name@example.com"
+            autoFocus
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-900"
+          />
+        </label>
+
+        <label className="mt-3 block">
+          <span className="mb-1 block text-xs font-medium text-neutral-700">Subject</span>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-900"
+          />
+        </label>
+
+        <label className="mt-3 block">
+          <span className="mb-1 block text-xs font-medium text-neutral-700">Message</span>
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={6}
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-900"
+          />
+        </label>
+
+        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          This sends a real email to a real person.
+        </p>
+
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={sending}
+            className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={send}
+            disabled={sending || !to.trim() || !message.trim()}
+            className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+          >
+            {sending ? "Sending…" : "Send it"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

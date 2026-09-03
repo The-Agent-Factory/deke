@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-guard'
 
-const LANES = ['INBOX', 'TODAY', 'DOING', 'WAITING', 'DONE']
-const KINDS = ['GIG', 'CONTENT', 'ADMIN', 'IDEA', 'FOLLOWUP']
-const PRIORITIES = ['LOW', 'NORMAL', 'HIGH']
-const OWNERS = ['Denis', 'Deke']
+import { LANES, KINDS, PRIORITIES, canonicalizeOwner } from '@/lib/activity-fields'
 
 type Ctx = { params: Promise<{ id: string }> }
 
@@ -30,11 +27,11 @@ export async function PATCH(request: NextRequest, ctx: Ctx) {
 
     if (typeof p.title === 'string' && p.title.trim()) data.title = p.title.trim().slice(0, 200)
     if (typeof p.body === 'string') data.body = p.body.trim() || null
-    if (typeof p.lane === 'string' && LANES.includes(p.lane)) data.lane = p.lane
-    if (typeof p.kind === 'string' && KINDS.includes(p.kind)) data.kind = p.kind
-    if (typeof p.priority === 'string' && PRIORITIES.includes(p.priority)) data.priority = p.priority
-    if (p.owner === null || (typeof p.owner === 'string' && OWNERS.includes(p.owner))) {
-      data.owner = p.owner
+    if (typeof p.lane === 'string' && (LANES as readonly string[]).includes(p.lane)) data.lane = p.lane
+    if (typeof p.kind === 'string' && (KINDS as readonly string[]).includes(p.kind)) data.kind = p.kind
+    if (typeof p.priority === 'string' && (PRIORITIES as readonly string[]).includes(p.priority)) data.priority = p.priority
+    if (p.owner === null || typeof p.owner === 'string') {
+      data.owner = canonicalizeOwner(p.owner)
     }
     if (typeof p.sortIndex === 'number' && Number.isFinite(p.sortIndex)) {
       data.sortIndex = Math.trunc(p.sortIndex)
