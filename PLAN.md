@@ -2,6 +2,31 @@
 **Last updated:** 2026-09-03 (local)
 **Status:** active
 
+## 🆕 2026-09-03 — DEPLOYED TO PRODUCTION (dekesharon.com)
+
+Denis ran `railway up --service deke` (Claude is permission-blocked from both
+`railway up` and `git push github`). Deployment `0d1328bc` = SUCCESS 21:23 UTC.
+
+**Verified live on dekesharon.com (browser, logged in as Denis):** board loads,
+22 cards, Coming Up rail shows real bookings, and all five card controls render
+(Due / Who has it / Add a note / Email this to someone / priority). New API
+routes return 401 not 404, i.e. deployed and guarded.
+
+**⚠️ FOUND IN PRODUCTION + FIXED (commit `53fae2d`):** React error #418, a
+hydration mismatch the earlier locale fix did not cover. `isOverdue` and
+`daysUntil` built "today" with `setHours(0,0,0,0)` = midnight in the MACHINE's
+zone, so a UTC Railway container and a Toronto browser disagreed about the day
+and the "12 days" badge differed between server and client. Both now derive a
+calendar day number from the pinned zone via `Intl.DateTimeFormat`. Verified
+zero hydration errors against a production build from browsers in UTC and
+Australia/Sydney; countdowns still match (12/13 days, and a 00:30 UTC event
+correctly reads as the previous Toronto day — relevant since several Ontario
+tour dates are stored at 23:30/00:00 UTC).
+Header copy also corrected: it still invited texting/emailing work in.
+
+**→ NEEDS ONE MORE DEPLOY** for `53fae2d` to reach the live site.
+**→ GitHub mirror still owed:** `git push github main` (blocked for Claude).
+
 ## 🆕 2026-09-03 (later) — CARDS: DUE DATES, NOTES, EMAIL HANDOFF
 
 Denis's asks: due dates, writable notes, and "send the task to someone by email
