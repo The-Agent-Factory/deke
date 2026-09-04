@@ -125,18 +125,38 @@ function formatWhen(iso: string | null): string {
 
 function isOverdue(iso: string): boolean {
   const due = new Date(iso);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return due.getTime() < today.getTime();
+  return dayNumber(due) < todayNumber();
+}
+
+/**
+ * A calendar day as a plain number (days since epoch) in the board's zone.
+ *
+ * `setHours(0,0,0,0)` snaps to midnight in whatever zone the machine happens to
+ * be in, so a Railway container in UTC and a browser in Toronto disagreed about
+ * which day it was and how many days remained. React saw two different strings
+ * for the same badge and threw out the server render (hydration error #418).
+ * Deriving the day from the pinned zone makes both sides agree.
+ */
+function dayNumber(d: Date): number {
+  const [y, m, day] = new Intl.DateTimeFormat("en-CA", {
+    timeZone: DISPLAY_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
+    .format(d)
+    .split("-")
+    .map(Number);
+  return Math.floor(Date.UTC(y, m - 1, day) / 86400000);
+}
+
+function todayNumber(): number {
+  return dayNumber(new Date());
 }
 
 function daysUntil(iso: string | null): number | null {
   if (!iso) return null;
-  const target = new Date(iso);
-  target.setHours(0, 0, 0, 0);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return Math.round((target.getTime() - today.getTime()) / 86400000);
+  return dayNumber(new Date(iso)) - todayNumber();
 }
 
 /* ------------------------------------------------------------------ */
@@ -361,7 +381,7 @@ export function CommandClient({
             Command Center
           </h1>
           <p className="mt-1 text-sm text-neutral-600">
-            Everything on the go, in one place. Text or email it in, or type it below.
+            Everything on the go, in one place. Type what needs doing and it gets sorted.
           </p>
         </div>
         <div className="flex gap-2 text-xs">
