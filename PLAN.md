@@ -1,6 +1,42 @@
 # Deke — Plan
-**Last updated:** 2026-09-06 (local)
+**Last updated:** 2026-09-07 (local)
 **Status:** active
+
+## 🆕 2026-09-07 — TOTAL VOCAL IS FREE + BIO IMAGE FIXED (live, commit `0d9359a`)
+
+Denis caught two things shipping live on `/total-vocal`.
+
+**1. The page was advertising a price for a free community.** The join card
+rendered the literal placeholder `$XX /month` with the caption "Editable
+placeholder — may be free", and the FAQ answer told visitors to "edit this
+placeholder to reflect your real plan". **Total Vocal is FREE — no charge, no
+card, no subscription.** Denis: "There may be, at some point, some upsell, but
+for now, there is no charge." Join card now reads "Free / to join — No card, no
+subscription. Just show up and sing." FAQ answers plainly.
+
+**2. The About section image was a slice of the Skool banner.** It used
+`deke-portrait.webp`, which is the Skool community thumbnail with "TOTAL VOCAL
+/ ALL THINGS A CAPPELLA" text baked in; the 4:5 crop showed a fragment of that
+banner. Replaced with a real bio portrait cropped from `biotop.jpg`
+(`deke-bio-portrait.webp`), photographer credit (Nina Westervelt) added as a
+visible caption since it fell outside the crop.
+
+**Verified live on dekesharon.com:** no `$XX`, no placeholder wording anywhere,
+free messaging present, old banner image gone, new portrait serves 200 (94KB),
+credit renders. Hero image and all five UTM placements still intact.
+
+**⚠️ STILL OUTSTANDING — FABRICATED TESTIMONIALS ARE LIVE.**
+`src/components/total-vocal/tv-testimonials.tsx` carries three invented member
+quotes with invented names ("Maya R.", "Jordan T.", "Andre C.") and a
+fabricated competition result ("We placed at ICCA semis that spring"). These
+are presented as real member testimonials. Flagged to Denis 2026-09-07, NOT
+fixed (needs real quotes or removal — Claude cannot invent them). The file
+carries a TODO. **This is a credibility risk on a live client page.**
+
+**Also still open:** directors tier not discussed with Deke yet; lead-capture
+path for not-ready-to-buy visitors proposed but not built; unreferenced fake
+images (`hero.jpeg`, `deke.jpeg`, `hero-performance.webp`, `deke-portrait.webp`)
+safe to delete.
 
 ## 🆕 2026-09-06 — TOTAL VOCAL WIRED INTO THE SITE (live, commit `663fb85`)
 
