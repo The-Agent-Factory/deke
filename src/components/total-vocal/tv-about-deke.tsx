@@ -25,15 +25,20 @@ export function TvAboutDeke() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-border shadow-elevated">
-              <Image
-                src="/images/total-vocal/deke-portrait.webp"
-                alt="Deke Sharon, the father of contemporary a cappella"
-                fill
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover"
-              />
-            </div>
+            <figure className="mx-auto w-full max-w-md">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border shadow-elevated">
+                <Image
+                  src="/images/total-vocal/deke-bio-portrait.webp"
+                  alt="Deke Sharon, the father of contemporary a cappella"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="mt-2 text-right text-xs text-muted-foreground">
+                Photo: Nina Westervelt
+              </figcaption>
+            </figure>
           </motion.div>
 
           <motion.div

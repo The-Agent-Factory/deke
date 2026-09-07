@@ -48,13 +48,12 @@ export function TvJoin() {
 
             <div className="flex flex-col justify-center gap-6 bg-gradient-cta p-8 text-white md:p-10">
               <div>
-                <div className="flex items-end gap-1">
-                  {/* TODO: replace $XX with the real membership price (or remove if free) */}
-                  <span className="font-display text-5xl font-bold text-accent">$XX</span>
-                  <span className="mb-1 text-white/70">/month</span>
+                <div className="flex items-end gap-2">
+                  <span className="font-display text-5xl font-bold text-accent">Free</span>
+                  <span className="mb-1 text-white/70">to join</span>
                 </div>
                 <p className="mt-1 text-sm text-white/60">
-                  Editable placeholder — may be free
+                  No card, no subscription. Just show up and sing.
                 </p>
               </div>
               <Link

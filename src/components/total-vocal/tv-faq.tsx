@@ -19,7 +19,7 @@ const FAQS = [
   },
   {
     q: "What does it cost?",
-    a: "Membership pricing is shown above — edit this placeholder to reflect your real plan (it may even be free to join). Either way, you get the full library, the live calls, and the community from day one.",
+    a: "Nothing. Total Vocal is free to join — no card, no subscription. You get the library, the live calls, and the community from day one.",
   },
   {
     q: "How do the live calls work?",
