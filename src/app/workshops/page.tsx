@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { TotalVocalCrosslink } from "@/components/total-vocal-crosslink";
 import { WorkshopTopicsSection } from "@/components/landing";
 import {
   Calendar,
@@ -273,6 +274,11 @@ export default function WorkshopsPage() {
 
       {/* Full Workshop Topics Catalog */}
       <WorkshopTopicsSection />
+
+      <TotalVocalCrosslink
+        heading="Can't bring Deke to your group yet?"
+        body="Total Vocal is the global community where Deke coaches singers, directors and arrangers every month. Live calls, arranging courses, and feedback on your group's sound."
+      />
 
       {/* CTA */}
       <section className="py-20 md:py-28 bg-gradient-hero text-white">

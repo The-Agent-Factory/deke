@@ -9,6 +9,7 @@ import {
   ServicesTabsSection,
   WorkshopTopicsSection,
   PP2DiaryBanner,
+  TotalVocalBanner,
   FAQSection,
   ContactSection,
 } from "@/components/landing";
@@ -18,6 +19,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <CredentialsBar />
+      <TotalVocalBanner />
       <ServicesSection />
       <VideoSection />
       <BooksSection />

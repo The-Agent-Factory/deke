@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { skoolUrl } from "@/lib/skool-url";
 
-const SKOOL_URL = "https://www.skool.com/deke";
+const SKOOL_URL = skoolUrl("tv_final_cta");
 
 export function TvFinalCta() {
   return (

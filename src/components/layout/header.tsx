@@ -16,6 +16,7 @@ import { Menu, ArrowRight, LogIn } from "lucide-react";
 const navItems = [
   { label: "Arrangements", href: "/arrangements" },
   { label: "Coaching", href: "/coaching" },
+  { label: "Total Vocal", href: "/total-vocal" },
   { label: "Workshops", href: "/workshops" },
   { label: "Speaking", href: "/speaking" },
   { label: "Media", href: "/media" },
@@ -66,7 +67,7 @@ export function Header() {
                 <NavigationMenuLink asChild>
                   <Link
                     href={item.href}
-                    className="group inline-flex h-9 items-center justify-center px-3 py-2 text-sm font-semibold text-foreground/80 transition-colors hover:text-foreground focus:text-foreground focus:outline-none link-underline"
+                    className="group inline-flex h-9 items-center justify-center whitespace-nowrap px-2.5 py-2 text-sm font-semibold text-foreground/80 transition-colors hover:text-foreground focus:text-foreground focus:outline-none link-underline"
                   >
                     {item.label}
                   </Link>

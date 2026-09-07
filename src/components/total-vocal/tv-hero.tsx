@@ -5,8 +5,10 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Play, ChevronDown, Mic2 } from "lucide-react";
 import { TvEqualizer } from "./tv-equalizer";
+import { skoolUrl } from "@/lib/skool-url";
 
-const SKOOL_URL = "https://www.skool.com/deke";
+const SKOOL_URL = skoolUrl("tv_hero");
+const INTRO_VIDEO_URL = "https://www.youtube.com/watch?v=99p9_FIOIEo&t=1s";
 
 const stats = [
   { value: "10 yrs", label: "at Carnegie Hall" },
@@ -65,7 +67,6 @@ export function TvHero() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              {/* TODO: "Watch the intro" currently links to Skool; swap for a real intro video/modal */}
               <Link
                 href={SKOOL_URL}
                 target="_blank"
@@ -76,7 +77,7 @@ export function TvHero() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                href={SKOOL_URL}
+                href={INTRO_VIDEO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-white/30 bg-white/5 px-7 py-4 text-base font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
@@ -96,8 +97,8 @@ export function TvHero() {
           >
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
               <Image
-                src="/images/total-vocal/hero-performance.webp"
-                alt="Singers performing together at Total Vocal"
+                src="/images/total-vocal/hero-deke-directs.webp"
+                alt="Deke Sharon conducting a live a cappella rehearsal"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"

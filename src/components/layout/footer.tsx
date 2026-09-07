@@ -14,6 +14,7 @@ const footerLinks = {
     { label: "Album Production", href: "/masterclass" },
   ],
   resources: [
+    { label: "Total Vocal Community", href: "/total-vocal" },
     { label: "Find a Group", href: "/find-group" },
     { label: "Media", href: "/media" },
     { label: "PP2 Diary", href: "/pitch-perfect-diary" },

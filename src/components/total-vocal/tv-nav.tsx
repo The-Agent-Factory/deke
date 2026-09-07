@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { skoolUrl } from "@/lib/skool-url";
 
 const NAV_LINKS = [
   { label: "What's Inside", href: "#inside" },
@@ -12,7 +13,7 @@ const NAV_LINKS = [
   { label: "FAQ", href: "#faq" },
 ];
 
-const SKOOL_URL = "https://www.skool.com/deke";
+const SKOOL_URL = skoolUrl("tv_nav");
 
 export function TvNav() {
   const [scrolled, setScrolled] = useState(false);
