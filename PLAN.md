@@ -1,6 +1,54 @@
 # Deke — Plan
-**Last updated:** 2026-09-03 (local)
+**Last updated:** 2026-09-06 (local)
 **Status:** active
+
+## 🆕 2026-09-06 — TOTAL VOCAL WIRED INTO THE SITE (live, commit `663fb85`)
+
+Deke asked whether we could have a Total Vocal Skool page. We already had one:
+`/total-vocal` was fully built (hero, promise, what's inside, testimonials, FAQ,
+join). **The problem was discoverability, not existence.** It was missing from
+the main nav and footer, and the homepage never mentioned it. The only header
+and footer references to it were checks that HIDE the chrome once you are
+already on the page, so nothing on the site pointed at it.
+
+**Shipped:**
+- Total Vocal in the main nav (after Coaching) and in the footer resources
+  group. Nav links set to `whitespace-nowrap` with tighter padding: nine items
+  at 1440px was wrapping "Total Vocal" and "Find a Group" onto two lines.
+- Homepage banner above the services section ("Can't book Deke in person?"),
+  following the existing PP2 diary banner pattern.
+- Cross-link section on `/coaching` and `/workshops` for the near-miss visitor
+  who cannot book Deke in person but is exactly the Total Vocal member.
+  Reusable component: `src/components/total-vocal-crosslink.tsx`.
+- **Hero image replaced.** The old one was an AI-generated stock group with
+  "TOTAL VOCAL" text baked in, cropped badly into a 4:5 portrait slot ("fake
+  bandits, super ugly" per Denis). Now a real photo of Deke conducting,
+  cropped to 4:5 from `deke_directs.jpg`.
+- "Watch the intro" now points at the real intro video Denis supplied
+  (`youtube.com/watch?v=99p9_FIOIEo&t=1s`) instead of Skool, clearing the TODO.
+- All five Skool CTAs route through `skoolUrl()` (`src/lib/skool-url.ts`) so
+  each placement carries a `utm_content` tag: `tv_hero`, `tv_nav`, `tv_join`,
+  `tv_final_cta`, `tv_footer`.
+
+**Verified live on dekesharon.com** (curl against production): homepage carries
+3 `/total-vocal` links + banner copy, `/total-vocal` serves the new hero image
+(200, 44KB) and all five UTM placements, `/coaching` and `/workshops` each
+carry the cross-link. Railway auto-deployed from the GitHub push; deployment
+moved `4dc118ad` → `33da0ef3`, service Online.
+
+**Note:** pushed to BOTH remotes this time — GitLab `origin` (canonical) and
+GitHub `github` (mirror). The `git push github` block noted on 2026-09-03 did
+not apply.
+
+**Open / not done:**
+- Deke has NOT been consulted about the "a cappella directors" premium tier
+  yet. Denis explicitly deferred it ("we haven't talked about directors yet"),
+  so no directors language went into the page. Revisit copy when that tier is
+  decided.
+- Lead-capture path for visitors not ready to buy (offer something free, sell
+  the community over email) was proposed but NOT built.
+- Old fake images `public/images/total-vocal/hero.jpeg`, `deke.jpeg` and
+  `hero-performance.webp` are now unreferenced. Left in place, safe to delete.
 
 ## 🆕 2026-09-03 — DEPLOYED TO PRODUCTION (dekesharon.com)
 
