@@ -268,6 +268,10 @@ export default function CoachingPage() {
               Personalized coaching for directors, arrangers, and individual
               vocalists looking to elevate their craft.
             </p>
+            <Badge variant="outline" className="mt-4">
+              <Video className="h-3 w-3 mr-1" />
+              $250/hour · Virtual only, online sessions
+            </Badge>
           </motion.div>
 
           <motion.div

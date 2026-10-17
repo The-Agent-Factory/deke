@@ -43,8 +43,8 @@ const services = [
     id: "individual",
     icon: User,
     title: "Individual Coaching",
-    description: "One-on-one sessions for directors and vocalists",
-    price: "From $200/hr",
+    description: "One-on-one online sessions for directors and vocalists (virtual only)",
+    price: "$250/hr, online",
   },
   {
     id: "workshop",

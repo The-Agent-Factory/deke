@@ -19,7 +19,7 @@ const CONDUCTOR_CONFIG: AgentConfig = {
 
 Your expertise includes:
 - Workshop booking ($2,000-$10,000 per day)
-- Vocal coaching sessions ($200/hr individual, $2,000+ group)
+- Vocal coaching sessions ($250/hr individual, virtual only; $2,000+ group)
 - Calendar availability checking
 - Consultation scheduling
 - Virtual and in-person session coordination

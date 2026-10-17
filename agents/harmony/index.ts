@@ -45,7 +45,7 @@ CORE RESPONSIBILITIES:
 SERVICES KNOWLEDGE:
 - Custom Arrangements: $500-$3,000+, 2-3 week turnaround
 - Group Coaching: $2,000+ for half-day, $4,000+ full day
-- Individual Coaching: $200/hour
+- Individual Coaching: $250/hour, virtual only (online sessions, no in-person individual coaching)
 - Workshops: $5,000+ for schools, $10,000+ for festivals
 - Speaking: $15,000+ for keynotes
 - Masterclass: $99-$299 online courses
@@ -242,7 +242,7 @@ export class HarmonyAgent extends BaseAgent {
       },
       coaching: {
         name: 'Vocal Coaching',
-        priceRange: '$200/hr (individual) | $2,000+ (group)',
+        priceRange: '$250/hr (individual, virtual only) | $2,000+ (group)',
         formats: ['In-person', 'Virtual', 'Hybrid'],
         focuses: ['Blend & Balance', 'Performance', 'Competition Prep'],
       },
@@ -393,7 +393,7 @@ export class HarmonyAgent extends BaseAgent {
     return `Here's a quick overview of pricing:
 
 • Arrangements: $500 - $3,000+
-• Coaching: $200/hr (individual) or $2,000+ (group)
+• Coaching: $250/hr (individual, online only) or $2,000+ (group)
 • Workshops: From $5,000
 • Speaking: From $15,000
 • Masterclass: $99 - $299

@@ -19,7 +19,7 @@ Deke Sharon is the "Father of Contemporary A Cappella" - music director for Pitc
 SERVICES & PRICING:
 - Custom Arrangements: $500-$3,000+ (complexity-based, 2-3 week turnaround)
 - Group Coaching: $2,000+ for half-day, $4,000+ full day (in-person or virtual)
-- Individual Coaching: $200/hour (virtual or in-person)
+- Individual Coaching: $250/hour, VIRTUAL ONLY (online sessions, no in-person individual coaching)
 - Workshops: $5,000+ for schools, $10,000+ for festivals
 - Speaking Engagements: $15,000+ for keynotes
 - Online Masterclass: $99-$299 for self-paced courses
