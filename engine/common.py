@@ -4,8 +4,14 @@ from zoneinfo import ZoneInfo
 
 ENGINE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(ENGINE)
-STATE = os.path.join(ENGINE, "state")
-BATCHES = os.path.join(ENGINE, "batches")
+# Dry workspace (engine/dryrun.py sets DEKE_ENGINE_DRY=1): a private copy of the bank, batches and state,
+# so a dry run can never change what the real engine has planned.
+DRY = os.environ.get("DEKE_ENGINE_DRY") == "1"
+_SFX = "-dry" if DRY else ""
+STATE = os.path.join(ENGINE, "state" + _SFX)
+BATCHES = os.path.join(ENGINE, "batches" + _SFX)
+BANK_PATH = os.path.join(ENGINE, f"bank{_SFX}.json")
+SOURCES_PATH = os.path.join(ENGINE, f"sources{_SFX}.json")
 os.makedirs(STATE, exist_ok=True)
 os.makedirs(BATCHES, exist_ok=True)
 
@@ -50,6 +56,23 @@ def load_env():
 ENV = load_env()
 CONFIG = json.load(open(os.path.join(ENGINE, "config.json"), encoding="utf-8"))
 TZ = ZoneInfo(CONFIG["timezone"])
+# Master switch (Denis, 2026-10-31). live false = nothing is emailed to Deke and nothing is scheduled in
+# Postiz; the scheduled tasks only run health checks. A dry run is never live.
+LIVE = CONFIG.get("live") is True and not DRY
+
+
+def site_week(week):
+    """Key used on dekesharon.com. Dry runs use dry-<week> so they never collide with a real week."""
+    return f"dry-{week}" if DRY else week
+
+
+def deke_inbox():
+    """Where Deke-facing emails go. Until the engine is live, they go to Denis instead."""
+    return CONFIG["deke_email"] if LIVE else CONFIG["alert_email"]
+
+
+def tag(subject):
+    return subject if LIVE else ("[DRY RUN] " if DRY else "[NOT LIVE] ") + subject
 
 
 def now():
@@ -57,11 +80,11 @@ def now():
 
 
 def load_bank():
-    return load_json_safe(os.path.join(ENGINE, "bank.json"))
+    return load_json_safe(BANK_PATH)
 
 
 def save_bank(bank):
-    safe_write_json(os.path.join(ENGINE, "bank.json"), bank)
+    safe_write_json(BANK_PATH, bank)
 
 
 def postiz(path):

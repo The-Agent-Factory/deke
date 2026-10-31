@@ -175,6 +175,9 @@ def plan(week, auto):
 
 
 def publish(week):
+    from common import LIVE
+    if not LIVE:
+        die("the engine is not live (config live=false); nothing is scheduled in Postiz")
     folder = os.path.join(BATCHES, week)
     meta_p = os.path.join(folder, "batch.json")
     if not os.path.exists(meta_p):

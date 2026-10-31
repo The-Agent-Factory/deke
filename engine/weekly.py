@@ -12,7 +12,7 @@ Steps (each one logged; a failure is reported, never hidden):
 """
 import json, os, sys, subprocess, shutil, datetime, traceback
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CONFIG, TZ, ENGINE, REPO, STATE, BATCHES, ENV, now, load_bank, deke_posts, write_state
+from common import CONFIG, TZ, LIVE, DRY, SOURCES_PATH, ENGINE, REPO, STATE, BATCHES, ENV, now, load_bank, deke_posts, write_state
 
 CHANNEL = "https://www.youtube.com/channel/UCTuZ5LxQIjLK-CJBy0onT_Q/videos"
 MEDIA = "D:/deke-media/engine"
@@ -48,7 +48,7 @@ def preflight():
 
 
 def refresh_sources():
-    p = os.path.join(ENGINE, "sources.json")
+    p = SOURCES_PATH
     src = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {"videos": []}
     known = {v["id"] for v in src["videos"]}
     code, out = sh(["yt-dlp", "--flat-playlist", "--playlist-end", "60", "--print",
@@ -119,7 +119,7 @@ def mine_one(src):
     v["status"] = "mined" if code == 0 else "mine_failed"
     v["mined"] = now().isoformat(timespec="minutes")
     v["items_added"] = gained
-    json.dump(src, open(os.path.join(ENGINE, "sources.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    json.dump(src, open(SOURCES_PATH, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     if code != 0:
         raise RuntimeError(f"mining {vid} exited {code}: {out[-600:]}")
     log(f"refill: {vid} added {gained} items")
@@ -135,6 +135,12 @@ def next_mondays(n=2):
 def main():
     started = now()
     report = {"started": started.isoformat(timespec="minutes"), "steps": {}, "ok": True}
+    if not LIVE and not DRY:
+        log("engine not live (config live=false): weekly build paused, health check only")
+        report.update(paused=True, finished=now().isoformat(timespec="minutes"))
+        write_state("last-weekly.json", report)
+        sh(PY + [os.path.join(ENGINE, "watchdog.py")], timeout=300)
+        return
     try:
         preflight(); report["steps"]["preflight"] = "ok"
         src = refresh_sources(); report["steps"]["sources"] = "ok"

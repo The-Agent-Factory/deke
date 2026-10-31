@@ -1,6 +1,8 @@
 {
   "_about": "Deke content engine settings. Change approval_mode only on Denis's word.",
   "timezone": "America/Toronto",
+  "live": false,
+  "_live": "Master switch. false = nothing goes to Deke and nothing is scheduled in Postiz. Only Denis flips it to true, after the dry run passes.",
   "approval_mode": "deke",
   "_approval_modes": "deke = (Denis, 2026-10-31) the Saturday run sends next week to Deke on a review page on dekesharon.com; he taps Approve or Skip per post; Sunday 21:00 the engine schedules everything not skipped; no answer means all of it goes out. explicit = batch waits for Denis's go (engine/approve.ps1 <week>). standing = the weekly run schedules the batch itself, at least 7 days ahead; Denis vetoes by deleting a post in Postiz.",
   "alert_email": "denis@theagentfactory.ai",

@@ -12,7 +12,7 @@ Every outcome is emailed to Denis; failures exit non-zero so the watchdog turns 
 """
 import datetime, html, json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CONFIG, TZ, BATCHES, now, load_bank, save_bank, send_email, site_api, postiz_upload
+from common import CONFIG, TZ, BATCHES, LIVE, DRY, now, load_bank, save_bank, send_email, site_api, postiz_upload, site_week, deke_inbox, tag
 
 PLATFORM_NAMES = {"instagram": "Instagram", "facebook": "Facebook", "youtube": "YouTube Shorts",
                   "tiktok": "TikTok", "linkedin": "LinkedIn", "threads": "Threads"}
@@ -74,7 +74,7 @@ def send(week):
     save_bank(full)
 
     deadline = deadline_for(week)
-    res = site_api("POST", "/api/content-review", {"week": week, "deadline": deadline.isoformat(), "items": items})
+    res = site_api("POST", "/api/content-review", {"week": site_week(week), "deadline": deadline.isoformat(), "items": items})
     url = res["url"]
     meta.update(status="awaiting_deke", review_url=url, sent_to_deke=now().isoformat(timespec="minutes"),
                 deadline=deadline.isoformat())
@@ -95,8 +95,8 @@ def send(week):
         f"<p>If I don't hear back by {deadline.strftime('%A at %I %p').replace(' 0', ' ')}, everything goes out as planned.</p>"
         "<p>Denis</p></div>"
     )
-    send_email(f"Next week on your channels: {reels} videos, {texts} posts to approve", body,
-               to=CONFIG["deke_email"], reply_to=CONFIG["alert_email"], bcc=CONFIG["alert_email"],
+    send_email(tag(f"Next week on your channels: {reels} videos, {texts} posts to approve"), body,
+               to=deke_inbox(), reply_to=CONFIG["alert_email"], bcc=CONFIG["alert_email"] if LIVE else None,
                sender=CONFIG["review_from"])
     print(f"SENT {week} to Deke: {url.split('?')[0]}")
 
@@ -109,7 +109,7 @@ def _remind(week, meta):
         f"<p><a href='{html.escape(meta['review_url'])}'>Review next week</a></p>"
         f"<p>If there is no answer by {deadline.strftime('%A at %I %p').replace(' 0', ' ')}, it all goes out as planned.</p>"
         "<p>Denis</p></div>")
-    send_email("Reminder: next week's posts are waiting for your OK", body, to=CONFIG["deke_email"],
+    send_email(tag("Reminder: next week's posts are waiting for your OK"), body, to=deke_inbox(),
                reply_to=CONFIG["alert_email"], sender=CONFIG["review_from"])
     meta["reminded"] = now().isoformat(timespec="minutes")
     _save_meta(week, meta)
@@ -134,21 +134,34 @@ def finalize(week, meta, answer):
                            "submittedAt": (answer or {}).get("submittedAt"),
                            "silence_counted_as_yes": not decisions}
     _save_meta(week, meta)
-    if manifest["items"]:
+    if manifest["items"] and not LIVE:
+        # Not live: prove what WOULD be scheduled with the publisher's dry run, schedule nothing.
+        code, dry, tail = batch.run_publisher(mpath, dry=True)
+        meta["status"] = "dry_finalized" if code == 0 else "dry_finalize_failed"
+        meta["would_schedule"] = [f"{r['local']} {r['platform']}: {r['text'][:60]}" for r in manifest["items"]]
+        _save_meta(week, meta)
+        if code != 0:
+            raise RuntimeError(f"Postiz dry run failed at finalize: {tail[-400:]}")
+    elif manifest["items"]:
         batch.publish(week)  # raises SystemExit on failure; status becomes scheduled
     else:
         meta["status"] = "all_skipped"
         _save_meta(week, meta)
     how = "Deke answered" if decisions else "No answer by the deadline, so everything went out"
     note = (answer or {}).get("note")
-    send_email(f"Deke week of {week}: {len(manifest['items'])} posts scheduled, {len(skipped)} skipped",
+    lines = "".join(f"<li>{html.escape(r['local'])} . {r['platform']} . {html.escape(r['text'][:80])}</li>" for r in manifest["items"])
+    verb = "scheduled" if LIVE else "would be scheduled (nothing was sent to Postiz)"
+    send_email(tag(f"Deke week of {week}: {len(manifest['items'])} posts {'scheduled' if LIVE else 'would post'}, {len(skipped)} skipped"),
                f"<div style='font-family:system-ui,Arial'><p><b>{how}.</b></p>"
-               f"<p>Scheduled: {len(manifest['items'])} posts. Skipped by Deke: {', '.join(skipped) or 'none'}.</p>"
+               f"<p>{len(manifest['items'])} posts {verb}. Skipped by Deke: {', '.join(skipped) or 'none'}.</p><ul>{lines}</ul>"
                + (f"<p>Deke's note: <i>{html.escape(note)}</i></p>" if note else "") + "</div>")
     print(f"FINALIZED {week}: {len(manifest['items'])} posts, skipped {skipped}")
 
 
-def tick():
+def tick(force_remind=False, force_finalize=False):
+    if not LIVE and not DRY:
+        print("engine not live (config live=false): review step paused, nothing sent to Deke")
+        return
     failures = []
     for week in sorted(os.listdir(BATCHES)):
         if not os.path.exists(_meta_path(week)):
@@ -164,13 +177,13 @@ def tick():
         if meta.get("status") != "awaiting_deke":
             continue
         try:
-            answer = site_api("GET", f"/api/content-review?week={week}")
+            answer = site_api("GET", f"/api/content-review?week={site_week(week)}")
             deadline = datetime.datetime.fromisoformat(meta["deadline"])
             if answer.get("submittedAt"):
                 finalize(week, meta, answer)
-            elif now() >= deadline:
+            elif now() >= deadline or force_finalize:
                 finalize(week, meta, None)
-            elif now() >= deadline - datetime.timedelta(hours=14) and not meta.get("reminded"):
+            elif (now() >= deadline - datetime.timedelta(hours=14) or force_remind) and not meta.get("reminded"):
                 _remind(week, meta)
         except SystemExit as e:
             failures.append(f"{week}: {e.code}")

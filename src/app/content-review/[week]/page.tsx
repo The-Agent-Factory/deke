@@ -29,7 +29,8 @@ export default async function ContentReviewPage({
     )
   }
 
-  const monday = new Date(`${week}T12:00:00`)
+  const isDry = week.startsWith('dry-')
+  const monday = new Date(`${week.replace('dry-', '')}T12:00:00`)
   const label = monday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
   const deadline = new Date(review.deadline).toLocaleString('en-US', {
     weekday: 'long',
@@ -41,6 +42,11 @@ export default async function ContentReviewPage({
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
+      {isDry ? (
+        <p className="mb-6 rounded-md border border-amber-400 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
+          DRY RUN. This is a test of the review page. Your answers are recorded for the test only, and nothing is posted.
+        </p>
+      ) : null}
       <p className="text-sm font-semibold uppercase tracking-wider text-amber-700">Total Vocal . week of {label}</p>
       <h1 className="mt-2 text-3xl font-semibold text-balance">Next week on your channels</h1>
       <p className="mt-3 text-neutral-700">

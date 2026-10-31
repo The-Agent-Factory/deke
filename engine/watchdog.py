@@ -9,7 +9,7 @@ Postiz is itself red: it never reports "fine" on missing data.
 """
 import json, os, sys, datetime, traceback
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CONFIG, now, load_bank, deke_posts, send_email, write_state, read_state, BATCHES
+from common import LIVE, CONFIG, now, load_bank, deke_posts, send_email, write_state, read_state, BATCHES
 
 SKOOL = "C:/Users/lafla/claude_projects/claude-academy/1- Youtube Production/pipeline/Projects/deke/growth/data/skool.jsonl"
 AUTOPILOT_LOG = "D:/deke-media/autopilot-log.txt"
@@ -117,6 +117,10 @@ def check():
         amber.append(f"Skool pulse unreadable: {e}")
 
     lists = {"went_out_last_7_days": locals().get("s_went", []), "coming_up": locals().get("s_next", [])}
+    if not LIVE:
+        # Paused on purpose: an empty queue is expected, so it is not an emergency.
+        amber[:0] = ["The engine is paused (dry-run mode, config live=false). Nothing goes to Deke or Postiz."] +             [x for x in red if x.startswith("Postiz runway")]
+        red = [x for x in red if not x.startswith("Postiz runway")]
     return {"checked": t.isoformat(timespec="minutes"), "red": red, "amber": amber, "facts": facts, "lists": lists,
             "level": "red" if red else ("amber" if amber else "green")}
 
@@ -163,7 +167,8 @@ def main():
         subject = (f"RED: Deke engine needs you ({len(s['red'])})" if s["red"]
                    else f"Deke engine weekly: runway {s['facts'].get('runway_days')} days, Skool {s['facts'].get('skool_members')}")
         try:
-            send_email(subject, render_html(s))
+            from common import tag
+            send_email(tag(subject), render_html(s))
             print("emailed:", subject)
         except Exception as e:
             print("EMAIL FAILED:", e, file=sys.stderr)

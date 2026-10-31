@@ -1,7 +1,12 @@
 state/
+state-dry/
 batches/
+batches-dry/
 *.bak
 *.tmp
+*.tmp.*
 __pycache__/
 bank.json
+bank-dry.json
 sources.json
+sources-dry.json

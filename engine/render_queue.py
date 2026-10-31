@@ -2,7 +2,9 @@
 the exit code is 1 if any failed, and the failures are recorded on the items (status render_failed)."""
 import json, os, subprocess, sys
 ENGINE = os.path.dirname(os.path.abspath(__file__))
-bank = json.load(open(os.path.join(ENGINE, "bank.json"), encoding="utf-8"))
+sys.path.insert(0, ENGINE)
+from common import load_bank
+bank = load_bank()
 todo = [i["id"] for i in bank["items"] if i["lane"] == "reel" and i["status"] == "idea"]
 limit = int(sys.argv[1]) if len(sys.argv) > 1 else len(todo)
 failed = []

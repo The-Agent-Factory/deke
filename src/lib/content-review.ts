@@ -37,7 +37,8 @@ export type Review = {
   submittedAt: string | null
 }
 
-export const WEEK_RE = /^\d{4}-\d{2}-\d{2}$/
+// Real weeks are the Monday date; dry runs use dry-<date> so they never touch a real week.
+export const WEEK_RE = /^(dry-)?\d{4}-\d{2}-\d{2}$/
 
 export function newToken(): string {
   return randomBytes(24).toString('base64url')
