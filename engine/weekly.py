@@ -66,6 +66,12 @@ def refresh_sources():
                               "duration": dur, "channel_rank": idx, "status": status,
                               "found": now().date().isoformat()})
         added += 1
+    # A video that already has clips in the bank counts as mined, even if it was mined by hand.
+    in_bank = {(i.get("source") or {}).get("id") for i in load_bank()["items"]}
+    for v in src["videos"]:
+        if v["status"] == "new" and v["id"] in in_bank:
+            v["status"] = "mined"
+            v["mined"] = "already in bank"
     json.dump(src, open(p, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     log(f"sources: {added} new, {sum(1 for v in src['videos'] if v['status'] == 'new')} unmined")
     return src
