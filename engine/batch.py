@@ -152,7 +152,12 @@ def plan(week, auto):
     json.dump(meta, open(os.path.join(folder, "batch.json"), "w", encoding="utf-8"), indent=1)
     if mode == "deke":
         import review  # Deke approves on dekesharon.com; review.tick() schedules on Sunday night
-        review.send(week)
+        try:
+            review.send(week)
+        except Exception as e:
+            meta.update(status="send_failed", send_error=str(e)[:500])
+            json.dump(meta, open(os.path.join(folder, "batch.json"), "w", encoding="utf-8"), indent=1)
+            die(f"planned {week} but could not send it to Deke (the next review check retries): {e}")
         print(f"PLANNED {week}: {len(rows)} posts, {len(chosen)} pieces, sent to Deke for review.")
         return
     if mode == "standing":

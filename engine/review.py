@@ -154,6 +154,13 @@ def tick():
         if not os.path.exists(_meta_path(week)):
             continue
         meta = json.load(open(_meta_path(week), encoding="utf-8"))
+        if meta.get("status") == "send_failed":
+            try:
+                send(week)
+                continue
+            except Exception as e:
+                failures.append(f"{week}: still cannot send to Deke: {e}")
+                continue
         if meta.get("status") != "awaiting_deke":
             continue
         try:
