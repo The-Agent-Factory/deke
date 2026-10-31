@@ -18,6 +18,7 @@ const PUBLIC_API_ROUTES = [
   "/api/webhooks",
   "/api/subscribers",
   "/api/newsletter-signup",
+  "/api/content-review", // own auth: engine bearer secret, or Deke's per-week link token
 ]
 
 function isPublicApiRoute(pathname: string): boolean {

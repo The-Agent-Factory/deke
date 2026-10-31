@@ -1,0 +1,105 @@
+<title>Deke Content Engine</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: one reading column, a flow strip of the weekly loop, then status and asks. Total Vocal charcoal and gold. */
+:root {
+  --bg: #f7f5f0; --surface: #ffffff; --fg: #1c1a17; --muted: #6b655b; --line: #e3ddd1;
+  --gold: #a87a1f; --gold-soft: #f3e7cc; --red: #b3261e; --red-soft: #fbe3e0; --green: #2f6b3a; --green-soft: #e1efe2;
+  --display: "Fraunces", Georgia, serif; --body: "Source Sans 3", system-ui, sans-serif; --mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141311; --surface: #1d1b18; --fg: #efe9dd; --muted: #a39b8c; --line: #34302a;
+  --gold: #d9a948; --gold-soft: #3a2f18; --red: #f08a80; --red-soft: #3d1d1a; --green: #8fcb98; --green-soft: #1d3221; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #141311; --surface: #1d1b18; --fg: #efe9dd; --muted: #a39b8c; --line: #34302a;
+  --gold: #d9a948; --gold-soft: #3a2f18; --red: #f08a80; --red-soft: #3d1d1a; --green: #8fcb98; --green-soft: #1d3221; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 17px/1.55 var(--body); }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 36px; }
+h1 { font: 600 2.3rem/1.1 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 600 1.35rem/1.2 var(--display); margin: 0 0 12px; text-wrap: balance; }
+.eyebrow { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.lede { color: var(--muted); font-size: 1.05rem; }
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px; min-width: 0; }
+.step b { display: block; font-size: .95rem; }
+.step span { font-size: .85rem; color: var(--muted); }
+.step .when { font: .72rem var(--mono); color: var(--gold); display: block; margin-bottom: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.tablebox { overflow-x: auto; }
+td, th { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill { font-size: .75rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.ok { background: var(--green-soft); color: var(--green); }
+.wait { background: var(--gold-soft); color: var(--gold); }
+.bad { background: var(--red-soft); color: var(--red); }
+.asks { display: grid; gap: 12px; }
+.ask { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: 4px; padding: 14px 16px; }
+.ask b { display: block; margin-bottom: 4px; }
+code { font: .85rem var(--mono); background: var(--gold-soft); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 65ch; }
+.foot { font-size: .85rem; color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <div class="eyebrow">Deke Sharon . Total Vocal . updated Oct 27, 2026</div>
+    <h1>Deke Content Engine</h1>
+    <p class="lede">A machine on your laptop that keeps Deke's accounts posting every week from his own videos, with no batch waiting on you. It emails you only when something breaks.</p>
+  </header>
+
+  <section>
+    <h2>Why posting kept stopping</h2>
+    <p>Every past batch waited for a manual go. When the go did not come, posting stopped: in July, again in early October, and now. The last scheduled post went out Oct 25. When posts do go out, the community grows: Skool went from 215 to 302 members during the two weeks the October batch ran, and grew by 4 in the dark week before it.</p>
+  </section>
+
+  <section>
+    <h2>The weekly loop</h2>
+    <div class="flow">
+      <div class="step"><span class="when">SUN 7:00</span><b>Find</b><span>Checks Deke's YouTube for new uploads.</span></div>
+      <div class="step"><span class="when">SUN</span><b>Refill</b><span>If under 6 weeks of clips, transcribes the next video and picks new clips.</span></div>
+      <div class="step"><span class="when">SUN</span><b>Render</b><span>Vertical reels with gold captions and the Join Total Vocal end card.</span></div>
+      <div class="step"><span class="when">SUN</span><b>Schedule</b><span>Fills the next two weeks in Postiz, 7+ days ahead, and emails you the list.</span></div>
+      <div class="step"><span class="when">DAILY 8:30</span><b>Watch</b><span>Emails you only if the queue runs low or a job fails.</span></div>
+    </div>
+    <p style="margin-top:12px">Each week: 3 reels on Instagram, Facebook, YouTube Shorts and TikTok, plus 2 text posts on Facebook, Threads and LinkedIn. That is the same shape as the October week that grew the community. To stop any post, delete it in Postiz before its time.</p>
+  </section>
+
+  <section>
+    <h2>Guardrails</h2>
+    <ul>
+      <li>Every reel is a clip of Deke speaking in one of his published videos. Every text post is built from his own words, and the source and timestamp are recorded.</li>
+      <li>Anything with a guest speaking, a named third party or a minor is held for you and never posts on its own.</li>
+      <li>A checker rejects clips that cut through a word, run outside 12 to 60 seconds, say "choir directors" or use dashes.</li>
+      <li>Every post is pinned to Deke's own Postiz channels, so nothing can land on another account.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where it stands today</h2>
+    <div class="tablebox"><table>
+      <tr><th>Piece</th><th>Status</th><th>Detail</th></tr>
+      <tr><td>Clip bank</td><td><span class="pill ok">Seeded</span></td><td>10 reels and 4 text posts from "How to Run a Great Rehearsal" and "It's Never Too Late to Sing"</td></tr>
+      <tr><td>Rendering</td><td><span class="pill ok">Working</span></td><td class="num">About 2 min per reel. All checks pass: size, length, loudness near -14 LUFS.</td></tr>
+      <tr><td>Source videos</td><td><span class="pill wait">In progress</span></td><td>10 of Deke's videos downloaded. 8 still being transcribed.</td></tr>
+      <tr><td>Daily watchdog</td><td><span class="pill ok">Working</span></td><td>Tested today. It correctly reports the empty queue.</td></tr>
+      <tr><td>Automatic schedule</td><td><span class="pill bad">Needs you</span></td><td>Claude is not allowed to create Windows scheduled tasks. One click, below.</td></tr>
+      <tr><td>Postiz queue</td><td><span class="pill ok">Week of Nov 2 scheduled</span></td><td>16 posts: 3 rehearsal reels on 4 platforms and 2 text posts on 2 platforms each. Checked in Postiz. Oct 28 to Nov 1 is still empty.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>What only you can do</h2>
+    <div class="asks">
+      <div class="ask"><b>1. Switch on the schedule, once.</b>Right-click <code>claude_projects\deke\engine\install-tasks.ps1</code> and choose Run with PowerShell. It registers the Sunday run and the daily check. After that, the engine runs without you.</div>
+      <div class="ask"><b>2. Send the link to Deke's backlog folder.</b>His new Too Many Notes takes, the quick hits and the Robert Plant footage are not in the shared Dropbox, Google Drive, Gmail or on the laptop. He probably sent the link by WhatsApp. Paste it to Claude and the engine will add them.</div>
+      <div class="ask"><b>3. Confirm the two lives with Deke.</b>Oct 29: how to run a great rehearsal, with Q&amp;A. Nov 6: live video critique. Announcements are drafted and held until you give the time of day. The rehearsal reels already promote the Oct 29 topic.</div>
+    </div>
+  </section>
+
+  <p class="foot">Engine files: <code>claude_projects\deke\engine\</code>. Rendered reels: <code>D:\deke-media\engine\renders\</code>. Status any session can read: <code>engine\state\status.json</code>. Say "post week YYYY-MM-DD" or "engine status" in any Claude session in the deke folder.</p>
+</div>

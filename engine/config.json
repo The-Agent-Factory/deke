@@ -1,0 +1,41 @@
+{
+  "_about": "Deke content engine settings. Change approval_mode only on Denis's word.",
+  "timezone": "America/Toronto",
+  "approval_mode": "deke",
+  "_approval_modes": "deke = (Denis, 2026-10-31) the Saturday run sends next week to Deke on a review page on dekesharon.com; he taps Approve or Skip per post; Sunday 21:00 the engine schedules everything not skipped; no answer means all of it goes out. explicit = batch waits for Denis's go (engine/approve.ps1 <week>). standing = the weekly run schedules the batch itself, at least 7 days ahead; Denis vetoes by deleting a post in Postiz.",
+  "alert_email": "denis@theagentfactory.ai",
+  "deke_email": "deke@dekesharon.com",
+  "review_site": "https://dekesharon.com",
+  "review_from": "Total Vocal Content <content@dekesharon.com>",
+  "email_from": "Deke Content Engine <deke@dekesharon.com>",
+  "runway_alert_days": 7,
+  "bank_alert_weeks": 3,
+  "cta": "Free a cappella community: skool.com/deke",
+  "postiz_channels": {
+    "instagram": "cmrla0s2y00nds20ybn1n8cls",
+    "facebook": "cmrl83nyt066brz0yf9dawxv3",
+    "threads": "cmrlb3bu406jkrz0ycbm12eyi",
+    "youtube": "cms1yf65v0fykrv0y63g13rht",
+    "tiktok": "cmrl7oo2t00bjs20yta38g7m8",
+    "linkedin": "cmrl9n6za00lts20ypgdafvsh"
+  },
+  "_slots": "Same weekly shape as the Oct 19 week that shipped and grew Skool 215 to 302. Day 0 = Monday. Times are local Toronto time; UTC is computed per date, so DST is handled.",
+  "slots": {
+    "reel": [
+      { "day": 1, "posts": [["instagram", "10:00"], ["facebook", "10:00"], ["youtube", "12:00"], ["tiktok", "14:00"]] },
+      { "day": 3, "posts": [["instagram", "10:00"], ["facebook", "10:00"], ["youtube", "12:00"], ["tiktok", "14:00"]] },
+      { "day": 5, "posts": [["instagram", "10:00"], ["facebook", "10:00"], ["youtube", "12:00"], ["tiktok", "14:00"]] }
+    ],
+    "text": [
+      { "day": 0, "posts": [["facebook", "10:00"], ["threads", "12:00"]] },
+      { "day": 2, "posts": [["linkedin", "09:00"], ["facebook", "10:00"]] }
+    ]
+  },
+  "rules": [
+    "Only Deke's own words. Every reel is a clip of him speaking; every text post is built from something he said on camera or wrote, with the source recorded in the bank.",
+    "Say 'a cappella directors', never 'choir directors'.",
+    "No em dashes.",
+    "No identifiable minors.",
+    "Anything that names a third party, shows other groups, or changes his meaning is needs_deke and never auto-posts."
+  ]
+}

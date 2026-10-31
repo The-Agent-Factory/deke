@@ -1,0 +1,7 @@
+state/
+batches/
+*.bak
+*.tmp
+__pycache__/
+bank.json
+sources.json
