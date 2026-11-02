@@ -55,6 +55,9 @@ def source_path(src):
 def framing_filter(framing):
     """Return a filter chain taking [in] video to 1080x1920 30fps."""
     kind = framing.get("kind", "blur169") if isinstance(framing, dict) else framing
+    if kind == "native":
+        # Source is already vertical (phone selfie): fill 1080x1920, no blur band.
+        return "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,setsar=1"
     if kind == "crop":
         # Native 9:16 crop. cropX = left edge in source pixels at 1920x1080 scale.
         x = framing.get("cropX", 656)
@@ -115,7 +118,7 @@ def words_for(item):
     return out
 
 
-def qa(path, expect_dur):
+def qa(path, expect_dur, max_sec=90):
     probe = run(["ffprobe", "-v", "error", "-show_entries", "format=duration:stream=codec_name,width,height,r_frame_rate",
                  "-of", "json", path]).stdout
     info = json.loads(probe)
@@ -126,8 +129,8 @@ def qa(path, expect_dur):
         problems.append(f"size {v['width']}x{v['height']}")
     if abs(dur - expect_dur) > 0.5:
         problems.append(f"duration {dur:.1f}s, expected {expect_dur:.1f}s")
-    if dur > 90:
-        problems.append(f"{dur:.0f}s is too long for a reel (90 s max)")
+    if dur > max_sec:
+        problems.append(f"{dur:.0f}s is too long ({max_sec} s max for this item)")
     lufs = run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af", "ebur128", "-f", "null", "-"]).stderr
     m = re.findall(r"I:\s+(-?[\d.]+) LUFS", lufs)
     il = float(m[-1]) if m else None
@@ -166,7 +169,7 @@ def main():
         os.remove(os.path.join(pub, f"{item_id}.mp4"))
         run(["ffmpeg", "-v", "error", "-y", "-ss", str(item.get("coverSec", 1.5)), "-i", final, "-frames:v", "1",
              "-q:v", "3", f"{MEDIA}/renders/{item_id}.jpg"])
-        result = qa(final, dur)
+        result = qa(final, dur, item.get("maxSec", 90))
         if result["problems"]:
             raise SystemExit("QA: " + "; ".join(result["problems"]))
     except SystemExit as e:

@@ -30,7 +30,7 @@ def slot_time(monday, day, hhmm):
 
 
 def eligible(item, lane, when):
-    if item["lane"] != lane or item.get("needs_deke") or item.get("week"):
+    if item["lane"] != lane or item.get("needs_deke") or item.get("week") or item.get("skool_only"):
         return False
     if lane == "reel" and item["status"] != "rendered":
         return False

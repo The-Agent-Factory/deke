@@ -30,13 +30,14 @@ def check(item, ids):
             e.append(f"contains {why}")
     if item.get("lane") == "reel":
         src = item.get("source", {})
-        wp = f"{TR}/{src.get('id')}.words.json"
-        if src.get("type") != "youtube" or not os.path.exists(wp):
-            e.append(f"source must be a transcribed youtube id ({wp} missing)")
+        key = src.get("id") if src.get("type") == "youtube" else os.path.splitext(os.path.basename(src.get("path", "")))[0]
+        wp = f"{TR}/{key}.words.json"
+        if src.get("type") not in ("youtube", "file") or not os.path.exists(wp):
+            e.append(f"source must be a transcribed youtube id or local file ({wp} missing)")
         segs = item.get("segments") or []
         total = sum(b - a for a, b in segs) if segs else 0
-        if not 12 <= total <= 60:
-            e.append(f"clip length {total:.1f}s, must be 12 to 60 s")
+        if not 12 <= total <= item.get("maxSec", 60):
+            e.append(f"clip length {total:.1f}s, must be 12 to {item.get('maxSec', 60)} s")
         if os.path.exists(wp) and segs:
             words = json.load(open(wp, encoding="utf-8"))["words"]
             for a, b in segs:
@@ -52,7 +53,7 @@ def check(item, ids):
                 e.append(f"copy.{k} missing")
         if len(c.get("ytTitle", "")) > 95:
             e.append("ytTitle over 95 chars")
-        if (item.get("framing") or {}).get("kind") not in ("blur169", "blur43", "blur45", "crop", "region"):
+        if (item.get("framing") or {}).get("kind") not in ("blur169", "blur43", "blur45", "crop", "region", "native"):
             e.append("framing.kind must be blur169, blur43, blur45, crop or region")
         item.setdefault("status", "idea")
     else:
