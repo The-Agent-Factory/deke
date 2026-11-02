@@ -14,9 +14,10 @@ import json, os, subprocess, sys, shutil, re, datetime
 
 ENGINE = os.path.dirname(os.path.abspath(__file__))
 BANK = os.path.join(ENGINE, "bank.json")
-MEDIA = "D:/deke-media/engine"
+MEDIA = os.environ.get("DEKE_MEDIA", "D:/deke-media") + "/engine"  # DEKE_MEDIA moves all outputs, e.g. when D: is unhealthy
 REMOTION = os.path.join(os.path.dirname(ENGINE), "my-video")
 HOLD = 3.5
+FILLERS = {"uh", "um", "uhm", "erm", "ah"}
 ENC = ["-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", "30",
        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart"]
 NORM = "loudnorm=I=-14:TP=-1.5:LRA=11"
@@ -99,8 +100,44 @@ def snap_end(src, b, lookback=0.05, lookahead=0.3):
     return round(a0 + k * (hop // 2) / 16000 + 0.01, 3)
 
 
+def transcript_words(item):
+    src = item["source"]
+    key = src["id"] if src["type"] == "youtube" else os.path.splitext(os.path.basename(src["path"]))[0]
+    wp = f"{MEDIA}/transcripts/{key}.words.json"
+    return json.load(open(wp, encoding="utf-8"))["words"] if os.path.exists(wp) else []
+
+
+def safe_end(src, b, allw):
+    """Snap the cut to real silence, but never into the next phrase. If Deke leaves a pause (gap >= 0.15 s),
+    the cut must stop before the next word starts. If he runs words together, allow up to 0.2 s past it,
+    because Whisper's word times run early there."""
+    nxt = min((w["start"] for w in allw if w["start"] >= b - 0.01), default=b + 1.0)
+    gap = nxt - b
+    lookahead = max(0.03, gap - 0.03) if gap >= 0.15 else gap + 0.2
+    return snap_end(src, b, lookahead=min(0.3, lookahead))
+
+
+def safe_start(src, a, allw):
+    """If the previous word runs straight into this one (gap under 0.15 s), Whisper's start time catches the
+    tail of the previous word. Move the start forward to the quietest moment just before the voice resumes."""
+    prev = max((w["end"] for w in allw if w["end"] <= a + 0.01), default=a - 1.0)
+    if a - prev >= 0.15:
+        return a
+    import numpy as np
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(0, a - 0.03):.3f}", "-t", "0.25", "-i", src,
+                          "-ac", "1", "-ar", "16000", "-f", "s16le", "-"], capture_output=True).stdout
+    x = np.frombuffer(raw, dtype=np.int16).astype(float)
+    hop = 320
+    if len(x) < hop * 3:
+        return a
+    rms = [np.sqrt(np.mean(x[i:i + hop] ** 2)) for i in range(0, len(x) - hop, hop // 2)]
+    k = int(np.argmin(rms))
+    return round(max(0, a - 0.03) + k * (hop // 2) / 16000, 3)
+
+
 def build_base(item, src, out):
-    segs = [[a, snap_end(src, b)] for a, b in item["segments"]]
+    allw = transcript_words(item)
+    segs = [[safe_start(src, a, allw), safe_end(src, b, allw)] for a, b in item["segments"]]
     item["cut_segments"] = segs  # what was actually cut, for the record and for caption timing
     parts, labels = [], []
     for i, (a, b) in enumerate(segs):
@@ -124,15 +161,100 @@ def words_for(item):
         run([sys.executable, "-X", "utf8", os.path.join(ENGINE, "transcribe.py"), source_path(src)])
     allw = json.load(open(wp, encoding="utf-8"))["words"]
     out, offset = [], 0.0
-    for a, b in item.get("cut_segments", item["segments"]):
+    planned = item["segments"]
+    cut = item.get("cut_segments", planned)
+    for (a, b_plan), (_, b_cut) in zip(planned, cut):
+        # Captions carry exactly the planned words; the audio cut may run a little longer to finish the last word.
         for w in allw:
-            if a <= w["start"] < b - 0.05:
+            if a <= w["start"] < b_plan - 0.05 and w["word"].strip(",.").lower() not in FILLERS:
                 out.append({"start": round(w["start"] - a + offset, 3),
-                            "end": round(min(w["end"], b) - a + offset, 3), "word": w["word"]})
-        offset += b - a
+                            "end": round(min(w["end"], b_cut) - a + offset, 3), "word": w["word"]})
+        offset += b_cut - a
     if len(out) < 5:
         die(f"only {len(out)} caption words found for {item['id']}; check the segment times")
+    return join_split_words(out)
+
+
+_WHISPER = None
+
+
+def words_from_clip(base, speech_sec):
+    """Transcribe the finished clip itself. Short, clean context gives punctuation, fewer mishearings,
+    and timings that match the cut exactly (nothing from outside the clip can appear)."""
+    global _WHISPER
+    from faster_whisper import WhisperModel
+    if _WHISPER is None:
+        _WHISPER = WhisperModel("large-v3", device="cuda", compute_type="float16")
+    segs, _ = _WHISPER.transcribe(base, word_timestamps=True, vad_filter=False, language="en")
+    out = []
+    for s in segs:
+        for w in s.words:
+            t = w.word.strip()
+            if w.start < speech_sec - 0.05 and t.strip(",.?!").lower() not in FILLERS and t:
+                out.append({"start": round(w.start, 3), "end": round(min(w.end, speech_sec), 3), "word": t})
+    return join_split_words(out)
+
+
+def join_split_words(words):
+    """Whisper splits '7 p.m.' into '7' 'p' '.m.' and 'warm-ups' into 'warm' '-ups'. A fragment that starts
+    with . - or an apostrophe belongs to the word before it, so join them before the captions are built."""
+    out = []
+    for w in words:
+        t = w["word"]
+        if out and t[:1] in ".-'’" and not t.startswith("..."):
+            out[-1] = {**out[-1], "word": out[-1]["word"] + t, "end": w["end"]}
+        else:
+            out.append(dict(w))
     return out
+
+
+def caption_chunks(words):
+    """Same grouping as the DekeShort template (src/DekeShort.tsx chunkWords): max 3 words, break on a pause
+    over 0.6 s or on punctuation. Used to lint captions and to build the proof sheet."""
+    chunks, cur = [], []
+    for i, w in enumerate(words):
+        cur.append(w)
+        gap = words[i + 1]["start"] - w["end"] if i + 1 < len(words) else 9
+        if len(cur) >= 3 or gap > 0.6 or re.search(r"[.?!,]$", w["word"]):
+            chunks.append(cur)
+            cur = []
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+
+def caption_problems(words):
+    bad = []
+    for c in caption_chunks(words):
+        text = " ".join(w["word"] for w in c)
+        if any(re.match(r"^[.\-'’%,;:]", w["word"]) or not re.search(r"\w", w["word"]) for w in c):
+            bad.append(text)
+    return bad
+
+
+def caption_sheet(final, words, out_jpg):
+    """One frame per caption, tiled, so a person (or Claude) can read every caption at a glance."""
+    chunks = caption_chunks(words)
+    tiles = []
+    for n, c in enumerate(chunks):
+        t = (c[0]["start"] + c[-1]["end"]) / 2
+        p = f"{MEDIA}/work/cap_{n:03d}.jpg"
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.2f}", "-i", final, "-frames:v", "1",
+             "-vf", "crop=1080:420:0:1180,scale=360:-1", p])
+        tiles.append(p)
+    cols = 4
+    rows = (len(tiles) + cols - 1) // cols
+    while len(tiles) < rows * cols:
+        tiles.append(tiles[-1])
+    args = []
+    for p in tiles:
+        args += ["-i", p]
+    layout = "|".join(f"{'+'.join(['w0'] * (i % cols)) or '0'}_{'+'.join(['h0'] * (i // cols)) or '0'}" for i in range(len(tiles)))
+    run(["ffmpeg", "-v", "error", "-y", *args, "-filter_complex",
+         f"xstack=inputs={len(tiles)}:layout={layout}", "-frames:v", "1", out_jpg])
+    for p in set(tiles):
+        os.remove(p)
+    return len(chunks)
 
 
 def qa(path, expect_dur, max_sec=90):
@@ -174,7 +296,14 @@ def main():
         src = source_path(item["source"])
         base = f"{MEDIA}/bases/{item_id}.mp4"
         dur = build_base(item, src, base)
-        words = words_for(item)
+        planned_words = words_for(item)
+        words = words_from_clip(base, dur - HOLD)
+        # Sanity: the clip transcript must cover about the same words as the plan, or something is off.
+        if abs(len(words) - len(planned_words)) > max(4, 0.25 * len(planned_words)):
+            die(f"clip transcript has {len(words)} words but the plan has {len(planned_words)}; check the cut")
+        broken = caption_problems(words)
+        if broken:
+            die("captions would show broken words: " + " | ".join(broken[:5]))
         pub = os.path.join(REMOTION, "public", "engine")
         os.makedirs(pub, exist_ok=True)
         shutil.copyfile(base, os.path.join(pub, f"{item_id}.mp4"))
@@ -187,6 +316,8 @@ def main():
         run(["ffmpeg", "-v", "error", "-y", "-ss", str(item.get("coverSec", 1.5)), "-i", final, "-frames:v", "1",
              "-q:v", "3", f"{MEDIA}/renders/{item_id}.jpg"])
         result = qa(final, dur, item.get("maxSec", 90))
+        result["caption_sheet"] = f"{MEDIA}/renders/{item_id}-captions.jpg"
+        result["caption_chunks"] = caption_sheet(final, words, result["caption_sheet"])
         if result["problems"]:
             raise SystemExit("QA: " + "; ".join(result["problems"]))
     except SystemExit as e:
