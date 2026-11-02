@@ -83,12 +83,29 @@ def framing_filter(framing):
             f"eq=brightness=-0.15[bb];[f]{fg}[ff];[bb][ff]overlay=0:{y},fps=30,setsar=1")
 
 
+def snap_end(src, b, lookback=0.05, lookahead=0.3):
+    """Whisper word ends run early; cutting there clips the last word. Move the cut to the quietest
+    20 ms just after it (where the voice really stops), so every clip ends on a complete word."""
+    import numpy as np
+    a0 = max(0.0, b - lookback)
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{a0:.3f}", "-t", f"{lookback + lookahead:.3f}", "-i", src,
+                          "-ac", "1", "-ar", "16000", "-f", "s16le", "-"], capture_output=True).stdout
+    x = np.frombuffer(raw, dtype=np.int16).astype(float)
+    hop = 320  # 20 ms
+    if len(x) < hop * 3:
+        return b
+    rms = [np.sqrt(np.mean(x[i:i + hop] ** 2)) for i in range(0, len(x) - hop, hop // 2)]
+    k = int(np.argmin(rms))
+    return round(a0 + k * (hop // 2) / 16000 + 0.01, 3)
+
+
 def build_base(item, src, out):
-    segs = item["segments"]
+    segs = [[a, snap_end(src, b)] for a, b in item["segments"]]
+    item["cut_segments"] = segs  # what was actually cut, for the record and for caption timing
     parts, labels = [], []
     for i, (a, b) in enumerate(segs):
         parts.append(f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,"
-                     f"afade=t=in:d=0.03,afade=t=out:st={max(0, b - a - 0.05):.3f}:d=0.05[a{i}]")
+                     f"afade=t=in:d=0.03,afade=t=out:st={max(0, b - a - 0.03):.3f}:d=0.03[a{i}]")
         labels.append(f"[v{i}][a{i}]")
     total = sum(b - a for a, b in segs)
     fc = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(segs)}:v=1:a=1[cv][ca];" \
@@ -107,7 +124,7 @@ def words_for(item):
         run([sys.executable, "-X", "utf8", os.path.join(ENGINE, "transcribe.py"), source_path(src)])
     allw = json.load(open(wp, encoding="utf-8"))["words"]
     out, offset = [], 0.0
-    for a, b in item["segments"]:
+    for a, b in item.get("cut_segments", item["segments"]):
         for w in allw:
             if a <= w["start"] < b - 0.05:
                 out.append({"start": round(w["start"] - a + offset, 3),
@@ -180,6 +197,7 @@ def main():
         raise
     bank = load_bank()
     it = next(x for x in bank["items"] if x["id"] == item_id)
+    it["cut_segments"] = item.get("cut_segments")
     it.update({"status": "rendered", "media": final, "cover": f"{MEDIA}/renders/{item_id}.jpg", "qa": result,
                "renderedAt": datetime.datetime.now().isoformat(timespec="seconds")})
     it.pop("error", None)
