@@ -64,7 +64,7 @@ ITEMS = [
     {"id": "text-tuesday-emotion-saturday", "lane": "text", "status": "ready", "priority": 5, "needs_deke": False,
      "sourceNote": note("8:50 to 9:28"),
      "text": {
-         "facebook": "You have an incredible, emotional run around the piano on Tuesday. Then Saturday comes and the "
+         "facebook": "You have an emotionally powerful run through a song in rehearsal on Tuesday. Then Saturday comes and the "
                      "emotion is gone.\n\nThat happens when you stumble on the emotion instead of rehearsing it. If singers "
                      "make tones in every rehearsal, they will make tones on stage. Ask for the emotion every single time, "
                      "and every performance gets easier than the rehearsals.\n\nHas this happened to your group?",

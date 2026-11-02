@@ -76,6 +76,12 @@ Text post (built from a moment in the video that works better as words than as a
 
 Priority: 8 to 9 for the strongest, most surprising ideas; 5 for solid; 3 for filler.
 
+## Deke's wording notes (from his own corrections; follow them)
+
+- 2026-11-02: "emotional run around the piano" sounds like an athletic event. Say "an emotionally powerful run
+  through a song in rehearsal". In general, describe singing in plain musical terms, never in words that read
+  as sport or exercise.
+
 ## Hard rules
 
 - Only Deke's own ideas, in his own framing. Never add advice, stories, numbers or opinions he did not say.
