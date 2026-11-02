@@ -98,7 +98,7 @@ def send(week):
     send_email(tag(f"Next week on your channels: {reels} videos, {texts} posts to approve"), body,
                to=deke_inbox(), reply_to=CONFIG["alert_email"], bcc=CONFIG["alert_email"] if LIVE else None,
                sender=CONFIG["review_from"])
-    print(f"SENT {week} to Deke: {url.split('?')[0]}")
+    print(f"SENT {week} to {deke_inbox()}: {url.split('?')[0]}")
 
 
 def _remind(week, meta):
