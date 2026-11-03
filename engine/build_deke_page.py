@@ -34,6 +34,12 @@ def main(folder, intro, skool, reply_by):
     first = local(min(rows, key=lambda r: r["scheduledAtISO"]))
     monday = first.date() - datetime.timedelta(days=first.weekday())
     sunday = monday + datetime.timedelta(days=6)
+    grid = []
+    for d in range(7):
+        day = monday + datetime.timedelta(days=d)
+        todays = [r for r in rows if local(r).date() == day]
+        kind = ("Video" if bank[todays[0]["engineItem"]]["lane"] == "reel" else "Text") if todays else "Rest"
+        grid.append(f'<div class="{"" if todays else "rest"}"><div class="d">{day:%a} {day.day}</div><div class="w">{kind}</div></div>')
     cards = []
     for n, iid in enumerate(order, 1):
         it = bank[iid]
@@ -72,6 +78,7 @@ def main(folder, intro, skool, reply_by):
             '<li>To drop a post, reply "skip" and its number.</li></ol>'
             f'<p>{E(reply_by)}</p></section>'
             f'<section class="skool"><h2>Inside Total Vocal</h2><p>{E(skool)}</p></section>'
+            f'<div class="week" aria-label="The week at a glance">{"".join(grid)}</div>'
             + "".join(cards) +
             f'<footer>Prepared by Denis Laflamme for Deke Sharon. Nothing on this page has been posted yet.</footer></main>')
     out = os.path.join(folder, "DEKE-WEEK.html")

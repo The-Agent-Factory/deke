@@ -26,3 +26,9 @@ figure{margin:0;display:flex;flex-direction:column;gap:8px}figure img{width:100%
 .copy{white-space:pre-wrap;margin:0;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px 14px;overflow-wrap:anywhere}
 footer{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:14px}
 @media (max-width:640px){.body{grid-template-columns:1fr}figure{max-width:220px}}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.week div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 4px;text-align:center;min-width:0}
+.week .d{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:0;padding:0}
+.week .w{font-size:13px;font-weight:600;border:0;padding:0}
+.week .rest{opacity:.55}
+@media (max-width:640px){.week{grid-template-columns:repeat(4,minmax(0,1fr))}}
