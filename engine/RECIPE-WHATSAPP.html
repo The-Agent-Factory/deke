@@ -1,0 +1,68 @@
+<title>Deke WhatsApp Recipe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one reading column. A who-does-what strip, the eight steps as a numbered sequence, then the standard. */
+:root{--bg:#f7f5f0;--card:#fff;--fg:#1c1a17;--muted:#6b655b;--line:#e3ddd1;--gold:#a87a1f;--gold-soft:#f3e7cc;--you:#2f5f8a;--you-soft:#e3edf6;
+--body:"Segoe UI",system-ui,sans-serif;--mono:Consolas,"Courier New",monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141311;--card:#1d1b18;--fg:#efe9dd;--muted:#a39b8c;--line:#34302a;--gold:#d9a948;--gold-soft:#3a2f18;--you:#8bb8e0;--you-soft:#1b2a38;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141311;--card:#1d1b18;--fg:#efe9dd;--muted:#a39b8c;--line:#34302a;--gold:#d9a948;--gold-soft:#3a2f18;--you:#8bb8e0;--you-soft:#1b2a38;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:17px/1.55 var(--body)}
+.wrap{max-width:780px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:32px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:0}
+h1{font-size:34px;line-height:1.1;margin:6px 0 10px;text-wrap:balance}
+h2{font-size:22px;margin:0 0 12px}
+p{margin:0;max-width:66ch}.lede{color:var(--muted)}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.who div{border-radius:8px;padding:14px 16px;min-width:0}
+.who .you{background:var(--you-soft)}.who .claude{background:var(--gold-soft)}
+.who b{display:block;margin-bottom:4px}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
+ol.steps li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px 14px 60px;position:relative;counter-increment:s;min-width:0}
+ol.steps li::before{content:counter(s);position:absolute;left:16px;top:13px;width:30px;height:30px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:15px}
+ol.steps li.you{border-left:4px solid var(--you)}
+.tag{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;display:block}
+li.you .tag{color:var(--you)}
+code{font:.86em var(--mono);background:var(--gold-soft);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+ul.std{margin:0;padding-left:20px;display:grid;gap:6px;max-width:66ch}
+.foot{font-size:14px;color:var(--muted)}
+</style>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Deke Sharon . Total Vocal . approved Nov 3, 2026</p>
+    <h1>Deke WhatsApp Recipe</h1>
+    <p class="lede">How any video Deke sends on WhatsApp becomes a week of posts at the same quality as the rehearsal tips. You do two things; Claude does the rest, with checks that stop anything sloppy before Deke sees it.</p>
+  </header>
+
+  <section class="who" aria-label="Who does what">
+    <div class="you"><b>You</b>Save the video into the inbox and say "new Deke WhatsApp video". Later, send Deke one link and post the full video in Skool.</div>
+    <div class="claude"><b>Claude</b>Cuts the reels, checks every word and caption, builds Deke's page, and schedules after his OK.</div>
+  </section>
+
+  <section>
+    <h2>The eight steps</h2>
+    <ol class="steps">
+      <li class="you"><span class="tag">You, 30 seconds</span>In WhatsApp Desktop, right-click Deke's video, choose Save as, and save it in <code>C:\deke-media\inbox</code>. Then tell Claude in the deke folder: "new Deke WhatsApp video".</li>
+      <li><span class="tag">Claude</span><b>Intake.</b> Checks the video, detects whether it is a vertical selfie or landscape, measures the sound, and transcribes it. Stops with a reason if there is no speech or no audio.</li>
+      <li><span class="tag">Claude</span><b>Pick the clips.</b> One reel per idea or tip, 15 to 30 seconds, starting on the idea and ending on a complete sentence. A numbered list becomes a series ("TIP 1 OF 4"), and the whole video becomes a Skool-only post. Captions are Deke's own words. A checker refuses anything that breaks the rules.</li>
+      <li><span class="tag">Claude</span><b>Render.</b> Every reel gets the standard below automatically. A render that would clip a word or show a broken caption fails instead of shipping.</li>
+      <li><span class="tag">Claude</span><b>Quality check.</b> Transcribes how each reel starts and ends, and builds a contact sheet with every caption and the first and last frames. Anything wrong is fixed and re-rendered before Deke sees it.</li>
+      <li><span class="tag">Claude</span><b>Plan the week.</b> Same shape as the approved weeks: videos Tuesday, Thursday and Saturday on Instagram, Facebook, YouTube and TikTok; text posts Monday and Wednesday. The Postiz dry run must pass.</li>
+      <li class="you"><span class="tag">You, 1 minute</span>Claude gives you Deke's page. Set it to "anyone with the link" and send it to Deke on WhatsApp. He watches each video, reads each post, and replies "all good" or names a change.</li>
+      <li><span class="tag">Claude, then you</span><b>Schedule.</b> On his OK, or Sunday 9 PM with no answer, Claude applies any change he asked for, schedules the week, and confirms every post is in Postiz. You post the full video inside Total Vocal on Monday.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>The standard every reel gets</h2>
+    <ul class="std">
+      <li>A small gold label at the opening, only for a real series ("REHEARSAL TIP 1 OF 4"), gone within three seconds.</li>
+      <li>The Maliboom a cappella bed from Deke's Sing-Off folder, quiet under his voice, rising on the closing card.</li>
+      <li>The Total Vocal closing card with his portrait and skool.com/deke, instead of a frozen last frame.</li>
+      <li>Cuts at real silence, never through a word, with a natural pause before the card.</li>
+      <li>Captions that match exactly what he says: "7 p.m." whole, no "uh", nothing from the next sentence.</li>
+      <li>Vertical 1080 by 1920, his speech at a steady level, and every public caption pointing to the full video inside Total Vocal.</li>
+    </ul>
+  </section>
+
+  <p class="foot">Claude's step-by-step version with exact commands: <code>claude_projects\deke\engine\RECIPE-WHATSAPP.md</code>. Media lives in <code>C:\deke-media</code>.</p>
+</main>

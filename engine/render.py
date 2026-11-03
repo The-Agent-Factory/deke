@@ -6,7 +6,7 @@ timings from the local Whisper transcript, then the DekeShort Remotion template
 (gold word captions, end CTA, progress bar).
 
 Usage:  python engine/render.py <item-id> [--force]
-Reads engine/bank.json, writes D:/deke-media/engine/renders/<id>.mp4 + <id>.jpg
+Reads engine/bank.json, writes <media_root>/engine/renders/<id>.mp4 + <id>.jpg
 and updates the item's status to "rendered" (or "render_failed" with the error).
 Fails loudly: any step that goes wrong exits 1 with the reason.
 """
@@ -14,7 +14,7 @@ import json, os, subprocess, sys, shutil, re, datetime
 
 ENGINE = os.path.dirname(os.path.abspath(__file__))
 BANK = os.path.join(ENGINE, "bank.json")
-MEDIA = os.environ.get("DEKE_MEDIA", "D:/deke-media") + "/engine"  # DEKE_MEDIA moves all outputs, e.g. when D: is unhealthy
+MEDIA = (os.environ.get("DEKE_MEDIA") or json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8")).get("media_root", "C:/deke-media")) + "/engine"  # config media_root (C: since D: failed); env DEKE_MEDIA overrides
 REMOTION = os.path.join(os.path.dirname(ENGINE), "my-video")
 HOLD = 3.5
 FILLERS = {"uh", "um", "uhm", "erm", "ah"}

@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CONFIG, TZ, LIVE, DRY, SOURCES_PATH, ENGINE, REPO, STATE, BATCHES, ENV, now, load_bank, deke_posts, write_state
 
 CHANNEL = "https://www.youtube.com/channel/UCTuZ5LxQIjLK-CJBy0onT_Q/videos"
-MEDIA = "D:/deke-media/engine"
+MEDIA = (os.environ.get("DEKE_MEDIA") or json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8")).get("media_root", "C:/deke-media")) + "/engine"
 TARGET_WEEKS = 6
 LOG = os.path.join(STATE, "weekly.log")
 PY = [sys.executable, "-X", "utf8"]
@@ -34,8 +34,8 @@ def sh(cmd, timeout=3600, **kw):
 
 def preflight():
     problems = []
-    if not os.path.isdir("D:/deke-media"):
-        problems.append("D: media drive is not mounted (D:/deke-media missing)")
+    if not os.path.isdir(os.path.dirname(MEDIA)):
+        problems.append(f"media folder {os.path.dirname(MEDIA)} is missing")
     if not ENV.get("POSTIZ_API_KEY"):
         problems.append("POSTIZ_API_KEY missing")
     for tool in ("node", "yt-dlp", "ffmpeg", "claude"):

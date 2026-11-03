@@ -18,7 +18,7 @@ def local(r):
 
 
 def still(it):
-    small = f"D:/deke-media/engine/work/{it['id']}-still.jpg"
+    small = os.path.join(os.path.dirname(it["media"]), "..", "work", f"{it['id']}-still.jpg")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "2", "-i", it["media"], "-frames:v", "1",
                     "-vf", "scale=360:-1", "-q:v", "5", small], check=True)
     return "data:image/jpeg;base64," + base64.b64encode(open(small, "rb").read()).decode()

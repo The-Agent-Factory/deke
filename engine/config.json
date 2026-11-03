@@ -134,5 +134,7 @@
     "music": "music/HJ_Maliboom_BED1.mp3",
     "musicUnder": 0.05,
     "musicSwell": 0.22
-  }
+  },
+  "media_root": "C:/deke-media",
+  "_media_root": "Where the engine keeps sources, transcripts, renders. Moved off D: on 2026-11-02 (D: flagged Full Repair Needed). Env DEKE_MEDIA overrides."
 }

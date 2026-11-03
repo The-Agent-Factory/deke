@@ -9,7 +9,7 @@ import json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import load_bank, save_bank
 
-TR = "D:/deke-media/engine/transcripts"
+TR = (os.environ.get("DEKE_MEDIA") or json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8")).get("media_root", "C:/deke-media")) + "/engine/transcripts"
 BANNED = [("\u2014", "em dash"), ("choir director", "say 'a cappella directors'"), ("\u2013", "en dash")]
 
 

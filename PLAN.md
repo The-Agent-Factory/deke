@@ -1,6 +1,222 @@
-# Deke — Plan
-**Last updated:** 2026-09-07 (local)
+# Deke: Plan
+**Last updated:** 2026-11-01 (local)
 **Status:** active
+
+## 🆕 2026-11-01: GO-LIVE PREP FOR THE WEEK OF NOV 2 (contact sheet for Deke, nothing sent)
+
+- **Denis:** "go live on the Deke queue" and send Deke a contact sheet he can improve today.
+- **Week of Nov 2 = the 5 built Nov 9 pieces moved one week earlier** (engine priority picks exactly these): Mon text "Great on Tuesday, flat on Saturday" (FB, Threads; J75D3PhzzL0 8:50), Tue China Pingtan reel (IG/FB/YT/TikTok; Deke's phone footage; flagged for Deke's yes: shows other groups), Wed text one-day sings (LinkedIn, FB; NixffPanZ6s 23:47), Thu UK doctors reel (NixffPanZ6s 19:02), Sat music-career reel (NixffPanZ6s 2:37). 16 posts.
+- **Contact sheet:** `engine/contact-sheets/2026-11-02.html`, private Artifact https://claude.ai/artifact/73qBXtNYj3ZKLYvNeNZcfU (republish there; Share it before sending to Deke). Stills, captions, sources, plus 10 swap-in candidates A to J (A-D rendered, E-I need a cut, J = "Creative Vocal Arranging in 4 Steps", 54K views, moment not picked). Generator: session scratchpad `build_sheet.py` (not kept in repo).
+- **Read-only checks:** Postiz queue 0 posts next 21 days. ENGINE_REVIEW_SECRET is in `.env` but NOT on Railway (deke-production / service deke, 27 vars). "Deke Engine Review" task does not exist; Weekly still has the old Sunday trigger (now shows 6:00 after DST), Watchdog shows 7:30. So install-tasks.ps1 was not re-run.
+- **Go-live steps (exact commands):** `engine/contact-sheets/GO-LIVE-2026-11-02.md`. Order: send sheet to Deke, run install-tasks.ps1, apply Deke's swaps, flip live, rename the vetoed `batches/2026-11-02` folder by hand (NOT `release`: it would un-veto the 5 vetoed items), `batch.py release 2026-11-09`, `batch.py plan 2026-11-02 --auto` before Mon 7 AM. Review deadline for this week is tonight 21:00 ET; the 21:00 Review task schedules it (silence = yes).
+- **Gap:** after this week the bank has 0 text posts; Nov 9 will run short 2 text slots unless the miner adds text.
+- **→ DENIS:** steps 1 to 5 of GO-LIVE-2026-11-02.md today.
+
+## 🆕 2026-11-02 (later): THIS WEEK SCHEDULED + DEKE'S WHATSAPP "4 TIPS" VIDEO CUT FOR SKOOL PROMO
+
+- Another session had sent Deke a Nov 2-7 plan (https://claude.ai/artifact/73qBXtNYj3ZKLYvNeNZcfU) with the same 5 pieces as the engine's Nov 9 batch; Deke approved it ("These are great!", one wording tweak). Denis said go: **16 posts scheduled in Postiz for Nov 2-7** from `engine/batches/2026-11-02-approved/manifest.json` (Mon FB moved to 2 PM, Threads noon). Engine Nov 9 batch marked superseded; those 5 bank items = scheduled. Lesson: two sessions planned the same week; always check `engine/batches` and Postiz before planning Deke content.
+- Deke's WhatsApp video (`Deke-Whatsapp-message.mp4`, 1:45 vertical selfie, "Choir directors, do you have too much free time?", 4 rehearsal tips) copied to `D:/deke-media/engine/source/`, transcribed, cut into 4 reels (`wa-tip1..4`, 18-28 s, QA pass) + full 1:46 `wa-four-tips-full` (skool_only, never auto-planned). Renders in `D:/deke-media/engine/renders/`. Promo mechanic: full video posted only inside Total Vocal; each public tip caption ends "All four tips in one video, free inside Total Vocal: skool.com/deke". Note: Deke says "choir directors" in his own spoken hook; our copy says a cappella directors.
+- Engine: new framing "native" (already-vertical sources), per-item maxSec, skool_only excluded from planning (commit after 9b6b16c).
+- **Clipped endings fixed (Denis caught tip 1 cut short):** Whisper word end times run ~0.05-0.2 s early, so cuts clipped the last word ("it", "autopilot", "choir", "club", "backyard"). render.py now snaps each segment end to the quietest 20 ms just after the word (`snap_end`) and records `cut_segments`; verified by re-transcribing each render's last 3 s. Re-rendered all 4 WhatsApp tips + full, and UK doctors + career; the 8 scheduled Postiz posts for Thu Nov 5 and Sat Nov 7 were deleted and re-sent with the fixed files (16 posts total, verified). Nov 9 plan page republished with new preview links.
+- **Captions fixed (Denis: "7 pm" captions broken):** render.py now transcribes each finished clip itself (punctuation, no outside words), joins Whisper fragments (7 p.m., warm-ups, t-shirts), drops fillers (uh/um), snaps cut starts and ends to silence without leaking into the next phrase, and writes `<id>-captions.jpg` (one frame per caption) for every render; template DekeShort.tsx shows the newest caption so short ones are not hidden (commit d613b31). Re-rendered 4 tips, full video, UK doctors (start moved to 1143.05 to drop "that"), career; replaced Thu Nov 5 + Sat Nov 7 Postiz posts again (16 posts total, 2 published Mon). China reel captions checked clean. Nov 9 page republished with new previews.
+- **Nov 3, two more bad cuts caught by Denis (tip 1 after "time?", tip 3 last word):** quietest-point snapping landed inside words (dip between syllables of "rehear-sal"; "time?" really runs to 3.2 s though Whisper said 2.92). render.py now cuts at the first real silence (voice below room-noise threshold for 100 ms, plus 80 ms natural pause) and fails any render whose cut lands while the voice is in the upper half of his speaking level (commit 4c19fc6). Tips re-rendered (tip 1 hook ends 3.29, tip 3 ends 74.14), verified by transcribing each ending; Nov 9 page republished. This week's scheduled UK/career cuts unchanged under the new rule.
+- **Nov 3, polish prototype (Denis: tasteful animation, a cappella bed, better ending):** `my-video/src/Polish.tsx` adds Kicker (small gold "REHEARSAL TIP 1 OF 4" label + hairline, gone by 3 s), MusicBed (HJ_Maliboom_BED1 Sing-Off bed at 0.05 under voice = speech loudness unchanged, swells to about -21 LUFS on the card, fades out), EndSplash (Total Vocal charcoal/gold card with Deke portrait, "ALL 4 TIPS / FREE INSIDE / TOTAL VOCAL", skool.com/deke) replacing the held frame + pill. Off by default; per item `polish`. Preview item `wa-tip1-polished-preview` (skool_only, never auto-planned): before https://uploads.postiz.com/AAzYEgTXyv.mp4 after https://uploads.postiz.com/K6hhZB0Si3.mp4. **Denis chose "apply everything now":** polish (kicker "REHEARSAL TIP n OF 4", Maliboom bed, Total Vocal card) is on all 4 tips (bank `polish` field), re-rendered on C:, frames checked, Nov 9 page republished (v5) with a line asking Deke to say if the Sing-Off beds are not cleared for social (Content ID risk). Full Skool video stays plain.
+- **Nov 3: "That is the new standard" (Denis).** Saved to memory (feedback_deke_reel_standard.md). engine/config.json `reel_polish` now applies the Maliboom bed + Total Vocal closing card ("THE FREE COMMUNITY / FOR A CAPPELLA SINGERS / TOTAL VOCAL") to every reel by default; items override with their own `polish` (e.g. series kicker) or `polish:false`; skool_only stays plain. Contact sheet builder `engine/build_contact_sheet.py` (every caption, opening/middle/closing frames, cut points, loudness, checks). Tips contact sheet: https://claude.ai/artifact/KKo3meVfz9nom5FZH4wdvf
+- **⚠️ D: drive (media, "Exports") dropped out mid-render on Nov 2 ~6:40 PM; Windows marks it "Full Repair Needed".** Renders now go to C:\deke-media\engine via env `DEKE_MEDIA=C:/deke-media` (bank media paths point there). The scheduled tasks still default to D:. Denis to decide on repair (chkdsk) and a backup.
+- **Week of Nov 9 (Denis chose):** plan page for Deke https://claude.ai/artifact/RSoNaaDxHEHskSLiv76Hjg (source `engine/batches/2026-11-09-deke-plan/DEKE-WEEK.html`, built by `engine/build_deke_page.py`). Mon text record-the-last-take, Tue tip 1, Wed text learning-is-asymptotic, Thu tip 2, Sat tip 3 (16 posts, Postiz dry run OK, manifest `engine/batches/2026-11-09-deke-plan/manifest.json`, NOT scheduled). Tip 4 opens the week of Nov 16. Denis posts the full video in Skool Mon Nov 9 (wa-four-tips-full.mp4). Deke replies by Sun Nov 8 9 PM; then schedule with `node scripts/postiz-publish.mjs --manifest engine/batches/2026-11-09-deke-plan/manifest.json`.
+
+## 🆕 2026-11-02: DRY RUN PASSED 11/11, ENGINE STILL OFF (waiting on Denis's "go live")
+
+- Denis ran install-tasks.ps1: tasks Weekly (Sat 7:00), Review (9:00 + 21:00), Watchdog (8:30) registered; ENGINE_REVIEW_SECRET set on Railway (deploy 7e635fa3 SUCCESS).
+- Dry run for week dry-2026-11-09: all 11 steps PASS. Denis answered on his phone (4 approve, 1 skip); finalize dropped the skip, 14 posts passed the Postiz dry run; 0 new Deke posts in Postiz, 0 emails to Deke.
+- Deke saw the plan and replied: "These are great!" with one tweak: "emotional run around the piano" sounds athletic, use "emotionally powerful run through a song in rehearsal". Applied in bank.json, seed_rehearsal.py, the real Nov 9 manifest; saved as a standing rule in MINE-PROMPT.md.
+- Real week 2026-11-09 sits in engine/batches as send_failed (china, uk-doctors, career, tuesday-emotion, one-day-choirs); while live=false it does nothing.
+
+## 🆕 2026-10-31 (later): ENGINE IS OFF UNTIL A DRY RUN PASSES
+
+- **Denis:** nothing goes to Deke until a head-to-toe dry run has passed and he has seen every step. Plan + dry-run scoreboard: https://claude.ai/artifact/JBDS8qE76TDvJhR9tytNNc (source `engine/ENGINE-OVERVIEW.html`, republish there).
+- **Master switch `engine/config.json` "live": false.** While false: weekly.py and review.tick only log "paused", batch.publish refuses, every Deke-facing email goes to Denis tagged [NOT LIVE]/[DRY RUN], watchdog downgrades the empty-queue red to amber. Only Denis flips it ("go live").
+- **Dry run:** `engine/dryrun.py` (11 steps, `list` / `step n` / `all [--answer approve-all|skip-first]`) and `engine/dryrun.ps1` (pauses before each step). Private workspace: bank-dry.json, batches-dry/, state-dry/ (env DEKE_ENGINE_DRY=1); site key `dry-<week>` with a DRY RUN banner (site commit 64e85ff, deployed SUCCESS). Report: `engine/state-dry/dryrun-report.json`.
+- **Results 2026-10-31:** steps 0, 2, 3, 4 PASS; step 1 FAIL only because ENGINE_REVIEW_SECRET is not on Railway (Claude blocked from writing secrets); steps 5-10 wait on it. Dry run caught: re-mining a hand-mined video (fixed 344045e).
+- Railway note: replaced deployments show as FAILED (SIGTERM on swap), not crashes.
+- **→ DENIS:** run `engine/install-tasks.ps1` (safe while off), then `engine/dryrun.ps1` or say "continue the dry run"; at step 6 tap the buttons in the [DRY RUN] email; when all pass, say "go live".
+
+## 🆕 2026-10-31: DEKE APPROVES EACH WEEK (replaces standing approval)
+
+- **Decision (Denis):** weekly cycle. Saturday the engine builds next week and emails Deke a private review link; he taps Approve or Skip per post; Sunday 9 PM the engine schedules everything not skipped. **No answer = everything posts** (Denis's choice). Reminder to Deke Sunday ~7-9 AM. Skipped items are never offered again (bank status skipped_by_deke). `engine/config.json` approval_mode = "deke".
+- **Site (live, commits 102535d + retry fix, Railway auto-deployed from GitHub push, SUCCESS):** page `/content-review/<week>?t=<token>` (noindex), API `POST/GET /api/content-review` (engine bearer `ENGINE_REVIEW_SECRET`), `POST /api/content-review/<week>` (Deke's token). Stored in AgentMemory (agentId content-review), no schema change. `origin` remote added = GitHub The-Agent-Factory/deke.
+- **Engine:** `engine/review.py` (send / tick: remind, finalize, retry unsent), batch.py routes deke mode to review, weekly.py plans one week at a time, watchdog runs review.tick as catch-up. Previews uploaded to Postiz media (public URLs, verified streaming).
+- **Week of Nov 9 is built** (China reel, UK doctors, music career, 2 text) and dry-run passed; status send_failed until the Railway secret exists.
+- **→ DENIS: run `engine/install-tasks.ps1` again.** It moves Weekly to Saturday 7 AM, adds "Deke Engine Review" (9 AM + 9 PM), and sets ENGINE_REVIEW_SECRET on Railway (Claude was blocked from writing secrets). The next review check then emails Deke the Nov 9 link automatically. Tell Deke the email is coming.
+
+## 🆕 2026-10-30: ENGINE REPAIRED, NOV 2 WEEK VETOED, CHINA REEL QUEUED
+
+- Deke (WhatsApp Oct 30): frustrated his NEW footage sits unused (5 Too Many Notes takes, quick hits, a closely cut video with music, China). Likes the repurposed old videos and the Facebook text posts ("huge win"). Wants useful content, not daily small talk; success = engagement. Draft reply for Denis asks him to resend the backlog folder link.
+- Both engine tasks are installed (Denis ran install-tasks.ps1). First Sunday run: Nov 1, 7:00.
+- `engine/bank.json` was found zero-filled (laptop shut down mid-save Oct 27); watchdog crashed on it Oct 30. Rebuilt from `seed_rehearsal.py` + `state/mined-NixffPanZ6s.json` + renders; corrupt copy kept in `state/`. All engine writes now go through `common.safe_write_json` (fsync, validate, `.bak`).
+- Nov 2 week: all 16 posts were removed from Postiz. Denis: on purpose, keep off. Batch marked vetoed; its 5 items are status vetoed (not reused automatically).
+- China: card68 reel C added as `china-pingtan-judging-day`, priority 10, caption rebuilt from Deke's own words (the Oct caption line "every room has a sound waiting" was not his). Denis approved queuing it. Goes out in the Nov 9 week.
+- Monday numbers promised to Deke: Skool members are tracked; per-post reactions/comments are NOT wired into the engine yet.
+
+## 🆕 2026-10-27: DEKE CONTENT ENGINE (runs on its own once the tasks are installed)
+
+Denis asked for a system that keeps Deke posting without him chasing it. Root cause of every dark spell (July, early Oct, Oct 26 on): each batch waited on a manual go. Proof posting works: Skool 215 → 302 members during the 2 weeks the Oct 19 batch ran (+4 in the dark week before).
+
+- **Overview for Denis (republish to this URL):** https://claude.ai/artifact/JBDS8qE76TDvJhR9tytNNc (source `engine/ENGINE-OVERVIEW.html`).
+- **Decision locked (Denis, 2026-10-27): STANDING APPROVAL.** `engine/config.json` approval_mode = standing. The weekly run schedules each week itself, 7+ days ahead, and emails the list. Denis vetoes by deleting a post in Postiz. needs_deke items (guest speaking, third party, minor, unconfirmed event) never auto-post.
+- **Engine (`engine/`):** `bank.json` (clips + text, each with sourceNote), `render.py` (ffmpeg base + Whisper words + Remotion `EngineShort` comp in `my-video`, QA size/length/LUFS), `render_queue.py`, `batch.py plan|publish|release <monday>` (uses `scripts/postiz-publish.mjs`, channel ids pinned), `watchdog.py` (daily, Resend email when red, Monday summary, `state/status.json`), `weekly.py` (preflight → new YouTube uploads → refill bank to 6 weeks via headless `claude -p` + `MINE-PROMPT.md` + `add_items.py` validator → render → plan next 2 weeks → watchdog), `transcribe.py` (faster-whisper large-v3 local), `words.py`.
+- Media: `D:/deke-media/engine/{yt,transcripts,bases,renders}`.
+- **Scheduled:** week of Nov 2, 16 posts (3 rehearsal reels × IG/FB/YT/TikTok + 2 text × FB/Threads/LinkedIn), verified in Postiz. Fixed same day: 3 TikTok captions had #choirdirector, deleted and re-sent with #acappelladirector; validator now bans it.
+- **2026-10-29 (card 182, Denis confirmed the Nov 2 week):** re-verified live in Postiz: all 16 posts in QUEUE on Deke's 6 channel ids (no X), 0 duplicate slots, 0 on other brands. Nothing re-sent. Proof: `jobs-1029/morning/card182/live.json`.
+- **Bank:** 10 reels + 4 text (rehearsal video J75D3PhzzL0, interview NixffPanZ6s cropped to Deke's Zoom tile), 2 held event posts.
+- **Blocked by this session's permissions (not worked around):** registering Windows tasks, launching headless `claude -p`. → **DENIS: run `engine/install-tasks.ps1` once** (Deke Engine Weekly, Sun 7:00; Deke Engine Watchdog, daily 8:30). The headless miner is untested until its first Sunday run; watchdog emails if it fails.
+- **Waiting on Denis:** (1) link to Deke's backlog (5 Too Many Notes takes, quick hits, Robert Plant footage): not in Dropbox, Drive, Gmail or local disks, likely in WhatsApp. (2) times for Oct 29 rehearsal live and Nov 6 video-critique live, then flip `needs_deke` false on the two event items. (3) whether to fill Oct 28 to Nov 1 (nothing scheduled).
+- Not done yet: China rain-concert "persistence" short and Robert Plant / Home Free style piece (Deke's asks); Skool posts stay manual.
+
+## 🆕 2026-10-26: SOME VOICES PARTNERSHIP OUTREACH (draft in Gmail, Denis to send)
+
+- Some Voices (somevoices.co.uk): non-audition contemporary choir, founder Laura Howe (London 2010), co-MD Curtis Stansfield, 2,500+ members, ~35 UK cities + Amsterdam, Berlin, Paris, Helsinki, Gouda. Contact sing@somevoices.co.uk.
+- Denis chose "open chat first": short hello from Denis as Total Vocal community coordinator, floats 3 ideas (listing on dekesharon.com /find-group, a perk for Total Vocal members, sharing content) and asks for a 20-minute call. Gmail draft id `r2990882173519681193`, not sent.
+- **Next:** Denis sends. If they reply yes, prep a call brief and add them to the Find a Group page.
+
+## 🆕 2026-10-22: SKOOL 90-DAY PLAN (Hormozi Council run, Denis to review)
+
+- Denis asked for a production schedule that does not babysit Deke and does not depend on Dropbox, plus coaching. Council winner: the Operator. Deke's only asks: 1 WhatsApp voice memo/week + 1 Riverside live/month. Floor = back catalogue + 3 admin-run rituals (Mon question, Wed "Postcard from Deke", Fri spotlight). Metric = members posting/commenting per week, target 25 by day 90. Kill the Postiz Skool cookie plan (ban risk on the owning account). Sell 10 founding "a cappella directors" seats at the first live before building a library.
+- Deliverable: `total-vocal-skool/strategy/SKOOL-90-DAY-PLAN.html`, published as Artifact https://claude.ai/artifact/423xexSCvRwUjZbSDcBoKg (republish to this URL).
+- **Next (Denis):** send the one-page agreement to Deke by WhatsApp, post the Monday question, then say "build the floor" for the first 2-week back-catalogue batch.
+- **Update same day (Denis):** focus is the content machine only. $49 founding seats PARKED. Riverside DROPPED (cost), use VDO.Ninja. Evaluate moving the content hub into Brand OS; use Voicebox with Deke's cloned voice, gated on Deke's written consent + platform AI labels. Handoff for a claude_projects-level session: `total-vocal-skool/strategy/CONTENT-MACHINE-HANDOFF.md`.
+
+## 🆕 2026-10-21: POST IN TOTAL VOCAL SKOOL AS DEKE, VIA POSTIZ (waiting on Deke's login)
+
+- Postiz supports Skool through its Chrome extension, which copies the Skool session cookie (no official API). Postiz warns this may break Skool's terms and risk a ban, and Deke's account owns the group, so keep posting low and human-paced.
+- Existing Skool channel `cmro2910e017dn60ype1i9ghx` is DENIS's account (Claude Academy customer). Not Deke.
+- `scripts/postiz-publish.mjs` already supports `platform: "skool"` (optional `title`). No code change needed.
+- Denis chose: Deke logs into skool.com in Denis's Chrome, then Postiz → Add Channel → Skool.
+- **Blocker:** needs Deke's login (Deke present, or his password plus his OK).
+- **Next after connect:** `--check` to confirm a "Deke Sharon" skool channel; add `skool` to the allowed scope; make sure the publisher picks Deke's skool channel, not Denis's (2 skool channels will exist); one test post with Denis's approval.
+
+## 🆕 2026-10-18: "ROOM FOR EVERYONE" WITH THE UP WITH PEOPLE FEEL (local only, nothing shared)
+
+Reference: "Room for Everyone (Voices by UWP)", Up With People, https://youtu.be/1oAafUvSUN4 (A major,
+band, steady 99.4 BPM, 80 bars). Audio + Demucs stems + analysis in `musicxml-tracks/interp/`.
+**Decisions locked (Denis):** Deke's form (48 bars, chart unchanged) with UWP's feel; new 4-bar groove
+intro before bar 1 (Bass groove of bar 3, oo/hoo chords in intro bars 3-4); tempo 108 BPM (Deke 118, UWP 99).
+- ACE working copy: `musicxml-tracks/job/ace-project/Room For Everyone UWP feel/Room For Everyone UWP feel/Room For Everyone UWP feel.acep`
+  (yesterday's project untouched). UWP vocal stem kept there as a muted reference track.
+- Method: ACE Vocal-to-MIDI on the Demucs vocal stem -> UWP lead syllables on the band's beat grid
+  (+0.5 beat fix: tracker locked to the "ands"; chorus residual median 0 proves it) -> matched per
+  section to Deke's melody relay by word + scale degree -> 16th/8th pushes copied (17 lead moves,
+  42 harmony notes follow; vocables keep the pulse). Verses: UWP sings a different melody, kept Deke's.
+  Dynamics from UWP's vocal loudness per section, melody part +0.15; breaths per part.
+- Scripts: `scripts/uwp_feel.py`, `scripts/uwp_dynamics.py` (dry run by default). Plan + report: `interp/uwp-feel-plan.json`.
+- Renders: `musicxml-tracks/exports-uwp-feel/` (mix + 13 learning tracks). First render (10:54) died at
+  10:59:02 when the PC was restarted from the Start menu (System event 1074), not an ACE crash; project was
+  saved 10:53 with all edits. IN FLIGHT: re-render started after the 2:25 PM boot, GPU free.
+- **Engine bug 2 (not fixed in engine):** ACE 2.1 reports export "succeeded" before the file is on disk;
+  `ace.py render()` checks at once and STOPs on an empty file. Workaround: `scripts/uwp_render.py` waits for
+  the file size to settle, then runs the engine's own mix + tracks. Fix the same way in the engine.
+- 14:46 render: GPU driver timeout (LiveKernelEvent 117, TDR) then ACE AppHang, with GPU-ClockCap active
+  (ran 2:35 PM, result 0) and the GPU at 66 C idle. Retry IN FLIGHT with a 60 C cool-start gate before every
+  file (`uwp_render.py cool_gate`). **DONE 14:53:** mix + 13 learning tracks rendered at 58-60 C, all 118.5 s,
+  13 distinct files, none silent; Bass-missing starts at 4.1 s (groove intro check). Mix + 4 predominant
+  tracks are on the explainer page as MP4 assets. Waiting on Denis's listen (tempo + intro feel).
+- MP3s on Google Drive (rclone `gdrive:`, folder "Deke Room For Everyone UWP feel", anyone-with-link):
+  mix https://drive.google.com/open?id=1pAvZI8gBmu-RglvAqz0wmu3wqsjMpiZ4 ,
+  learning tracks folder https://drive.google.com/open?id=1gl7Xs9ukQIRjtOzGhHuiSJ2c8v6ieT3R .
+  Dropbox refused (account over quota: 200 GB used of 9.25 GB). Artifacts refuse .mp3 assets.
+  rclone warns its shared Google Drive client_id stops working during 2026: make our own client_id.
+- Demucs cannot split a quartet into parts (one "vocals" stem). The pipeline does not need it: one solo lead take + the chart.
+- Explainer page (for Denis's ACE learning-tracks video): https://claude.ai/artifact/Vn3yps3c4ZZ6ct5kxJZZDp
+  (source `musicxml-tracks/interp/uwp-feel-explainer.html`; republish to the same URL).
+- **Engine bug found (not fixed):** `ace.py cmd_match` keys pronunciation overrides by list index, but
+  `phoneme list` omits "-" notes, so after `match` overrides land on the wrong notes. Fix: key by noteUuid.
+- YouTube download needs WARP paused (bot check on the WARP IP); cookies from Chrome/Edge/Comet fail on Windows.
+
+## 🆕 2026-10-17: "ROOM FOR EVERYONE" SATB SUNG TRACKS (local only, nothing shared)
+
+Deke's World Singing Day 2026 arrangement (`musicxml-tracks/Room For Everyone SATB.mxl`) run
+through PDF to Tracks from the MusicXML (no OMR): repeats unrolled 41 -> 48 bars, 118 bpm.
+`musicxml-tracks/parts/` = 4 part MusicXML; `musicxml-tracks/exports/` = dry WAV + MP3 per part
+plus full mix (light mix). ACE voices: Soprano Ember Rose, Alto Lien, Tenor Drex L, Bass Laolu.
+ACE project: `musicxml-tracks/job/ace-project/Room For Everyone/`. Open item for Deke: Bass
+bar 30 holds only one beat in his file (see `musicxml-tracks/job/note-check.md`).
+Helper scripts: `scripts/musicxml_to_t2t_job.py`, `patch_t2t_part_lyrics.py`, `ace_fix_pronunciation.py`.
+
+## 🆕 2026-10-17: INDIVIDUAL COACHING NOW $250/HR, VIRTUAL ONLY (live, commit `647f215`)
+
+Denis's call: Deke's one-on-one rate goes from $200 to $250/hr, online only.
+Changed in 5 files: booking card (`src/app/booking/page.tsx`), new badge on
+`/coaching` individual section, site chat bot prompt (`src/app/api/chat/route.ts`),
+Harmony and Conductor agent prompts. Group coaching untouched (still in-person or
+virtual, $2,000+). Pushed to GitLab + GitHub, Railway deploy `a118d36f` SUCCESS,
+verified on dekesharon.com: `/coaching` shows the badge, `/booking` bundle carries
+"$250/hr, online", zero `$200/hr` left. Not changed: old strategy docs
+(`docs/`, `public/skool/deke-skool-strategy.html`) still cite "$200-500/hr" as history.
+
+## 🆕 2026-10-15: CARD 68, CHINA SORTED, 4 REELS RENDERED, DRY RUN PASS (nothing posted)
+
+Brief 06, run on OMEN. Full report: `card68/deliverables/06-china-sort-renders.md`.
+- China folder (24 originals) viewed: main 1 (DJI_0048 Deke selfie), b-roll 12, skip 11. DJI_0061 dropped (identifiable child on the bus), DJI_0060 with it.
+- Reel C IN as a gated render (needs_deke true: names Pingtan and the festival, shows 3 groups, cuts his "very young acapella" line). F1 holds Sat Oct 24 unless Deke OKs by Thu Oct 22 12:00 ET.
+- Renders in `card68/renders/` (reel-a, reel-b, reel-c, f1), 1080x1920 H.264/AAC 30 fps faststart. A cropped to avoid inset photos, B dropped the truck b-roll, so both are Deke-only.
+- A/B sources re-downloaded from Deke's YouTube (old mkv files gone). F1 source is `RESOLVE EDIT KIT/WARMUPS - body clean 4K (C).mov` (the job's DJI_0021 path is stale).
+- Dry run: `card68/dryrun/build_and_validate.py` (no network code), 16 payloads + 4 held, 0 errors. Do NOT use `postiz-publish.mjs --dry-run` under a no-API rule: it calls GET /integrations.
+- Blocked on: box publishing the renders (public URLs), Denis on YouTube-sourced cuts, Deke on Reel C, then "post it".
+
+## 🆕 2026-09-09 — DAILY CONTENT ROUTINE + AUTOPILOT WAS DEAD FOR A MONTH
+
+Denis asked for a daily routine that (a) looks at what Deke drops in Dropbox and
+(b) mines his popular YouTube back catalogue for Shorts, then drafts posts.
+
+**Found first — the existing autopilot has been failing silently since ~2026-08-07.**
+`DekeDropboxAutopilot` is registered and "Ready", but every run exits 1. Cause: the
+media tier was moved to `D:\deke-media` and **the D: drive is not mounted**. Two bugs
+turned that into a silent failure:
+1. `writeFileSync(LOCK, ...)` ran BEFORE the try block, so the crash never reached the
+   fail-loud email handler.
+2. `main()` was called bare with no `.catch()`, so a pre-try throw died as a stack trace
+   to nobody.
+Also `log()` itself appends to the missing drive, which would re-throw while reporting.
+
+**Fixed (`scripts/dropbox-autopilot.mjs`):** explicit media-drive check first with a
+readable message, `mkdirSync` for the footage dir, `log()` append wrapped in try/catch,
+and `main().catch()` that emails + exits 1. **Verified:** now prints
+"FATAL: Media drive D:/ is not mounted ... nothing is lost" and emails, exit 1.
+
+**Cost of the outage:** Deke dropped a **China folder on 2026-09-02 — 24 videos,
+14.5 GB** that has never been pulled, probed, or transcribed. Nothing was lost (it is
+all still in Dropbox) but it sat a week unnoticed. ⚠️ **C: has only ~15.9 GB free and the
+drop is 14.5 GB** — plugging D: back in is the right fix, not staging onto C:.
+
+**New: `scripts/deke-daily.ps1`** — one daily pass, drafts only, never publishes.
+- **Preflight first** (per CLAUDE.md): rclone + `dropbox:` remote, media drive mounted,
+  `claude` CLI on PATH, free-space warning under 20 GB. Fails loud with the real reason
+  and pulls/cuts nothing. `-DryRun` tests exactly this.
+- **Source A:** reuses `dropbox-autopilot.mjs` (owns the ledger; not reimplemented).
+- **Source B:** headless `claude -p` → vidIQ MCP for top performers on
+  `UCTuZ5LxQIjLK-CJBy0onT_Q`, transcript → exact Short timestamps, drafts Skool post +
+  caption, runs stop-slop, plus ONE community discussion prompt (the weekly-ritual seed).
+- **A failing does NOT abort B** — the back catalogue is what feeds the community on a
+  day Deke drops nothing. Exits 1 if either half failed so Task Scheduler shows red.
+- Output: `reports/daily/<date>.md`. Hard rules in the prompt: no publishing, no invented
+  quotes/metrics, "a cappella directors" never "choir directors", no em dashes.
+
+**→ DENIS: 2 things to switch it on.**
+1. **Plug the D: drive back in.** Until then the Dropbox half cannot run at all.
+2. Register the task (Claude is permission-blocked from `schtasks`):
+   `schtasks /create /tn "DekeDaily" /tr "pwsh.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\lafla\claude_projects\deke\scripts\deke-daily.ps1" /sc daily /st 08:20 /f`
+   then the battery fix:
+   `Set-ScheduledTask -TaskName "DekeDaily" -Settings (New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries)`
+
+**Skool baseline (from the daily `Deke Skool Pulse` scrape, healthy):** 2026-08-14 =
+76 members / 30 posts → 2026-09-08 = **101 members / 52 posts**. Membership grew but
+posting is ~0.5 posts per member lifetime, and growth flatlined at 100 from 09-03 to
+09-08. Confirms Denis's read: the group is filling up but not talking.
+
+**Still true and still unfixed:** the three fabricated testimonials on `/total-vocal`
+(`src/components/total-vocal/tv-testimonials.tsx`). Denis confirmed 2026-09-09 there are
+**zero real member quotes**, so these cannot be swapped for real ones — they need to come
+down and be replaced with verifiable proof.
 
 ## 🆕 2026-09-07 — TOTAL VOCAL IS FREE + BIO IMAGE FIXED (live, commit `0d9359a`)
 

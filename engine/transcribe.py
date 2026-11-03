@@ -4,7 +4,8 @@ Skips files already done. Usage: python transcribe.py <video> [<video> ...]"""
 import sys, json, os
 from faster_whisper import WhisperModel
 
-OUT = "D:/deke-media/engine/transcripts"
+import json
+OUT = (os.environ.get("DEKE_MEDIA") or json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8")).get("media_root", "C:/deke-media")) + "/engine/transcripts"
 model = None
 for path in sys.argv[1:]:
     vid = os.path.splitext(os.path.basename(path))[0]
