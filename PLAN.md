@@ -2,6 +2,14 @@
 **Last updated:** 2026-11-03 (local)
 **Status:** active
 
+## 🆕 2026-11-03 (evening): FOOTAGE PICK LIST FOR DEKE (pre-cut checkboxes)
+
+- **Deke asked:** "Can you feed the footage I've sent you into this as well? The Too Many Notes that I've shot?"
+- **Found the "5 Too Many Notes takes":** they are the 2025 season on his YouTube (filmed at Camp A Cappella): -zSnIm_XyKk Pioneer, 723-8K0DweA How Much Should We Charge, 5vYndnic4VM Remote Groups, J75D3PhzzL0 Rehearsal (already mined), _EmgIR2OnKo Big Bands. 4 of 5 never cut. Older 2014-2021 teaching videos are also Too Many Notes ("Questions from Too Many Notes viewers").
+- **Pick page:** https://claude.ai/artifact/6HWMgL31g1fcnoBfSHtrbW (source `engine/footage-picks/PICKS.html`, built by `engine/footage-picks/build_picks.py engine/footage-picks/yt-channel-2026-11-03.jsonl`; republish to the same URL with the files map of `thumbs/`). 90 items: 85 YouTube videos in 6 groups + 5 Dropbox footage sets; 20 marked "Our pick"; already-cut status per video; copyright/minor flags. Checkbox per item; ticks save to artifact db doc `picks/deke` ({ids, note, updatedAt}); read with ArtifactData get collection `picks` doc `deke`. Fallback: "Copy my picks" button (text to paste on WhatsApp) because Deke is outside the org and may not be able to write the db.
+- **Still not found anywhere:** quick hits, the closely cut video with music, Robert Plant / Home Free footage (page asks Deke for the link).
+- **Next:** Denis shares the page with Deke (Share menu; Editor so ticks save). When picks arrive: add each picked YouTube id to the engine source list at top priority and mine/pre-cut them (engine weekly miner or by hand with MINE-PROMPT.md), then send Deke a contact sheet.
+
 ## 🆕 2026-11-03: NOV 9 WEEK SCHEDULED + WHATSAPP RECIPE (closed out)
 
 - Denis: assume Deke accepts everything. **Scheduled:** week of Nov 9 (16 posts, `engine/batches/2026-11-09-deke-plan`) and tip 4 on Tue Nov 17 (4 posts, `engine/batches/2026-11-16-tip4`). Postiz holds 31 Deke posts through Nov 17. Denis posts the full 4-tips video in Skool by hand Mon Nov 9 (`C:\deke-media\engine\renders\wa-four-tips-full.mp4`).

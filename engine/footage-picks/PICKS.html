@@ -1,0 +1,300 @@
+<title>Deke's Pre-cut Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column of video rows grouped by source, with a sticky tally bar that carries the save state. */
+:root {
+  --bg: #fbfaf7; --surface: #ffffff; --ink: #1f1d1a; --muted: #6b665d; --line: #e6e2d8;
+  --gold: #a87a1f; --gold-soft: #f4ead2; --gold-ink: #6e4e0e;
+  --warn: #9a3b1c; --warn-soft: #f8e4dc; --ok: #2f6b3a; --ok-soft: #e1efe2;
+  --display: "Young Serif", Georgia, "Times New Roman", serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #171614; --surface: #201e1b; --ink: #f1ede4; --muted: #a59e91; --line: #34312c;
+  --gold: #d9ad55; --gold-soft: #3a301c; --gold-ink: #f0d08e;
+  --warn: #f0a080; --warn-soft: #3d2219; --ok: #8fd19b; --ok-soft: #1d3322; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #171614; --surface: #201e1b; --ink: #f1ede4; --muted: #a59e91; --line: #34312c;
+  --gold: #d9ad55; --gold-soft: #3a301c; --gold-ink: #f0d08e;
+  --warn: #f0a080; --warn-soft: #3d2219; --ok: #8fd19b; --ok-soft: #1d3322; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 860px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 96px; }
+header.top { display: grid; gap: 14px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(32px, 6vw, 46px); line-height: 1.08; margin: 0; text-wrap: balance; }
+.lede { max-width: 62ch; color: var(--ink); margin: 0; }
+.how { display: grid; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; color: var(--muted); max-width: 62ch; }
+.how li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+.how b { color: var(--gold); font-family: var(--mono); font-weight: 500; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin-top: 28px; padding-block: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.tally { font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.tally small { font-weight: 500; font-size: 14px; color: var(--muted); }
+.save { font-size: 13px; color: var(--muted); }
+.save.ok { color: var(--ok); } .save.bad { color: var(--warn); }
+.bar .spacer { flex: 1 1 auto; }
+.btn { font: 600 14px/1 var(--body); border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+.btn:hover { border-color: var(--gold); }
+.btn.primary { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.btn:focus-visible, .pick input:focus-visible + .box, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.filter { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.filter button { font: 600 13px/1 var(--body); border: 0; background: transparent; color: var(--muted); padding: 9px 12px; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--gold-soft); color: var(--gold-ink); }
+
+section.group { margin-top: 44px; }
+section.group > h2 { font-family: var(--display); font-weight: 400; font-size: 26px; margin: 0; text-wrap: balance; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+section.group > h2 .count { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+section.group > p { color: var(--muted); margin: 6px 0 14px; max-width: 62ch; }
+
+.row { display: grid; grid-template-columns: 168px 1fr auto; gap: 16px; align-items: start; padding: 16px 0; border-top: 1px solid var(--line); }
+.row.checked .thumb { outline: 3px solid var(--gold); outline-offset: -3px; }
+.thumb { display: block; width: 168px; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: var(--gold-soft); position: relative; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb .dur { position: absolute; right: 6px; bottom: 6px; font: 500 11px/1 var(--mono); background: rgba(0,0,0,.72); color: #fff; padding: 3px 5px; border-radius: 3px; }
+.thumb.ph { display: grid; place-items: center; color: var(--gold-ink); font: 500 12px/1.2 var(--mono); text-align: center; padding: 8px; }
+.body { min-width: 0; display: grid; gap: 6px; }
+.title { font-weight: 700; font-size: 17px; line-height: 1.3; margin: 0; }
+.meta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.note { font-size: 14px; margin: 0; color: var(--ink); max-width: 60ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--line); color: var(--muted); }
+.chip.rec { background: var(--gold-soft); color: var(--gold-ink); }
+.chip.used { background: var(--ok-soft); color: var(--ok); }
+.chip.risk { background: var(--warn-soft); color: var(--warn); }
+.watch { font-size: 14px; font-weight: 600; color: var(--gold); text-decoration: none; }
+.watch:hover { text-decoration: underline; }
+.pick { display: grid; justify-items: center; gap: 4px; cursor: pointer; user-select: none; font-size: 12px; font-weight: 600; color: var(--muted); min-width: 64px; }
+.pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.box { width: 34px; height: 34px; border: 2px solid var(--muted); border-radius: 8px; display: grid; place-items: center; background: var(--surface); transition: background .12s, border-color .12s; }
+.box svg { width: 20px; height: 20px; opacity: 0; }
+.pick input:checked + .box { background: var(--gold); border-color: var(--gold); }
+.pick input:checked + .box svg { opacity: 1; }
+.pick input:checked ~ span { color: var(--gold); }
+.pick input:disabled + .box { opacity: .5; }
+
+.missing { margin-top: 44px; border: 1px dashed var(--gold); border-radius: 10px; padding: 18px 20px; display: grid; gap: 8px; }
+.missing h2 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 0; }
+.missing ul { margin: 0; padding-left: 20px; }
+.missing p { margin: 0; color: var(--muted); max-width: 62ch; }
+textarea#note { width: 100%; min-height: 90px; font: 15px/1.45 var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; box-sizing: border-box; }
+.notewrap { margin-top: 44px; display: grid; gap: 8px; }
+.notewrap label { font-family: var(--display); font-size: 22px; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.hidden-by-filter { display: none; }
+
+@media (max-width: 560px) {
+  .row { grid-template-columns: 1fr auto; }
+  .thumb { grid-column: 1 / -1; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .box { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Total Vocal &middot; footage for the reel pipeline</div>
+    <h1>Which videos should we cut into reels?</h1>
+    <p class="lede">Deke, this is everything we could turn into short clips for your channels: your YouTube videos and the footage you shot on trips. Tick the ones you want us to pre-cut. We send you the cuts to approve before anything posts.</p>
+    <ul class="how">
+      <li><b>1</b><span>Gold "Our pick" tags are our suggestions. Tick whatever you like, ours or not.</span></li>
+      <li><b>2</b><span>"Watch" opens the original on YouTube so you can check the source.</span></li>
+      <li><b>3</b><span>Your ticks save as you go. If it says it can't save, press "Copy my picks" and paste it to Denis on WhatsApp.</span></li>
+    </ul>
+  </header>
+
+  <div class="bar" role="region" aria-label="Your picks">
+    <div class="tally"><span id="count">0</span> picked <small id="of"></small></div>
+    <div class="save" id="save" aria-live="polite">Loading your picks...</div>
+    <div class="spacer"></div>
+    <div class="filter" role="group" aria-label="Show">
+      <button type="button" id="f-all" aria-pressed="true">All</button>
+      <button type="button" id="f-rec" aria-pressed="false">Our picks</button>
+      <button type="button" id="f-mine" aria-pressed="false">My ticks</button>
+    </div>
+    <button type="button" class="btn" id="tick-rec">Tick all our picks</button>
+    <button type="button" class="btn primary" id="copy">Copy my picks</button>
+  </div>
+
+  <main id="list"></main>
+
+  <div class="missing" id="missing"></div>
+
+  <div class="notewrap">
+    <label for="note">Anything else?</label>
+    <textarea id="note" placeholder="For example: cut the trumpet one first, skip anything with my old haircut, here is the link to the quick hits..."></textarea>
+    <div class="save" id="note-save"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const DATA = {"groups": [{"key": "tmn2025", "title": "Too Many Notes, 2025 season", "intro": "The five episodes you filmed at Camp A Cappella in spring 2025. Only the rehearsal one has been cut so far."}, {"key": "instrument", "title": "Sing like an instrument", "intro": "Your most watched videos. You alone, demonstrating. These travel well as short reels."}, {"key": "conversations", "title": "2026 conversations", "intro": "The long talks recorded this summer. Guests agreed to be filmed."}, {"key": "classics", "title": "Too Many Notes, earlier seasons (2014 to 2021)", "intro": "Your teaching episodes from earlier seasons. Each one usually holds 2 to 4 short moments."}, {"key": "panels", "title": "Counterpoint panels and guest hangouts", "intro": "Hour-long panels with other guests. Usable, but each clip needs the guest's name right."}, {"key": "footage", "title": "Footage you shot on trips", "intro": "Raw clips in your Dropbox (TotalVocal Skool folder)."}, {"key": "archive", "title": "Performances and archive", "intro": "Other groups singing known songs, TV clips and old interviews. Reels from these risk copyright claims or need the group's OK, so we don't suggest them."}], "items": [{"id": "J75D3PhzzL0", "group": "tmn2025", "title": "How to Run a Great Rehearsal", "year": "2025", "date": "20250513", "dur": "13:48", "views": 1370, "viewsLabel": "1.4K views", "note": "Already the source of 5 reels. A few strong moments are still unused.", "rec": true, "status": "5 reels cut in Oct. More moments left.", "used": true, "flag": "", "url": "https://youtu.be/J75D3PhzzL0", "thumb": "thumbs/J75D3PhzzL0.jpg"}, {"id": "-zSnIm_XyKk", "group": "tmn2025", "title": "How to be a Pioneer in A Cappella", "year": "2025", "date": "20250422", "dur": "11:40", "views": 952, "viewsLabel": "952 views", "note": "Seven principles for being a trailblazer in a cappella. One principle per reel.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/-zSnIm_XyKk", "thumb": "thumbs/-zSnIm_XyKk.jpg"}, {"id": "_EmgIR2OnKo", "group": "tmn2025", "title": "A Cappella Arranging Tips from Big Bands", "year": "2025", "date": "20250615", "dur": "6:33", "views": 501, "viewsLabel": "501 views", "note": "What a cappella can steal from big band energy and structure.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/_EmgIR2OnKo", "thumb": "thumbs/_EmgIR2OnKo.jpg"}, {"id": "723-8K0DweA", "group": "tmn2025", "title": "How Much Should We Charge?", "year": "2025", "date": "20250429", "dur": "5:49", "views": 344, "viewsLabel": "344 views", "note": "What groups should charge for gigs. A question every new group asks.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/723-8K0DweA", "thumb": "thumbs/723-8K0DweA.jpg"}, {"id": "5vYndnic4VM", "group": "tmn2025", "title": "Remote Groups - Crush A Cappella From Miles Apart", "year": "2025", "date": "20250506", "dur": "7:04", "views": 230, "viewsLabel": "230 views", "note": "How remote groups make music together from miles apart.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/5vYndnic4VM", "thumb": "thumbs/5vYndnic4VM.jpg"}, {"id": "50excXOTAuQ", "group": "instrument", "title": "Sing Like A Trumpet", "year": "2014", "date": "20140923", "dur": "3:00", "views": 99779, "viewsLabel": "100K views", "note": "Learn how to imitate a trumpet with your voice", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/50excXOTAuQ", "thumb": "thumbs/50excXOTAuQ.jpg"}, {"id": "qdbCO-1pwfI", "group": "instrument", "title": "Sing Like A Flute", "year": "2014", "date": "20141017", "dur": "3:03", "views": 31296, "viewsLabel": "31K views", "note": "Learn how to imitate a flute with your voice", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/qdbCO-1pwfI", "thumb": "thumbs/qdbCO-1pwfI.jpg"}, {"id": "Gc1heGjX5q8", "group": "instrument", "title": "Sing Like A Harmonica", "year": "2014", "date": "20141209", "dur": "3:46", "views": 27747, "viewsLabel": "28K views", "note": "Use your voice to sound like a Harmonica. Make friends, influence people, save $34.99 plus tax", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/Gc1heGjX5q8", "thumb": "thumbs/Gc1heGjX5q8.jpg"}, {"id": "5ol9d9qHfTE", "group": "instrument", "title": "Sing Like A Muted Trumpet", "year": "2014", "date": "20141006", "dur": "3:53", "views": 15007, "viewsLabel": "15K views", "note": "Learn how to imitate a muted trumpet with your voice", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/5ol9d9qHfTE", "thumb": "thumbs/5ol9d9qHfTE.jpg"}, {"id": "R-utZM_PUf8", "group": "instrument", "title": "Sing like an Electric Guitar (and Violin, Theremin, Kazoo)", "year": "2014", "date": "20141128", "dur": "3:56", "views": 92104, "viewsLabel": "92K views", "note": "Learn how to make your mouth buzz while singing, unlocking the core to several vocal instrumental sounds", "rec": false, "status": "Full recut and a short posted Aug 29.", "used": true, "flag": "", "url": "https://youtu.be/R-utZM_PUf8", "thumb": "thumbs/R-utZM_PUf8.jpg"}, {"id": "YIfmBU2IPxY", "group": "instrument", "title": "Pizzicato Strings with Your Voice", "year": "2015", "date": "20150101", "dur": "1:54", "views": 7524, "viewsLabel": "7.5K views", "note": "How to make your voice sound like a plucked string (Violin, Viola, Cello, String Bass)", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/YIfmBU2IPxY", "thumb": "thumbs/YIfmBU2IPxY.jpg"}, {"id": "Zb0o9q1kD2k", "group": "instrument", "title": "How To Use Your Voice Like An Instrument", "year": "2020", "date": "20200228", "dur": "7:51", "views": 5722, "viewsLabel": "5.7K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/Zb0o9q1kD2k", "thumb": "thumbs/Zb0o9q1kD2k.jpg"}, {"id": "XmhVlWMSzrc", "group": "conversations", "title": "More Women Than Men Sing Barbershop? Why It Matters", "year": "2026", "date": "20260804", "dur": "27:06", "views": 1493, "viewsLabel": "1.5K views", "note": "For 88 years, every quartet champion of the Barbershop Harmony Society was male. That streak just ended.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/XmhVlWMSzrc", "thumb": "thumbs/XmhVlWMSzrc.jpg"}, {"id": "ygvw_tXEtvY", "group": "conversations", "title": "Can You Make a Living in Music? (Yes, Here's How)", "year": "2026", "date": "20260804", "dur": "25:21", "views": 240, "viewsLabel": "240 views", "note": "Being good will not get you hired. That's the part nobody tells you.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/ygvw_tXEtvY", "thumb": "thumbs/ygvw_tXEtvY.jpg"}, {"id": "Zio3cjMo398", "group": "conversations", "title": "Building a Music Career: The Advice I Wish I Had at College", "year": "2026", "date": "20260901", "dur": "28:57", "views": 149, "viewsLabel": "149 views", "note": "Tom just finished his music degree in England and asked me the question every young musician asks: \"How do I actually get in?\"", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/Zio3cjMo398", "thumb": "thumbs/Zio3cjMo398.jpg"}, {"id": "NixffPanZ6s", "group": "conversations", "title": "It's Never Too Late to Sing: Starting a Group at 60", "year": "2026", "date": "20260901", "dur": "54:20", "views": 286, "viewsLabel": "286 views", "note": "Alan is a doctor in Las Vegas. Forty years ago he was rejected, twice, from the elite a cappella group at his college. Two weeks after singing the national anthem...", "rec": false, "status": "3 reels cut, 2 more ideas noted.", "used": true, "flag": "", "url": "https://youtu.be/NixffPanZ6s", "thumb": "thumbs/NixffPanZ6s.jpg"}, {"id": "evqK8oaV8V0", "group": "classics", "title": "Creative Vocal Arranging in 4 Steps", "year": "2018", "date": "20180109", "dur": "5:43", "views": 54652, "viewsLabel": "55K views", "note": "Spice up your arrangements and make them more creative with these 4 steps!", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/evqK8oaV8V0", "thumb": "thumbs/evqK8oaV8V0.jpg"}, {"id": "mrjZtmd55ZY", "group": "classics", "title": "So You Think You Can't Sing", "year": "2014", "date": "20140907", "dur": "4:01", "views": 48213, "viewsLabel": "48K views", "note": "Would you describe yourself as tone deaf? Do your friends say \"I can't sing, I wish I could sing?\"", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/mrjZtmd55ZY", "thumb": "thumbs/mrjZtmd55ZY.jpg"}, {"id": "sAmCEPFPvz8", "group": "classics", "title": "Why Doesn't Everyone Sing?", "year": "2016", "date": "20160101", "dur": "3:26", "views": 12570, "viewsLabel": "13K views", "note": "A couple of generations ago everyone used to sing. It was a part of every culture, every society. Why doesn't it happen anymore?", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/sAmCEPFPvz8", "thumb": "thumbs/sAmCEPFPvz8.jpg"}, {"id": "qu3_vLmiFmo", "group": "classics", "title": "Arranging for Women's Voices", "year": "2015", "date": "20151119", "dur": "5:41", "views": 8629, "viewsLabel": "8.6K views", "note": "5 key pointers to help you create great arrangements for women's a cappella groups", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/qu3_vLmiFmo", "thumb": "thumbs/qu3_vLmiFmo.jpg"}, {"id": "NB3TTGSOpwM", "group": "classics", "title": "Maximizing Rehearsal Time", "year": "2014", "date": "20141120", "dur": "5:35", "views": 6215, "viewsLabel": "6.2K views", "note": "Do you need more rehearsal time? Everyone does! Here's a 4 step plan that could result in up to 30 more minutes each rehearsal.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/NB3TTGSOpwM", "thumb": "thumbs/NB3TTGSOpwM.jpg"}, {"id": "gUCHXV5O8Hk", "group": "classics", "title": "Directors of Choral/Vocal/A Cappella Groups: Listen Up!", "year": "2018", "date": "20180219", "dur": "4:57", "views": 3944, "viewsLabel": "3.9K views", "note": "You may be doing something in rehearsal that you think is helping but is in fact undermining your ability to create great music.", "rec": true, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/gUCHXV5O8Hk", "thumb": "thumbs/gUCHXV5O8Hk.jpg"}, {"id": "54tfRYHm_1I", "group": "classics", "title": "Pop Quiz: Barbershop", "year": "2014", "date": "20140722", "dur": "1:37", "views": 12512, "viewsLabel": "13K views", "note": "You think you know barbershop?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/54tfRYHm_1I", "thumb": "thumbs/54tfRYHm_1I.jpg"}, {"id": "szxak6n2zKA", "group": "classics", "title": "Background Syllables", "year": "2015", "date": "20151011", "dur": "5:37", "views": 5360, "viewsLabel": "5.4K views", "note": "How to choose effective background syllables for your a cappella and vocal harmony arrangements (or die trying)", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/szxak6n2zKA", "thumb": "thumbs/szxak6n2zKA.jpg"}, {"id": "uAlvScEuA6o", "group": "classics", "title": "A Cappella Grenades!", "year": "2014", "date": "20140718", "dur": "1:55", "views": 4943, "viewsLabel": "4.9K views", "note": "A few explosive statements about contemporary a cappella", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/uAlvScEuA6o", "thumb": "thumbs/uAlvScEuA6o.jpg"}, {"id": "pifrpGLJrXY", "group": "classics", "title": "A Cappella Group Names", "year": "2014", "date": "20140804", "dur": "3:28", "views": 4533, "viewsLabel": "4.5K views", "note": "So many punny a cappella group names, so little time...", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/pifrpGLJrXY", "thumb": "thumbs/pifrpGLJrXY.jpg"}, {"id": "XIvZn_-0VMU", "group": "classics", "title": "Why Vocal Harmony Matters", "year": "2017", "date": "20171218", "dur": "8:09", "views": 4465, "viewsLabel": "4.5K views", "note": "For most of human history everyone sang... but that changed. Why did that happen, why is it a problem, and what can be done?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/XIvZn_-0VMU", "thumb": "thumbs/XIvZn_-0VMU.jpg"}, {"id": "tymICSqQJAM", "group": "classics", "title": "Three Part Vocal Arranging", "year": "2021", "date": "20210302", "dur": "10:15", "views": 4306, "viewsLabel": "4.3K views", "note": "", "rec": false, "status": "1 reel cut in Oct.", "used": true, "flag": "", "url": "https://youtu.be/tymICSqQJAM", "thumb": "thumbs/tymICSqQJAM.jpg"}, {"id": "YnXmbsLMz7E", "group": "classics", "title": "Choreography for Vocal Groups", "year": "2020", "date": "20201027", "dur": "6:48", "views": 3883, "viewsLabel": "3.9K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/YnXmbsLMz7E", "thumb": "thumbs/YnXmbsLMz7E.jpg"}, {"id": "cKLXlCe2dsE", "group": "classics", "title": "Get Your A Cappella Group In Fighting Shape!", "year": "2014", "date": "20141027", "dur": "2:02", "views": 3807, "viewsLabel": "3.8K views", "note": "Mic technique? Choreography? Syllables? Scatting? Kickstarter? Pinterest? Guitar Solos? Background Parts? Autotune?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/cKLXlCe2dsE", "thumb": "thumbs/cKLXlCe2dsE.jpg"}, {"id": "iFuJP8cUA1g", "group": "classics", "title": "The All-Purpose Vocal Music Toolkit", "year": "2015", "date": "20150211", "dur": "4:41", "views": 3676, "viewsLabel": "3.7K views", "note": "Learn about the 4 dimensions of sound and how they can be used to help you in all aspects of group singing, from blend to arranging", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/iFuJP8cUA1g", "thumb": "thumbs/iFuJP8cUA1g.jpg"}, {"id": "NdfiuEfyza4", "group": "classics", "title": "How To Win Every Vocal Harmony Competition", "year": "2021", "date": "20210511", "dur": "6:46", "views": 3638, "viewsLabel": "3.6K views", "note": "", "rec": false, "status": "1 reel cut in Oct.", "used": true, "flag": "", "url": "https://youtu.be/NdfiuEfyza4", "thumb": "thumbs/NdfiuEfyza4.jpg"}, {"id": "dTbcvuPvND4", "group": "classics", "title": "Mastering Microphone Technique: 10 Tips", "year": "2018", "date": "20180328", "dur": "9:45", "views": 3364, "viewsLabel": "3.4K views", "note": "Never used mics before? Used them but still haven't mastered good microphone technique? No problem: These ten tips will help.", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/dTbcvuPvND4", "thumb": "thumbs/dTbcvuPvND4.jpg"}, {"id": "aHXEDUwAujM", "group": "classics", "title": "Make Your Arrangements FULLER", "year": "2018", "date": "20180507", "dur": "5:36", "views": 3071, "viewsLabel": "3.1K views", "note": "Get Fuller Arrangements in THREE EASY STEPS!!", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/aHXEDUwAujM", "thumb": "thumbs/aHXEDUwAujM.jpg"}, {"id": "sVV3WIcx3Yk", "group": "classics", "title": "Competition Tips", "year": "2015", "date": "20150129", "dur": "5:51", "views": 2840, "viewsLabel": "2.8K views", "note": "It's competition season! The International Championship of College A Cappella (ICCAs), the International Championship of High School A Cappella (ICHSAs), and the...", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/sVV3WIcx3Yk", "thumb": "thumbs/sVV3WIcx3Yk.jpg"}, {"id": "7l8YzaTpJNk", "group": "classics", "title": "How To Arrange for Any Group", "year": "2018", "date": "20180201", "dur": "5:58", "views": 2724, "viewsLabel": "2.7K views", "note": "It's not hard to arrange for groups you know well... but how can you arrange a song that sounds good when sung by a variety of different groups that you've never met?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/7l8YzaTpJNk", "thumb": "thumbs/7l8YzaTpJNk.jpg"}, {"id": "mAp8O9Q8OIQ", "group": "classics", "title": "Singing Pro A Cappella after College", "year": "2014", "date": "20140725", "dur": "1:54", "views": 2617, "viewsLabel": "2.6K views", "note": "How to make the move to singing a cappella after graduating from your collegiate a cappella group.", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/mAp8O9Q8OIQ", "thumb": "thumbs/mAp8O9Q8OIQ.jpg"}, {"id": "iunfyWVC3Nc", "group": "classics", "title": "A Cappella Summer Camp!", "year": "2015", "date": "20150309", "dur": "4:20", "views": 2498, "viewsLabel": "2.5K views", "note": "If you love to sing and want to get better, there is nothing better than spending a week making music and new friends at an a cappella summer camp. All ages, all...", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/iunfyWVC3Nc", "thumb": "thumbs/iunfyWVC3Nc.jpg"}, {"id": "q-vSOvah6VI", "group": "classics", "title": "Viewer Questions", "year": "2014", "date": "20141111", "dur": "2:54", "views": 2370, "viewsLabel": "2.4K views", "note": "Questions from Too Many Notes viewers. If you have a question, email or message me and I'll answer it in an upcoming episode.", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/q-vSOvah6VI", "thumb": "thumbs/q-vSOvah6VI.jpg"}, {"id": "KYdB8RwM6fk", "group": "classics", "title": "Dynamics!", "year": "2016", "date": "20160121", "dur": "5:58", "views": 2233, "viewsLabel": "2.2K views", "note": "Learn a new way to approach dynamics in your singing group using numbers", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/KYdB8RwM6fk", "thumb": "thumbs/KYdB8RwM6fk.jpg"}, {"id": "1CSinIJ3o9g", "group": "classics", "title": "What Makes A Great A Cappella Group Name?", "year": "2017", "date": "20171129", "dur": "5:13", "views": 2229, "viewsLabel": "2.2K views", "note": "Does your group have a great name? Have you considered it from various perspectives?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/1CSinIJ3o9g", "thumb": "thumbs/1CSinIJ3o9g.jpg"}, {"id": "Cnky_94TcQ8", "group": "classics", "title": "Developing Your Own Sound & Style", "year": "2016", "date": "20160829", "dur": "7:58", "views": 2152, "viewsLabel": "2.2K views", "note": "How can your group develop their own musical sound and style?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/Cnky_94TcQ8", "thumb": "thumbs/Cnky_94TcQ8.jpg"}, {"id": "AFeY_QaodzU", "group": "classics", "title": "The Value of Vocal Music in Education", "year": "2018", "date": "20180418", "dur": "8:36", "views": 2000, "viewsLabel": "2K views", "note": "School music programs are being cut, and education priorities focused on STEM. Is there any real value to a vocal music education?", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/AFeY_QaodzU", "thumb": "thumbs/AFeY_QaodzU.jpg"}, {"id": "za1f8PL4jk8", "group": "classics", "title": "Getting Gigs", "year": "2016", "date": "20160511", "dur": "7:47", "views": 1996, "viewsLabel": "2K views", "note": "Ten steps to take your new group from no gigs to many gigs", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/za1f8PL4jk8", "thumb": "thumbs/za1f8PL4jk8.jpg"}, {"id": "WsFq1Wa24PQ", "group": "classics", "title": "Accuracy vs Emotion in Vocal Harmony", "year": "2021", "date": "20210108", "dur": "6:25", "views": 1744, "viewsLabel": "1.7K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/WsFq1Wa24PQ", "thumb": "thumbs/WsFq1Wa24PQ.jpg"}, {"id": "rZcPSLqxY7s", "group": "classics", "title": "Fix Your Struggling Vocal Group/Program!", "year": "2018", "date": "20180529", "dur": "5:11", "views": 1679, "viewsLabel": "1.7K views", "note": "All groups go through struggles and growing pains. But don't fret, we're all here to help!", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/rZcPSLqxY7s", "thumb": "thumbs/rZcPSLqxY7s.jpg"}, {"id": "Xv0Mx4KG39g", "group": "classics", "title": "Modifying Arrangements for the Studio", "year": "2015", "date": "20151213", "dur": "5:45", "views": 1640, "viewsLabel": "1.6K views", "note": "Are you about to record your live arrangements, but want them to be more than just what you do live? Here are 7 tips to help make your studio versions shine", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/Xv0Mx4KG39g", "thumb": "thumbs/Xv0Mx4KG39g.jpg"}, {"id": "cK7zsxJ5Qy0", "group": "classics", "title": "How To Get a Song on BOCA (the Best of College A Cappella CD)", "year": "2015", "date": "20150407", "dur": "3:49", "views": 1589, "viewsLabel": "1.6K views", "note": "For over 20 years, the Best of College A Cappella compilation has showcased each year's greatest a cappella tracks. How do you get a song on BOCA? Now you know!", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/cK7zsxJ5Qy0", "thumb": "thumbs/cK7zsxJ5Qy0.jpg"}, {"id": "A4FQzj_2tUU", "group": "classics", "title": "Should You Change Arrangements?!?", "year": "2021", "date": "20210713", "dur": "6:14", "views": 1530, "viewsLabel": "1.5K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/A4FQzj_2tUU", "thumb": "thumbs/A4FQzj_2tUU.jpg"}, {"id": "AE_34AS5eT0", "group": "classics", "title": "Viral Vocal Videos in 5 Steps!", "year": "2017", "date": "20171107", "dur": "6:36", "views": 1415, "viewsLabel": "1.4K views", "note": "Want to make vocal harmony videos that go viral? Follow these 5 steps and you'll be on your way! We can't promise that your videos will go viral, but these proven...", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/AE_34AS5eT0", "thumb": "thumbs/AE_34AS5eT0.jpg"}, {"id": "mE2EL7nshSk", "group": "classics", "title": "Grit!", "year": "2016", "date": "20160705", "dur": "3:08", "views": 1354, "viewsLabel": "1.4K views", "note": "get some grit in your a cappella rock and roll or die trying", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/mE2EL7nshSk", "thumb": "thumbs/mE2EL7nshSk.jpg"}, {"id": "Za9lBY8FEj0", "group": "classics", "title": "Make Money in A Cappella Careers", "year": "2021", "date": "20210907", "dur": "11:38", "views": 1303, "viewsLabel": "1.3K views", "note": "Here's a list of a cappella careers, taken from the book \"So You Want To Sing A Cappella\":", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/Za9lBY8FEj0", "thumb": "thumbs/Za9lBY8FEj0.jpg"}, {"id": "cBuJrZLsQiw", "group": "classics", "title": "Aca-Secrets everyone needs to know!", "year": "2020", "date": "20200214", "dur": "8:31", "views": 1283, "viewsLabel": "1.3K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/cBuJrZLsQiw", "thumb": "thumbs/cBuJrZLsQiw.jpg"}, {"id": "IY7lSJSN2VQ", "group": "classics", "title": "How To Take Audience Requests in an A Cappella Group", "year": "2020", "date": "20200712", "dur": "10:09", "views": 1136, "viewsLabel": "1.1K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/IY7lSJSN2VQ", "thumb": "thumbs/IY7lSJSN2VQ.jpg"}, {"id": "QyuscaPKsaE", "group": "classics", "title": "How Vocal Harmony can Save a Life", "year": "2020", "date": "20200830", "dur": "6:28", "views": 721, "viewsLabel": "721 views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/QyuscaPKsaE", "thumb": "thumbs/QyuscaPKsaE.jpg"}, {"id": "tmeHzMSPCNc", "group": "classics", "title": "How to get your music to MILLIONS!", "year": "2020", "date": "20200130", "dur": "9:56", "views": 657, "viewsLabel": "657 views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/tmeHzMSPCNc", "thumb": "thumbs/tmeHzMSPCNc.jpg"}, {"id": "OpVEoHjsbhI", "group": "classics", "title": "A Cappella Alumni Organizations: Collegiate Groups' Secret Weapon", "year": "2020", "date": "20201008", "dur": "8:14", "views": 586, "viewsLabel": "586 views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/OpVEoHjsbhI", "thumb": "thumbs/OpVEoHjsbhI.jpg"}, {"id": "_kRlJgWewZs", "group": "panels", "title": "Hanging Out with Claude McKnight (from Take 6), Special Guest: Deke Sharon", "year": "2015", "date": "20151113", "dur": "50:46", "views": 1054, "viewsLabel": "1.1K views", "note": "Covering a wide range of topics including the current state of a cappella and Pentatonix's #1 album", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/_kRlJgWewZs", "thumb": "thumbs/_kRlJgWewZs.jpg"}, {"id": "E53e3iKccok", "group": "panels", "title": "Counterpoint Episode 3 1: How To Make A Career of A Cappella", "year": "2025", "date": "20250624", "dur": "1:00:39", "views": 418, "viewsLabel": "418 views", "note": "Deke and Dietz are back with a brand new panel discussion format! This week's topic: How to build a career in a cappella.", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/E53e3iKccok", "thumb": "thumbs/E53e3iKccok.jpg"}, {"id": "ZBEjt65yNLY", "group": "panels", "title": "Counterpoint Episode 3.3 - Back To School!", "year": "2025", "date": "20250828", "dur": "59:44", "views": 147, "viewsLabel": "147 views", "note": "A discussion of the High School and Middle School a cappella scene post-covid", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/ZBEjt65yNLY", "thumb": "thumbs/ZBEjt65yNLY.jpg"}, {"id": "tsiZQVPQqKw", "group": "panels", "title": "Counterpoint Season 3 Episode 2: Touring", "year": "2025", "date": "20250813", "dur": "1:06:01", "views": 110, "viewsLabel": "110 views", "note": "It's that green room after the gig conversation that's the best part of your gig, featuring @ClaudeMcKnight3  of @Take6Official , @tristethancurless  of...", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/tsiZQVPQqKw", "thumb": "thumbs/tsiZQVPQqKw.jpg"}, {"group": "footage", "year": "2026", "date": "", "dur": "", "views": 0, "viewsLabel": "5 clips, Aug 29 (DJI 0057 to 0061)", "used": false, "flag": "", "url": "", "thumb": "", "id": "fx-china-rain", "title": "China: the rain concert", "note": "You asked for this one: the show that went on in the rain. We'd use the wet crowd, the umbrellas and your poncho line. The bus clip has a child in frame, so it stays out.", "rec": true, "status": "Not cut yet"}, {"group": "footage", "year": "2026", "date": "", "dur": "", "views": 0, "viewsLabel": "Zadar, Jul 28", "used": true, "flag": "", "url": "", "thumb": "", "id": "fx-croatia-beatbox", "title": "CROappella: the marble-dust beatboxer", "note": "The best story from the Zadar trip. Waiting on Tawnya's close-ups of the beatboxer.", "rec": true, "status": "Needs Tawnya's close-ups"}, {"group": "footage", "year": "2026", "date": "", "dur": "", "views": 0, "viewsLabel": "9 clips, Aug 29", "used": true, "flag": "", "url": "", "thumb": "", "id": "fx-china-gala", "title": "China: night gala and Acapellago sets", "note": "Other groups singing known songs. Picture only as b-roll; their audio would draw copyright claims.", "rec": false, "status": "3 seconds used in the judging-day reel"}, {"group": "footage", "year": "2026", "date": "", "dur": "", "views": 0, "viewsLabel": "85 clips, Jul 24 to 28", "used": true, "flag": "", "url": "", "thumb": "", "id": "fx-croatia-rest", "title": "Croatia: Plitvice, Rastoke and Zadar", "note": "Two reels already came out of this trip (singing instruments, improv class). The rest is scenery and b-roll.", "rec": false, "status": "2 reels posted in Aug"}, {"group": "footage", "year": "2026", "date": "", "dur": "", "views": 0, "viewsLabel": "17 clips, Jul 3 to 4, incl. one 41-minute take", "used": false, "flag": "", "url": "", "thumb": "", "id": "fx-singapore", "title": "Singapore: school concert", "note": "A school concert with students on stage. Without parents' consent we keep minors off your channels.", "rec": false, "status": "Not used"}, {"id": "LjLcarzUJ6M", "group": "archive", "title": "Berklee Pitch Slapped singing the *&^@! out of Stevie Wonder's \"I Wish\" (in my living room) !!!", "year": "2016", "date": "20160614", "dur": "4:03", "views": 69621, "viewsLabel": "70K views", "note": "", "rec": false, "status": "Not cut yet", "used": false, "flag": "Stevie Wonder song", "url": "https://youtu.be/LjLcarzUJ6M", "thumb": "thumbs/LjLcarzUJ6M.jpg"}, {"id": "q9lPAWJn2bA", "group": "archive", "title": "SanFran6 All About That Bass", "year": "2014", "date": "20141218", "dur": "1:41", "views": 14583, "viewsLabel": "15K views", "note": "Rehearsal video for Sing Off Season 5 Holiday Special", "rec": false, "status": "Not cut yet", "used": false, "flag": "Meghan Trainor song", "url": "https://youtu.be/q9lPAWJn2bA", "thumb": "thumbs/q9lPAWJn2bA.jpg"}, {"id": "wIoH4zb_AuA", "group": "archive", "title": "D Cappella Auditions", "year": "2017", "date": "20171216", "dur": "0:39", "views": 11039, "viewsLabel": "11K views", "note": "Submission deadline: January 12th, 2018", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/wIoH4zb_AuA", "thumb": "thumbs/wIoH4zb_AuA.jpg"}, {"id": "_mLnOJ3QjRw", "group": "archive", "title": "Sing Off South Africa Auditions", "year": "2015", "date": "20150318", "dur": "3:04", "views": 10483, "viewsLabel": "10K views", "note": "A selection of audition clips from the first day of Sing Off South Africa. Filmed in Soweto, Johannesburg", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/_mLnOJ3QjRw", "thumb": "thumbs/_mLnOJ3QjRw.jpg"}, {"id": "BEoR39taoZc", "group": "archive", "title": "Timothy's Gift \"Son of a Preacher Man\"", "year": "2014", "date": "20141218", "dur": "1:46", "views": 8468, "viewsLabel": "8.5K views", "note": "Rehearsal footage from The Sing Off Season 5 Holiday Special", "rec": false, "status": "Not cut yet", "used": false, "flag": "Dusty Springfield song", "url": "https://youtu.be/BEoR39taoZc", "thumb": "thumbs/BEoR39taoZc.jpg"}, {"id": "piLs3_iPc6U", "group": "archive", "title": "Deke Sharon Promo Reel", "year": "2023", "date": "20230925", "dur": "6:07", "views": 5286, "viewsLabel": "5.3K views", "note": "An overview of projects from the past 15 years", "rec": false, "status": "Not cut yet", "used": false, "flag": "TV and film clips", "url": "https://youtu.be/piLs3_iPc6U", "thumb": "thumbs/piLs3_iPc6U.jpg"}, {"id": "7xgeM2N66Lk", "group": "archive", "title": "Stay Tuned rehearsing Colbie Caillat's \"Try\"", "year": "2016", "date": "20160323", "dur": "2:06", "views": 4381, "viewsLabel": "4.4K views", "note": "During week 6 of Lifetime Television's \"Pitch Slapped\", Stay Tuned from Cherry Hill East High School in New Jersey rehearsing \"Try\" by Colbie Caillat", "rec": false, "status": "Not cut yet", "used": false, "flag": "Colbie Caillat song", "url": "https://youtu.be/7xgeM2N66Lk", "thumb": "thumbs/7xgeM2N66Lk.jpg"}, {"id": "NgQl_2pWrr4", "group": "archive", "title": "Asquared \"Latch\"", "year": "2014", "date": "20141218", "dur": "1:38", "views": 3735, "viewsLabel": "3.7K views", "note": "Rehearsal footage from the Sing Off Season 5 Holiday Special", "rec": false, "status": "Not cut yet", "used": false, "flag": "Sam Smith song", "url": "https://youtu.be/NgQl_2pWrr4", "thumb": "thumbs/NgQl_2pWrr4.jpg"}, {"id": "B2QANmIuaxk", "group": "archive", "title": "Sing Off South Africa Rehearsal", "year": "2015", "date": "20150515", "dur": "6:19", "views": 2642, "viewsLabel": "2.6K views", "note": "A glimpse behind the scenes of The Sing Off South Africa: opening number, each of the 10 groups singing a song that will not be on the show, and a treat at the end", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/B2QANmIuaxk", "thumb": "thumbs/B2QANmIuaxk.jpg"}, {"id": "tLPTvwd790A", "group": "archive", "title": "Deke Sharon Masterclass 1", "year": "2009", "date": "20090717", "dur": "0:56", "views": 2612, "viewsLabel": "2.6K views", "note": "A couple moments from a Melbourne, Australia a cappella masterclass with Deke Sharon", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/tLPTvwd790A", "thumb": "thumbs/tLPTvwd790A.jpg"}, {"id": "Ixx5mBB2nA4", "group": "archive", "title": "When I'm Sixty Four by FourScore from San Francisco University High School, 1985-86", "year": "2018", "date": "20181128", "dur": "1:36", "views": 2289, "viewsLabel": "2.3K views", "note": "My first arrangement! Back in the mid-80s at San Francisco University High School, my freshman year I was lead in the barbershop quartet in The Music Man, and loved...", "rec": false, "status": "Not cut yet", "used": false, "flag": "Beatles song, students", "url": "https://youtu.be/Ixx5mBB2nA4", "thumb": "thumbs/Ixx5mBB2nA4.jpg"}, {"id": "mDVVcsjXCDc", "group": "archive", "title": "Deke Sharon Masterclass 2", "year": "2009", "date": "20090717", "dur": "1:52", "views": 1978, "viewsLabel": "2K views", "note": "Excerpt from \"Spiderman\" - an arrangement by Deke Sharon from a masterclass in Melbourne Australia", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/mDVVcsjXCDc", "thumb": "thumbs/mDVVcsjXCDc.jpg"}, {"id": "dyeljLPfnRQ", "group": "archive", "title": "Tomorrow Never Dies", "year": "2014", "date": "20140816", "dur": "4:15", "views": 1929, "viewsLabel": "1.9K views", "note": "\"Tomorrow Never Dies\" (James Bond) performed by Voasis at the Desert Chorale Gala at Warehouse 21 in Santa Fe on Aug 14, 2014. Solo by Laura Dickinson, arrangement by...", "rec": false, "status": "Not cut yet", "used": false, "flag": "Beatles song", "url": "https://youtu.be/dyeljLPfnRQ", "thumb": "thumbs/dyeljLPfnRQ.jpg"}, {"id": "EBTjQeVQM7o", "group": "archive", "title": "OK! TV Pitch Slapped Interview", "year": "2016", "date": "20160125", "dur": "1:08", "views": 1591, "viewsLabel": "1.6K views", "note": "OK TV's Pitch Slapped Interview with members of Cherry Hill East's Stay Tuned", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/EBTjQeVQM7o", "thumb": "thumbs/EBTjQeVQM7o.jpg"}, {"id": "FVyrGRrduAg", "group": "archive", "title": "VoiceJam April 1&2, 2016", "year": "2015", "date": "20151217", "dur": "2:26", "views": 1559, "viewsLabel": "1.6K views", "note": "Come to the second annual Voice Jam, and enjoy a cappella concerts (featuring the legendary Swingle Singers), workshops, and a competition with the winner flown to...", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/FVyrGRrduAg", "thumb": "thumbs/FVyrGRrduAg.jpg"}, {"id": "f7F0aYx-aYM", "group": "archive", "title": "Deke Sharon Interview", "year": "2009", "date": "20090717", "dur": "2:31", "views": 1526, "viewsLabel": "1.5K views", "note": "Selections from the interview with the House Jacks backstage at Gewandhaus in Leipsig, Germany in spring 2009", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/f7F0aYx-aYM", "thumb": "thumbs/f7F0aYx-aYM.jpg"}, {"id": "hV10DjfCI8c", "group": "archive", "title": "Evening in December", "year": "2015", "date": "20150102", "dur": "4:43", "views": 1271, "viewsLabel": "1.3K views", "note": "Performed by Voasis in Santa Fe NM, December 2014", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/hV10DjfCI8c", "thumb": "thumbs/hV10DjfCI8c.jpg"}, {"id": "FCemsK79TOY", "group": "archive", "title": "Interview: Macau", "year": "2014", "date": "20140826", "dur": "2:17", "views": 789, "viewsLabel": "789 views", "note": "Deke Sharon interviews Macau choral director Aurelio Porfiri about the new contemporary a cappella scene in Macau 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/FCemsK79TOY", "thumb": "thumbs/FCemsK79TOY.jpg"}, {"id": "MzrqzFun5nk", "group": "archive", "title": "Interview: Hong Kong", "year": "2014", "date": "20140819", "dur": "1:30", "views": 207, "viewsLabel": "207 views", "note": "Deke Sharon interviews Kwok-tung Fung about the contemporary a cappella scene in Hong Kong, 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/MzrqzFun5nk", "thumb": "thumbs/MzrqzFun5nk.jpg"}, {"id": "8aGXxnxkfF4", "group": "archive", "title": "Interview: Vocal Asia", "year": "2014", "date": "20140819", "dur": "2:02", "views": 174, "viewsLabel": "174 views", "note": "Deke Sharon speaks with Catherine Liu (\"Bing Bing\") and Peter Huang (of MiCappella) about upcoming a cappella events in Asia, 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/8aGXxnxkfF4", "thumb": "thumbs/8aGXxnxkfF4.jpg"}, {"id": "R1jKFhSpfZM", "group": "archive", "title": "Interview: Manila", "year": "2014", "date": "20140819", "dur": "1:37", "views": 156, "viewsLabel": "156 views", "note": "Deke Sharon interviewing Oscar Pantaleon, Jr. about the a cappella scene in the Philippines, 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/R1jKFhSpfZM", "thumb": "thumbs/R1jKFhSpfZM.jpg"}, {"id": "BYIIZ9P6FmY", "group": "archive", "title": "Interview: Singapore", "year": "2014", "date": "20140819", "dur": "1:09", "views": 112, "viewsLabel": "112 views", "note": "Deke Sharon interviews Angie Choo about the Singapore a cappella community at Vocal Edge, 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/BYIIZ9P6FmY", "thumb": "thumbs/BYIIZ9P6FmY.jpg"}, {"id": "JeT54PvW5jI", "group": "archive", "title": "Interview: Taipei, A-house", "year": "2014", "date": "20140819", "dur": "3:16", "views": 91, "viewsLabel": "91 views", "note": "Deke Sharon interviews Christine Liu about the Taiwan a cappella scene, followed by a tour of Ahouse, Taiwan's a cappella cafe/live house. 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/JeT54PvW5jI", "thumb": "thumbs/JeT54PvW5jI.jpg"}, {"id": "XA1ynmZGzwU", "group": "archive", "title": "Interview Shenzhen", "year": "2014", "date": "20140819", "dur": "1:13", "views": 82, "viewsLabel": "82 views", "note": "Deke Sharon interviews Alan, one of the hosts of Sing Off China at auditions in Shenzhen, 2012", "rec": false, "status": "Not cut yet", "used": false, "flag": "", "url": "https://youtu.be/XA1ynmZGzwU", "thumb": "thumbs/XA1ynmZGzwU.jpg"}], "missing": ["Quick hits (short tips you filmed)", "The closely cut video with music", "Robert Plant / Home Free style footage"]};
+const DOC = "picks/deke";
+const LS = "deke-picks-v1";
+const CHECK = '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--bg)"/></svg>';
+
+let picked = new Set();
+let note = "";
+let filter = "all";
+let db = null, ref = null, canWrite = true, writeTimer = null, writing = false, pendingWrite = false;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const byId = Object.fromEntries(DATA.items.map(i => [i.id, i]));
+
+function render() {
+  const out = [];
+  for (const g of DATA.groups) {
+    const items = DATA.items.filter(i => i.group === g.key);
+    if (!items.length) continue;
+    out.push(`<section class="group" data-group="${g.key}"><h2>${esc(g.title)} <span class="count">${items.length}</span></h2><p>${esc(g.intro)}</p>`);
+    for (const i of items) {
+      const meta = [i.year, i.dur, i.views ? i.viewsLabel : i.viewsLabel].filter(Boolean).join(" · ");
+      const chips = [];
+      if (i.rec) chips.push('<span class="chip rec">Our pick</span>');
+      chips.push(`<span class="chip${i.used ? " used" : ""}">${esc(i.status)}</span>`);
+      if (i.flag) chips.push(`<span class="chip risk">${esc(i.flag)}</span>`);
+      const thumb = i.thumb
+        ? `<a class="thumb" href="${i.url}" target="_blank" rel="noopener" aria-label="Watch ${esc(i.title)} on YouTube"><img src="${i.thumb}" alt="" loading="lazy" width="320" height="180">${i.dur ? `<span class="dur">${i.dur}</span>` : ""}</a>`
+        : `<div class="thumb ph">In your Dropbox</div>`;
+      out.push(`<div class="row" id="row-${i.id}" data-id="${i.id}" data-rec="${i.rec ? 1 : 0}">
+        ${thumb}
+        <div class="body">
+          <p class="title">${esc(i.title)}</p>
+          <div class="meta">${esc(meta)}</div>
+          <div class="chips">${chips.join("")}</div>
+          ${i.note ? `<p class="note">${esc(i.note)}</p>` : ""}
+          ${i.url ? `<a class="watch" href="${i.url}" target="_blank" rel="noopener">Watch on YouTube</a>` : ""}
+        </div>
+        <label class="pick"><input type="checkbox" id="cb-${i.id}" data-id="${i.id}"><span class="box">${CHECK}</span><span>Pre-cut</span></label>
+      </div>`);
+    }
+    out.push("</section>");
+  }
+  $("list").innerHTML = out.join("");
+  $("missing").innerHTML = `<h2>Footage we still can't find</h2><p>You mentioned these, but they never reached us. Paste a link in the box below or send it to Denis.</p><ul>${DATA.missing.map(m => `<li>${esc(m)}</li>`).join("")}</ul>`;
+  $("of").textContent = `of ${DATA.items.length}`;
+  $("list").addEventListener("change", (e) => {
+    const id = e.target?.dataset?.id; if (!id) return;
+    e.target.checked ? picked.add(id) : picked.delete(id);
+    sync(); queueWrite();
+  });
+}
+
+function sync() {
+  for (const i of DATA.items) {
+    const cb = $("cb-" + i.id); if (!cb) continue;
+    cb.checked = picked.has(i.id);
+    $("row-" + i.id).classList.toggle("checked", cb.checked);
+  }
+  $("count").textContent = picked.size;
+  applyFilter();
+}
+
+function applyFilter() {
+  for (const row of document.querySelectorAll(".row")) {
+    const hide = (filter === "rec" && row.dataset.rec !== "1") || (filter === "mine" && !picked.has(row.dataset.id));
+    row.classList.toggle("hidden-by-filter", hide);
+  }
+  for (const sec of document.querySelectorAll("section.group")) {
+    sec.classList.toggle("hidden-by-filter", !sec.querySelector(".row:not(.hidden-by-filter)"));
+  }
+  for (const [k, b] of [["all", "f-all"], ["rec", "f-rec"], ["mine", "f-mine"]]) $(b).setAttribute("aria-pressed", String(filter === k));
+}
+
+function setSave(text, cls) { const s = $("save"); s.textContent = text; s.className = "save" + (cls ? " " + cls : ""); }
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2200); }
+
+function saveLocal() { try { localStorage.setItem(LS, JSON.stringify({ ids: [...picked], note })); } catch {} }
+function loadLocal() { try { const d = JSON.parse(localStorage.getItem(LS) || "null"); if (d) { picked = new Set((d.ids || []).filter(id => byId[id])); note = d.note || ""; } } catch {} }
+
+function queueWrite() {
+  saveLocal();
+  if (!db || !canWrite) { setSave("Saved on this device only. Press “Copy my picks” to send them to Denis.", "bad"); return; }
+  setSave("Saving...");
+  clearTimeout(writeTimer);
+  writeTimer = setTimeout(doWrite, 700);
+}
+async function doWrite() {
+  if (writing) { pendingWrite = true; return; }
+  writing = true;
+  try {
+    await ref.set({ ids: [...picked], note, updatedAt: new Date().toISOString() });
+    setSave("Saved. Denis sees your picks.", "ok");
+  } catch (e) {
+    if (e?.code === "invalid_argument" || e?.code === "not_granted") {
+      canWrite = false; setSave("This link is view-only for saving. Press “Copy my picks” and paste them to Denis.", "bad");
+    } else if (e?.code === "unavailable") {
+      setTimeout(doWrite, 1200 + Math.random() * 800);
+    } else setSave("Couldn't save just now. Press “Copy my picks” to be safe.", "bad");
+  } finally {
+    writing = false;
+    if (pendingWrite) { pendingWrite = false; doWrite(); }
+  }
+}
+
+function picksText() {
+  const lines = ["Deke's pre-cut picks (" + picked.size + "):"];
+  for (const g of DATA.groups) {
+    const mine = DATA.items.filter(i => i.group === g.key && picked.has(i.id));
+    if (!mine.length) continue;
+    lines.push("", g.title + ":");
+    for (const i of mine) lines.push("- " + i.title + (i.url ? " " + i.url : ""));
+  }
+  if (note.trim()) lines.push("", "Note: " + note.trim());
+  return lines.join("\n");
+}
+
+function wire() {
+  $("f-all").onclick = () => { filter = "all"; applyFilter(); };
+  $("f-rec").onclick = () => { filter = "rec"; applyFilter(); };
+  $("f-mine").onclick = () => { filter = "mine"; applyFilter(); };
+  $("tick-rec").onclick = () => {
+    DATA.items.filter(i => i.rec).forEach(i => picked.add(i.id)); sync(); queueWrite(); toast("Ticked all our picks");
+  };
+  $("copy").onclick = () => {
+    const text = picksText();
+    const fallback = () => {
+      const ta = $("note"); const old = ta.value; ta.value = text; ta.select();
+      toast("Selected. Press Ctrl+C (or Copy), then paste to Denis.");
+      setTimeout(() => { ta.value = old; }, 8000);
+    };
+    try { navigator.clipboard.writeText(text).then(() => toast("Copied. Paste it to Denis on WhatsApp."), fallback); } catch { fallback(); }
+  };
+  const nt = $("note"); let nTimer = null;
+  nt.addEventListener("input", () => { note = nt.value; clearTimeout(nTimer); nTimer = setTimeout(queueWrite, 900); });
+}
+
+render(); loadLocal(); $("note").value = note; sync(); wire();
+
+(async () => {
+  try { db = await window.claude?.use?.("db"); } catch { db = null; }
+  if (!db) { setSave(picked.size ? "Saved on this device only. Press “Copy my picks” to send them." : "Tick a video to start. Use “Copy my picks” to send them to Denis.", picked.size ? "bad" : ""); return; }
+  try {
+    const user = await window.claude.use("user");
+    const w = user ? await user.can("data.write") : null;
+    if (w === false) { canWrite = false; }
+  } catch {}
+  if (!canWrite) { setSave("Your ticks stay on this device. Press “Copy my picks” and paste them to Denis.", "bad"); return; }
+  ref = db.doc(DOC);
+  const timer = setTimeout(() => setSave("Can't reach the saved picks yet. Your ticks are kept on this device."), 10000);
+  let first = true;
+  ref.onSnapshot((snap) => {
+    if (!snap.metadata.fromCache) clearTimeout(timer);
+    if (snap.metadata.hasPendingWrites) return;
+    const d = snap.exists ? snap.data() : null;
+    if (d) {
+      picked = new Set((d.ids || []).filter(id => byId[id]));
+      if (document.activeElement !== $("note")) { note = d.note || ""; $("note").value = note; }
+      saveLocal();
+    } else if (first && picked.size && canWrite) { queueWrite(); }
+    first = false;
+    sync();
+    if (!canWrite) setSave("You can see the picks but not change them here. Use “Copy my picks” to send yours.", "bad");
+    else if (!snap.metadata.fromCache) setSave(d ? `Saved. Last change ${new Date(d.updatedAt).toLocaleString()}.` : "Tick a video to start. Ticks save as you go.", d ? "ok" : "");
+  }, () => { clearTimeout(timer); setSave("Saving is off for this view. Use “Copy my picks”.", "bad"); });
+})();
+</script>
