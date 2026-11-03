@@ -14,7 +14,7 @@ import json, os, subprocess, sys, shutil, re, datetime
 
 ENGINE = os.path.dirname(os.path.abspath(__file__))
 BANK = os.path.join(ENGINE, "bank.json")
-MEDIA = (os.environ.get("DEKE_MEDIA") or json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8")).get("media_root", "C:/deke-media")) + "/engine"  # config media_root (C: since D: failed); env DEKE_MEDIA overrides
+MEDIA = (os.environ.get("DEKE_MEDIA") or json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8")).get("media_root", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "media"))) + "/engine"  # config media_root (deke/media); env DEKE_MEDIA overrides
 REMOTION = os.path.join(os.path.dirname(ENGINE), "my-video")
 HOLD = 3.5
 FILLERS = {"uh", "um", "uhm", "erm", "ah"}

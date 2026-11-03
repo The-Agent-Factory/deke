@@ -43,3 +43,5 @@ plugins/
 # including the artwork PDF referenced by src/lib/artwork-data.ts.
 !public/
 !public/**
+
+/media/

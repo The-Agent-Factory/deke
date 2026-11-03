@@ -66,3 +66,6 @@ dev-server.log
 # Supabase local
 supabase/.branches
 supabase/.temp
+
+# Content engine media (videos, renders, transcripts): local only, never in git or deploys
+/media/

@@ -135,6 +135,6 @@
     "musicUnder": 0.05,
     "musicSwell": 0.22
   },
-  "media_root": "C:/deke-media",
-  "_media_root": "Where the engine keeps sources, transcripts, renders. Moved off D: on 2026-11-02 (D: flagged Full Repair Needed). Env DEKE_MEDIA overrides."
+  "media_root": "C:/Users/lafla/claude_projects/deke/media",
+  "_media_root": "Where the engine keeps sources, transcripts and renders: deke/media inside this project, ignored by git and deploys. Env DEKE_MEDIA overrides."
 }

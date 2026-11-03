@@ -7,7 +7,7 @@ Trigger: Denis says "new Deke WhatsApp video" (or drops a file in the inbox and 
 
 ## 0. Denis drops the video
 
-WhatsApp Desktop: right-click the video, Save as, into `C:\deke-media\inbox\`. Any number of videos.
+WhatsApp Desktop: right-click the video, Save as, into `C:\Users\lafla\claude_projects\deke\media\inbox\`. Any number of videos.
 Nothing else is needed from Denis or Deke.
 
 ## 1. Intake
@@ -103,5 +103,5 @@ Add a dated line to `deke/PLAN.md`: what was posted, the Deke page link, anythin
 
 ## Media and safety
 
-- Media lives in `C:\deke-media` (config `media_root`). D: was flagged "Full Repair Needed" on 2026-11-02.
+- Media lives in `deke\media` inside this project, ignored by git and deploys (config `media_root`). D: was flagged "Full Repair Needed" on 2026-11-02.
 - Nothing is scheduled without Denis's go or Deke's approval. Never post into Skool through Postiz.

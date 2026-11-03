@@ -5,7 +5,7 @@ You are running headless, launched by `engine/weekly.py`. Nobody is watching. Do
 ## Your input
 
 Read `engine/state/mine-job.json`. It names one source video: YouTube id, title, upload date, URL.
-The transcript is at `D:/deke-media/engine/transcripts/<id>.txt` (timestamped lines) and
+The transcript is at `<media_root>/engine/transcripts/<id>.txt` (timestamped lines) and
 `<id>.words.json` (word timings). Print exact word timings for any range with:
 
 ```
@@ -45,7 +45,7 @@ Who is speaking matters:
   `"needs_deke_reason": "guest <name or description> speaks; needs their OK"`. These never auto-post.
 - Anything naming a competitor, criticising a named person or group, or about a minor: needs_deke true.
 
-Look at one frame first (`ffmpeg -ss 120 -i D:/deke-media/engine/yt/<id>.mp4 -frames:v 1 frame.jpg`, then view it).
+Look at one frame first (`ffmpeg -ss 120 -i <media_root>/engine/yt/<id>.mp4 -frames:v 1 frame.jpg`, then view it).
 For a Zoom-style split screen, crop to Deke's tile only with
 `{"kind": "region", "x": .., "y": .., "w": .., "h": ..}` in 1920x1080 pixels (keep w:h at 16:9). The guest
 is then off screen, so the clip does not need their OK as long as only Deke speaks in it.
