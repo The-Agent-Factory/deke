@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { Kicker, EndSplash, MusicBed } from "./Polish";
+import type { KickerProps, EndSplashProps, MusicProps } from "./Polish";
 import {
   AbsoluteFill,
   Img,
@@ -30,6 +32,9 @@ export type DekeShortProps = {
   cover?: ShortCover; // masks a legacy burned-in graphic during the cold open
   broll?: ShortBRoll[];
   showTitle?: boolean; // "Too Many Notes" title; off for non-TMN sources
+  kicker?: KickerProps; // small gold label at the top during the opening line
+  endSplash?: EndSplashProps; // Total Vocal closing card (replaces the small end pill)
+  music?: MusicProps; // a cappella bed under the voice, swelling on the closing card
 };
 
 const chunkWords = (words: Word[]): Word[][] => {
@@ -300,6 +305,9 @@ export const DekeShort: React.FC<DekeShortProps> = ({
   cover,
   broll = [],
   showTitle = true,
+  kicker,
+  endSplash,
+  music,
 }) => {
   return (
     <AbsoluteFill style={{ background: "black" }}>
@@ -309,8 +317,10 @@ export const DekeShort: React.FC<DekeShortProps> = ({
         <BRollShot key={i} b={b} />
       ))}
       {showTitle ? <TitleOverlay /> : null}
+      {kicker ? <Kicker {...kicker} /> : null}
       <Captions words={words} />
-      <EndCta />
+      {endSplash ? <EndSplash {...endSplash} /> : <EndCta />}
+      {music ? <MusicBed {...music} /> : null}
       <ProgressBar />
     </AbsoluteFill>
   );

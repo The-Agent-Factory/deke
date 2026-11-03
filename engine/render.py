@@ -358,6 +358,17 @@ def main():
         os.makedirs(pub, exist_ok=True)
         shutil.copyfile(base, os.path.join(pub, f"{item_id}.mp4"))
         props = {"baseFile": f"engine/{item_id}.mp4", "words": words, "showTitle": False, "durationSec": round(dur, 3)}
+        pol = item.get("polish")
+        if pol:  # opening label, a cappella bed, Total Vocal closing card (my-video/src/Polish.tsx)
+            card_at = round(dur - HOLD + 0.25, 3)
+            music_src = pol.get("music", "music/HJ_Maliboom_BED1.mp3")
+            if pol.get("kicker"):
+                props["kicker"] = {"text": pol["kicker"], "outSec": pol.get("kickerOutSec", 3.0)}
+            props["endSplash"] = {"lines": pol.get("endLines", ["JOIN", "TOTAL VOCAL"]), "url": "skool.com/deke",
+                                  "startSec": card_at}
+            if music_src:
+                props["music"] = {"src": music_src, "under": pol.get("musicUnder", 0.05),
+                                  "swell": pol.get("musicSwell", 0.22), "swellAtSec": card_at}
         pfile = f"{MEDIA}/work/{item_id}.props.json"
         json.dump(props, open(pfile, "w", encoding="utf-8"))
         run(["npx.cmd" if os.name == "nt" else "npx", "remotion", "render", "src/index.ts", "EngineShort", final,
