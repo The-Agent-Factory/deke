@@ -1,6 +1,13 @@
 # Deke: Plan
-**Last updated:** 2026-11-01 (local)
+**Last updated:** 2026-11-03 (local)
 **Status:** active
+
+## 🆕 2026-11-03: NOV 9 WEEK SCHEDULED + WHATSAPP RECIPE (closed out)
+
+- Denis: assume Deke accepts everything. **Scheduled:** week of Nov 9 (16 posts, `engine/batches/2026-11-09-deke-plan`) and tip 4 on Tue Nov 17 (4 posts, `engine/batches/2026-11-16-tip4`). Postiz holds 31 Deke posts through Nov 17. Denis posts the full 4-tips video in Skool by hand Mon Nov 9 (`C:\deke-media\engine\renders\wa-four-tips-full.mp4`).
+- **Recipe (reproducible):** `engine/RECIPE-WHATSAPP.md` (Claude) and https://claude.ai/artifact/WESuEiob9vuT3aw6hB9Dg7 (Denis). Trigger "new Deke WhatsApp video"; inbox `C:\deke-media\inbox`. New scripts: `intake.py`, `plan_week.py` (plan/publish with Postiz confirmation), `verify_endings.py`. Saved to memory (project_whatsapp_recipe.md).
+- Media root is now `C:\deke-media` for every engine script (config `media_root`); D: still needs Denis's repair decision.
+- Deke page: https://claude.ai/artifact/RSoNaaDxHEHskSLiv76Hjg. Open question for Deke: are the Sing-Off beds cleared for social.
 
 ## 🆕 2026-11-01: GO-LIVE PREP FOR THE WEEK OF NOV 2 (contact sheet for Deke, nothing sent)
 
