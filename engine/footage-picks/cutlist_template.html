@@ -1,0 +1,197 @@
+<title>Deke's Pre-cut Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column. A list (our plan, ticked) above a shorter B list (extras), sticky tally bar with save state. */
+:root {
+  --bg: #fbfaf7; --surface: #ffffff; --ink: #1f1d1a; --muted: #6b665d; --line: #e6e2d8;
+  --gold: #a87a1f; --gold-soft: #f4ead2; --gold-ink: #6e4e0e; --warn: #9a3b1c; --ok: #2f6b3a;
+  --display: "Young Serif", Georgia, "Times New Roman", serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #171614; --surface: #201e1b; --ink: #f1ede4; --muted: #a59e91; --line: #34312c;
+  --gold: #d9ad55; --gold-soft: #3a301c; --gold-ink: #f0d08e; --warn: #f0a080; --ok: #8fd19b; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #171614; --surface: #201e1b; --ink: #f1ede4; --muted: #a59e91; --line: #34312c;
+  --gold: #d9ad55; --gold-soft: #3a301c; --gold-ink: #f0d08e; --warn: #f0a080; --ok: #8fd19b; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 820px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 96px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 6vw, 44px); line-height: 1.1; margin: 10px 0 12px; text-wrap: balance; }
+.lede { max-width: 60ch; margin: 0; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin-top: 24px; padding-block: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.tally { font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.save { font-size: 13px; color: var(--muted); flex: 1 1 200px; }
+.save.ok { color: var(--ok); } .save.bad { color: var(--warn); }
+.btn { font: 600 14px/1 var(--body); border: 1px solid var(--gold); background: var(--gold); color: var(--bg); padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+.btn:focus-visible, .pick input:focus-visible + .box, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+section { margin-top: 40px; }
+h2 { font-family: var(--display); font-weight: 400; font-size: 26px; margin: 0; text-wrap: balance; }
+h2 .tag { font: 700 12px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 6px; }
+section > p { color: var(--muted); margin: 6px 0 10px; max-width: 60ch; }
+
+.row { display: grid; grid-template-columns: 160px 1fr auto; gap: 16px; align-items: start; padding: 16px 0; border-top: 1px solid var(--line); }
+.row.off { opacity: .55; }
+.thumb { display: block; width: 160px; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: var(--gold-soft); position: relative; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb .dur { position: absolute; right: 6px; bottom: 6px; font: 500 11px/1 var(--mono); background: rgba(0,0,0,.72); color: #fff; padding: 3px 5px; border-radius: 3px; }
+.body { min-width: 0; display: grid; gap: 4px; }
+.title { font-weight: 700; font-size: 17px; line-height: 1.3; margin: 0; }
+.meta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.why { font-size: 14px; margin: 2px 0 0; max-width: 58ch; }
+.watch { font-size: 14px; font-weight: 600; color: var(--gold); text-decoration: none; }
+.watch:hover { text-decoration: underline; }
+.pick { display: grid; justify-items: center; gap: 4px; cursor: pointer; user-select: none; font-size: 12px; font-weight: 600; color: var(--muted); min-width: 60px; text-align: center; }
+.pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.box { width: 34px; height: 34px; border: 2px solid var(--muted); border-radius: 8px; display: grid; place-items: center; background: var(--surface); transition: background .12s, border-color .12s; }
+.box svg { width: 20px; height: 20px; opacity: 0; color: var(--bg); }
+.pick input:checked + .box { background: var(--gold); border-color: var(--gold); }
+.pick input:checked + .box svg { opacity: 1; }
+.pick input:checked ~ span { color: var(--gold); }
+
+.notewrap { margin-top: 40px; display: grid; gap: 8px; }
+.notewrap label { font-family: var(--display); font-size: 22px; }
+textarea#note { width: 100%; min-height: 84px; font: 15px/1.45 var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; box-sizing: border-box; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; max-width: calc(100% - 32px); }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr auto; } .thumb { grid-column: 1 / -1; width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .box { transition: none; } }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Total Vocal &middot; next reels</div>
+  <h1>What we're cutting next</h1>
+  <p class="lede">Deke, here is our plan for your next reels, including your Too Many Notes season. Untick anything you'd rather we skip, and add any extras you like from the second list. We send you every cut to approve before it posts.</p>
+
+  <div class="bar" role="region" aria-label="Your plan">
+    <div class="tally"><span id="count">0</span> videos in the plan</div>
+    <div class="save" id="save" aria-live="polite">Loading...</div>
+    <button type="button" class="btn" id="copy">Copy my list</button>
+  </div>
+
+  <section id="sec-a"><h2><span class="tag">A list</span>Our plan</h2><p>Ticked means we cut it. Untick to skip.</p><div id="list-a"></div></section>
+  <section id="sec-b"><h2><span class="tag">B list</span>Want to add any of these?</h2><p>Tick any you'd like us to cut as well.</p><div id="list-b"></div></section>
+
+  <div class="notewrap">
+    <label for="note">Anything else?</label>
+    <textarea id="note" placeholder="For example: start with the trumpet one."></textarea>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const DOC = "picks/deke";
+const LS = "deke-cutlist-v1";
+const CHECK = '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const byId = Object.fromEntries(DATA.items.map(i => [i.id, i]));
+
+let skip = new Set(), add = new Set(), note = "";
+let db = null, ref = null, canWrite = false, writeTimer = null, writing = false, again = false;
+
+const isOn = (i) => i.tier === "a" ? !skip.has(i.id) : add.has(i.id);
+
+function render() {
+  for (const tier of ["a", "b"]) {
+    $("list-" + tier).innerHTML = DATA.items.filter(i => i.tier === tier).map(i => `
+      <div class="row" id="row-${i.id}">
+        ${i.url ? `<a class="thumb" href="${i.url}" target="_blank" rel="noopener" aria-label="Watch ${esc(i.title)}"><img src="${i.thumb}" alt="" loading="lazy" width="320" height="180">${i.dur ? `<span class="dur">${i.dur}</span>` : ""}</a>`
+                : `<div class="thumb"><img src="${i.thumb}" alt="" loading="lazy" width="320" height="180"></div>`}
+        <div class="body">
+          <p class="title">${esc(i.title)}</p>
+          <div class="meta">${esc(i.meta)}</div>
+          <p class="why">${esc(i.why)}</p>
+          ${i.url ? `<a class="watch" href="${i.url}" target="_blank" rel="noopener">Watch the original</a>` : ""}
+        </div>
+        <label class="pick"><input type="checkbox" id="cb-${i.id}" data-id="${i.id}"><span class="box">${CHECK}</span><span>${tier === "a" ? "Cut it" : "Add"}</span></label>
+      </div>`).join("");
+  }
+  document.addEventListener("change", (e) => {
+    const id = e.target?.dataset?.id; if (!id) return;
+    const i = byId[id];
+    if (i.tier === "a") e.target.checked ? skip.delete(id) : skip.add(id);
+    else e.target.checked ? add.add(id) : add.delete(id);
+    sync(); queueWrite();
+  });
+}
+
+function sync() {
+  let n = 0;
+  for (const i of DATA.items) {
+    const on = isOn(i); if (on) n++;
+    $("cb-" + i.id).checked = on;
+    $("row-" + i.id).classList.toggle("off", i.tier === "a" && !on);
+  }
+  $("count").textContent = n;
+}
+
+function setSave(t, cls) { const s = $("save"); s.textContent = t; s.className = "save" + (cls ? " " + cls : ""); }
+function toast(m) { const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2400); }
+function saveLocal() { try { localStorage.setItem(LS, JSON.stringify({ skip: [...skip], add: [...add], note })); } catch {} }
+function loadLocal() { try { const d = JSON.parse(localStorage.getItem(LS) || "null"); if (d) apply(d); } catch {} }
+function apply(d) {
+  skip = new Set((d.skip || []).filter(id => byId[id]?.tier === "a"));
+  add = new Set((d.add || []).filter(id => byId[id]?.tier === "b"));
+  note = d.note || "";
+}
+
+function queueWrite() {
+  saveLocal();
+  if (!db || !canWrite) { setSave("Kept on this device. Press “Copy my list” and send it to Denis.", "bad"); return; }
+  setSave("Saving..."); clearTimeout(writeTimer); writeTimer = setTimeout(doWrite, 700);
+}
+async function doWrite() {
+  if (writing) { again = true; return; }
+  writing = true;
+  try { await ref.set({ skip: [...skip], add: [...add], note, updatedAt: new Date().toISOString() }); setSave("Saved. Denis sees your choices.", "ok"); }
+  catch (e) {
+    if (e?.code === "unavailable") setTimeout(doWrite, 1200 + Math.random() * 800);
+    else { canWrite = false; setSave("Kept on this device. Press “Copy my list” and send it to Denis.", "bad"); }
+  } finally { writing = false; if (again) { again = false; doWrite(); } }
+}
+
+function listText() {
+  const on = DATA.items.filter(isOn);
+  const lines = [`Deke's cut list (${on.length}):`, ...on.map(i => "- " + i.title)];
+  const skipped = DATA.items.filter(i => i.tier === "a" && !isOn(i));
+  if (skipped.length) lines.push("", "Skip:", ...skipped.map(i => "- " + i.title));
+  if (note.trim()) lines.push("", "Note: " + note.trim());
+  return lines.join("\n");
+}
+
+$("copy").onclick = () => {
+  const text = listText();
+  const fallback = () => { const ta = $("note"); const old = ta.value; ta.value = text; ta.select(); toast("Selected. Copy it and send it to Denis."); setTimeout(() => { ta.value = old; }, 8000); };
+  try { navigator.clipboard.writeText(text).then(() => toast("Copied. Send it to Denis."), fallback); } catch { fallback(); }
+};
+let nTimer = null;
+$("note").addEventListener("input", (e) => { note = e.target.value; clearTimeout(nTimer); nTimer = setTimeout(queueWrite, 900); });
+
+render(); loadLocal(); $("note").value = note; sync();
+
+(async () => {
+  try { db = await window.claude?.use?.("db"); } catch { db = null; }
+  if (!db) { setSave("Changes stay on this device. Press “Copy my list” to send them."); return; }
+  canWrite = true;
+  try { const user = await window.claude.use("user"); if (user && (await user.can("data.write")) === false) canWrite = false; } catch {}
+  if (!canWrite) { setSave("Changes stay on this device. Press “Copy my list” to send them."); return; }
+  ref = db.doc(DOC);
+  const timer = setTimeout(() => setSave("Can't reach saved choices yet. Changes are kept on this device."), 10000);
+  ref.onSnapshot((snap) => {
+    if (!snap.metadata.fromCache) clearTimeout(timer);
+    if (snap.metadata.hasPendingWrites) return;
+    const d = snap.exists ? snap.data() : null;
+    if (d) { apply(d); if (document.activeElement !== $("note")) $("note").value = note; saveLocal(); }
+    sync();
+    if (!snap.metadata.fromCache) setSave(d ? `Saved. Last change ${new Date(d.updatedAt).toLocaleString()}.` : "Your changes save as you go.", d ? "ok" : "");
+  }, () => { clearTimeout(timer); canWrite = false; setSave("Changes stay on this device. Press “Copy my list” to send them."); });
+})();
+</script>
