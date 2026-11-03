@@ -107,7 +107,54 @@ def transcript_words(item):
     return json.load(open(wp, encoding="utf-8"))["words"] if os.path.exists(wp) else []
 
 
+def _db_track(src, a, dur, hop=160):
+    import numpy as np
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(0, a):.3f}", "-t", f"{dur:.3f}", "-i", src,
+                          "-ac", "1", "-ar", "16000", "-f", "s16le", "-"], capture_output=True).stdout
+    x = np.frombuffer(raw, dtype=np.int16).astype(float)
+    return [20 * np.log10(np.sqrt(np.mean(x[i:i + hop] ** 2)) + 1e-9) for i in range(0, len(x) - hop, hop)]
+
+
+def silence_after(src, b, limit=0.7, hold=10, pad=0.08):
+    """First real silence after b: the voice drops to room noise and stays there 100 ms (a dip between
+    syllables is shorter than that, so it is never mistaken for the end of a word).
+    Returns the cut time (silence onset plus a short natural pause, never into the next sound), or None
+    when the next word starts before any silence (words run together)."""
+    import numpy as np
+    a0 = max(0, b - 0.5)
+    db = _db_track(src, a0, 0.5 + limit + 0.5)
+    if len(db) < 20:
+        return None
+    floor, peak = float(np.percentile(db, 15)), float(np.percentile(db, 90))
+    thr = floor + 0.3 * (peak - floor)
+    start = int(round((b - a0) * 100))
+    end = min(len(db), start + int(limit * 100))
+    for k in range(start, end - hold):
+        if all(v < thr for v in db[k:k + hold]):
+            onset = k
+            j = k
+            while j < len(db) and db[j] < thr and (j - onset) < int(pad * 100):
+                j += 1
+            return round(a0 + j / 100, 3)
+    return None
+
+
+def loud_at(src, t):
+    """True if the voice is still clearly sounding at time t (a cut there clips a word)."""
+    import numpy as np
+    db = _db_track(src, t - 0.8, 1.0)
+    if len(db) < 30:
+        return False
+    floor, peak = float(np.percentile(db, 15)), float(np.percentile(db, 90))
+    at = np.mean(db[78:81])  # the 30 ms right before t
+    return at > floor + 0.45 * (peak - floor)  # still in the upper half of his speaking level
+
+
 def safe_end(src, b, allw):
+    quiet = silence_after(src, b)
+    nxt = min((w["start"] for w in allw if w["start"] >= b - 0.01), default=b + 1.0)
+    if quiet is not None and quiet < nxt + 0.35:
+        return quiet
     """Snap the cut to real silence, but never into the next phrase. If Deke leaves a pause (gap >= 0.15 s),
     the cut must stop before the next word starts. If he runs words together, allow up to 0.2 s past it,
     because Whisper's word times run early there."""
@@ -144,6 +191,9 @@ def build_base(item, src, out):
         parts.append(f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,"
                      f"afade=t=in:d=0.03,afade=t=out:st={max(0, b - a - 0.03):.3f}:d=0.03[a{i}]")
         labels.append(f"[v{i}][a{i}]")
+    for a, b in segs:
+        if loud_at(src, b):
+            die(f"cut at {b:.2f}s lands while the voice is still sounding (would clip a word); fix the segment end")
     total = sum(b - a for a, b in segs)
     fc = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(segs)}:v=1:a=1[cv][ca];" \
         f"[cv]{framing_filter(item.get('framing', 'blur169'))},tpad=stop_mode=clone:stop_duration={HOLD}[v];" \
