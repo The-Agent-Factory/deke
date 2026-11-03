@@ -2,6 +2,17 @@
 **Last updated:** 2026-11-03 (local)
 **Status:** active
 
+## 🆕 2026-11-03 (night): FOOTAGE NOW WORKS ONLINE, STRAIGHT FROM DROPBOX (no media drive)
+
+- **Denis:** "This should all be done online. Forget about the drive repair." D: is out of the footage path.
+- **How:** `engine/dropbox_stream.py` serves the shared folder "TotalVocal Skool" over a local HTTP port with rclone (no file cache); ffmpeg and Whisper read from it and pull only the bytes they need. Proof: 6.7 s cut from the middle of a 2.9 GB China clip = 31 MB moved, 11 s.
+- **Indexer:** `engine/index_dropbox.py` (probe + transcribe each new trip clip; DJI .LRF preview audio when present; temp WAV deleted) → transcripts `media/engine/transcripts/dbx_<folder>_<file>.words.json/.txt`, index `engine/state/dropbox-index.json` (length, shape, speech level, first line). `--list`, `--only <folder>`, `--limit n`; lock `engine/state/dropbox-index.lock`. Excludes `deke-media/` and `Deke card68 masters/`.
+- **Renderer:** source type `{"type":"dropbox","path":"China/..."}` in bank items. render.py pulls only the window around the cuts (±3 s, max 15 min span) as a temp 1080p file, then the usual pipeline. Tested end to end on the China selfie (0048): 65 s, QA pass, test removed. Validator (add_items.py) and MINE-PROMPT.md know the new type.
+- **Autopilot** (scheduled task DekeDropboxAutopilot, every 6 h, unchanged trigger): no longer pulls files; runs the indexer (max 40 clips per run) and emails what was indexed. State moved to `engine/state/dropbox/`. `dropbox-ingest.mjs` and the D: ledger are retired.
+- **Backfill started 2026-11-03 ~18:15:** all 126 trip clips (China 24, Croatia 85, Singapore 17); log `engine/state/dropbox/backfill-2026-11-03.log`.
+- **⚠️ For Denis:** `TotalVocal Skool/deke-media/` inside Deke's Dropbox holds 108 GB of duplicate trip clips our old pull process copied back into his Dropbox. Safe to delete (originals untouched); not deleted, waiting on Denis.
+- Known older issue seen in the test: captions spell "ACAPELLA" as Whisper hears it.
+
 ## 🆕 2026-11-03 (evening): FOOTAGE PICK LIST FOR DEKE (pre-cut checkboxes)
 
 - **Deke asked:** "Can you feed the footage I've sent you into this as well? The Too Many Notes that I've shot?"

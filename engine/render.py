@@ -39,6 +39,33 @@ sys.path.insert(0, ENGINE)
 from common import load_bank, save_bank  # one safe writer for the whole engine
 
 
+def source_key(src):
+    if src["type"] == "youtube":
+        return src["id"]
+    if src["type"] == "dropbox":
+        import dropbox_stream
+        return dropbox_stream.key(src["path"])
+    return os.path.splitext(os.path.basename(src["path"]))[0]
+
+
+def dropbox_window(item, tmpdir):
+    """Pull only the stretch of a Dropbox clip this reel needs (cuts plus 3 s each side), straight from
+    Dropbox, as a temporary 1080p file. Returns (path, offset). Nothing else of the source is downloaded."""
+    import dropbox_stream
+    segs = item["segments"]
+    x = max(0.0, min(a for a, _ in segs) - 3)
+    span = max(b for _, b in segs) + 3 - x
+    if span > 900:
+        die(f"segments span {span:.0f}s of the source; keep a reel's cuts within 15 minutes of each other")
+    out = os.path.join(tmpdir, f"{item['id']}-window.mkv")
+    scale = "scale='if(gt(iw,ih),1920,-2)':'if(gt(iw,ih),-2,1920)'"
+    with dropbox_stream.served():
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{x:.3f}", "-i", dropbox_stream.url(item["source"]["path"]),
+             "-t", f"{span:.3f}", "-map", "0:v:0", "-map", "0:a:0", "-vf", scale, "-c:v", "libx264", "-preset",
+             "veryfast", "-crf", "14", "-c:a", "pcm_s16le", out])
+    return out, x
+
+
 def source_path(src):
     if src["type"] == "youtube":
         p = f"{MEDIA}/yt/{src['id']}.mp4"
@@ -46,6 +73,8 @@ def source_path(src):
             run(["yt-dlp", "-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080]",
                  "--merge-output-format", "mp4", "-o", f"{MEDIA}/yt/%(id)s.%(ext)s", "--", f"https://youtu.be/{src['id']}"])
         return p
+    if src["type"] == "dropbox":
+        die("dropbox sources are cut from a window (dropbox_window), not read whole")
     if src["type"] == "file":
         if not os.path.exists(src["path"]):
             die(f"source file missing: {src['path']}")
@@ -102,9 +131,17 @@ def snap_end(src, b, lookback=0.05, lookahead=0.3):
 
 def transcript_words(item):
     src = item["source"]
-    key = src["id"] if src["type"] == "youtube" else os.path.splitext(os.path.basename(src["path"]))[0]
+    key = source_key(src)
     wp = f"{MEDIA}/transcripts/{key}.words.json"
-    return json.load(open(wp, encoding="utf-8"))["words"] if os.path.exists(wp) else []
+    words = json.load(open(wp, encoding="utf-8"))["words"] if os.path.exists(wp) else []
+    return shift_words(words, item.get("_offset", 0))
+
+
+def shift_words(words, off):
+    """Dropbox reels are cut from a window that starts at `off` seconds into the source."""
+    if not off:
+        return words
+    return [dict(w, start=round(w["start"] - off, 3), end=round(w["end"] - off, 3)) for w in words if w["end"] - off > 0]
 
 
 def _db_track(src, a, dur, hop=160):
@@ -205,11 +242,13 @@ def build_base(item, src, out):
 
 def words_for(item):
     src = item["source"]
-    key = src["id"] if src["type"] == "youtube" else os.path.splitext(os.path.basename(src["path"]))[0]
+    key = source_key(src)
     wp = f"{MEDIA}/transcripts/{key}.words.json"
     if not os.path.exists(wp):
+        if src["type"] == "dropbox":
+            die(f"no transcript for {src['path']}; run engine/index_dropbox.py first")
         run([sys.executable, "-X", "utf8", os.path.join(ENGINE, "transcribe.py"), source_path(src)])
-    allw = json.load(open(wp, encoding="utf-8"))["words"]
+    allw = shift_words(json.load(open(wp, encoding="utf-8"))["words"], item.get("_offset", 0))
     out, offset = [], 0.0
     planned = item["segments"]
     cut = item.get("cut_segments", planned)
@@ -342,11 +381,20 @@ def main():
     if os.path.exists(final) and not force:
         print("already rendered", final); return
     os.makedirs(f"{MEDIA}/bases", exist_ok=True); os.makedirs(f"{MEDIA}/renders", exist_ok=True)
+    import tempfile
+    tmpdir = tempfile.mkdtemp(prefix="deke-render-")
     try:
-        src = source_path(item["source"])
         base = f"{MEDIA}/bases/{item_id}.mp4"
-        dur = build_base(item, src, base)
-        planned_words = words_for(item)
+        if item["source"]["type"] == "dropbox":
+            src, off = dropbox_window(item, tmpdir)
+            work = dict(item, _offset=off, segments=[[round(a - off, 3), round(b - off, 3)] for a, b in item["segments"]])
+            dur = build_base(work, src, base)
+            item["cut_segments"] = [[round(a + off, 3), round(b + off, 3)] for a, b in work["cut_segments"]]
+            planned_words = words_for(work)
+        else:
+            src = source_path(item["source"])
+            dur = build_base(item, src, base)
+            planned_words = words_for(item)
         words = words_from_clip(base, dur - HOLD)
         # Sanity: the clip transcript must cover about the same words as the plan, or something is off.
         if abs(len(words) - len(planned_words)) > max(4, 0.25 * len(planned_words)):
@@ -391,6 +439,8 @@ def main():
         it["status"], it["error"] = "render_failed", str(e.code)
         save_bank(bank)
         raise
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
     bank = load_bank()
     it = next(x for x in bank["items"] if x["id"] == item_id)
     it["cut_segments"] = item.get("cut_segments")

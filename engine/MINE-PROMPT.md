@@ -65,6 +65,12 @@ Reel:
           "tiktok": "one punchy line plus 4 or 5 hashtags like #acappella #singing #vocalharmony"}}
 ```
 
+Reel from Deke's trip footage in Dropbox (indexed online by `engine/index_dropbox.py`, transcripts named `dbx_<folder>_<file>`; footage stays in Dropbox, the render pulls only the seconds it uses; keep all segments of one reel within 15 minutes of each other):
+```json
+ "source": {"type": "dropbox", "path": "China/DJI_20260829181031_0048_D.MP4"},
+ "sourceNote": "Deke's China footage (Dropbox: China/DJI_..._0048) at 0:00"
+```
+
 Text post (built from a moment in the video that works better as words than as a clip):
 ```json
 {"id": "text-short-kebab-id", "lane": "text", "priority": 4, "needs_deke": false,

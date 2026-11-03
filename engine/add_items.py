@@ -30,10 +30,14 @@ def check(item, ids):
             e.append(f"contains {why}")
     if item.get("lane") == "reel":
         src = item.get("source", {})
-        key = src.get("id") if src.get("type") == "youtube" else os.path.splitext(os.path.basename(src.get("path", "")))[0]
+        if src.get("type") == "dropbox":
+            import dropbox_stream
+            key = dropbox_stream.key(src.get("path", ""))
+        else:
+            key = src.get("id") if src.get("type") == "youtube" else os.path.splitext(os.path.basename(src.get("path", "")))[0]
         wp = f"{TR}/{key}.words.json"
-        if src.get("type") not in ("youtube", "file") or not os.path.exists(wp):
-            e.append(f"source must be a transcribed youtube id or local file ({wp} missing)")
+        if src.get("type") not in ("youtube", "file", "dropbox") or not os.path.exists(wp):
+            e.append(f"source must be a transcribed youtube id, Dropbox clip or local file ({wp} missing)")
         segs = item.get("segments") or []
         total = sum(b - a for a, b in segs) if segs else 0
         if not 12 <= total <= item.get("maxSec", 60):
