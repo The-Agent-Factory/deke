@@ -359,9 +359,13 @@ def main():
         shutil.copyfile(base, os.path.join(pub, f"{item_id}.mp4"))
         props = {"baseFile": f"engine/{item_id}.mp4", "words": words, "showTitle": False, "durationSec": round(dur, 3)}
         pol = item.get("polish")
+        if pol is None and not item.get("skool_only"):
+            sys.path.insert(0, ENGINE)
+            from common import CONFIG
+            pol = CONFIG.get("reel_polish")  # Denis's standard: bed + closing card on every reel
         if pol:  # opening label, a cappella bed, Total Vocal closing card (my-video/src/Polish.tsx)
             card_at = round(dur - HOLD + 0.25, 3)
-            music_src = pol.get("music", "music/HJ_Maliboom_BED1.mp3")
+            music_src = pol.get("music", "music/HJ_Maliboom_BED1.mp3") if pol.get("music", True) is not False else None
             if pol.get("kicker"):
                 props["kicker"] = {"text": pol["kicker"], "outSec": pol.get("kickerOutSec", 3.0)}
             props["endSplash"] = {"lines": pol.get("endLines", ["JOIN", "TOTAL VOCAL"]), "url": "skool.com/deke",

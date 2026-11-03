@@ -1,0 +1,23 @@
+/* Layout: one column of reel sections; facts list, three stills in a row, then the full caption sheet. */
+:root{--bg:#f6f5f2;--card:#fff;--fg:#1c1b19;--muted:#66625b;--line:#e2ded6;--gold:#a87a1f;--ok:#2f6b3a;
+--body:"Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#151412;--card:#1e1d1a;--fg:#ece8df;--muted:#a19b90;--line:#34312c;--gold:#d9a948;--ok:#8fcb98;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151412;--card:#1e1d1a;--fg:#ece8df;--muted:#a19b90;--line:#34312c;--gold:#d9a948;--ok:#8fcb98;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--body)}
+.wrap{max-width:1000px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+.eyebrow{margin:0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{margin:0;font-size:30px;line-height:1.15;text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:65ch}
+.reel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:14px;min-width:0}
+.reel header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.reel h2{margin:0;font-size:20px;text-wrap:balance}
+.reel h3{margin:4px 0 0;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.watch{background:var(--fg);color:var(--bg);text-decoration:none;font-weight:600;padding:6px 16px;border-radius:6px}
+.watch:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+dl{margin:0;display:grid;gap:4px}dl div{display:grid;grid-template-columns:130px 1fr;gap:10px}
+dt{color:var(--muted);font-size:14px}dd{margin:0;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.stills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:640px}
+figure{margin:0}figure img{width:100%;border-radius:6px;border:1px solid var(--line);display:block}
+figcaption{font-size:13px;color:var(--muted);margin-top:4px}
+.sheet{width:100%;max-width:100%;border-radius:6px;border:1px solid var(--line)}
+@media (max-width:560px){dl div{grid-template-columns:1fr;gap:0}}

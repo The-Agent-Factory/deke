@@ -24,13 +24,97 @@
   "_slots": "Same weekly shape as the Oct 19 week that shipped and grew Skool 215 to 302. Day 0 = Monday. Times are local Toronto time; UTC is computed per date, so DST is handled.",
   "slots": {
     "reel": [
-      { "day": 1, "posts": [["instagram", "10:00"], ["facebook", "10:00"], ["youtube", "12:00"], ["tiktok", "14:00"]] },
-      { "day": 3, "posts": [["instagram", "10:00"], ["facebook", "10:00"], ["youtube", "12:00"], ["tiktok", "14:00"]] },
-      { "day": 5, "posts": [["instagram", "10:00"], ["facebook", "10:00"], ["youtube", "12:00"], ["tiktok", "14:00"]] }
+      {
+        "day": 1,
+        "posts": [
+          [
+            "instagram",
+            "10:00"
+          ],
+          [
+            "facebook",
+            "10:00"
+          ],
+          [
+            "youtube",
+            "12:00"
+          ],
+          [
+            "tiktok",
+            "14:00"
+          ]
+        ]
+      },
+      {
+        "day": 3,
+        "posts": [
+          [
+            "instagram",
+            "10:00"
+          ],
+          [
+            "facebook",
+            "10:00"
+          ],
+          [
+            "youtube",
+            "12:00"
+          ],
+          [
+            "tiktok",
+            "14:00"
+          ]
+        ]
+      },
+      {
+        "day": 5,
+        "posts": [
+          [
+            "instagram",
+            "10:00"
+          ],
+          [
+            "facebook",
+            "10:00"
+          ],
+          [
+            "youtube",
+            "12:00"
+          ],
+          [
+            "tiktok",
+            "14:00"
+          ]
+        ]
+      }
     ],
     "text": [
-      { "day": 0, "posts": [["facebook", "10:00"], ["threads", "12:00"]] },
-      { "day": 2, "posts": [["linkedin", "09:00"], ["facebook", "10:00"]] }
+      {
+        "day": 0,
+        "posts": [
+          [
+            "facebook",
+            "10:00"
+          ],
+          [
+            "threads",
+            "12:00"
+          ]
+        ]
+      },
+      {
+        "day": 2,
+        "posts": [
+          [
+            "linkedin",
+            "09:00"
+          ],
+          [
+            "facebook",
+            "10:00"
+          ]
+        ]
+      }
     ]
   },
   "rules": [
@@ -39,5 +123,16 @@
     "No em dashes.",
     "No identifiable minors.",
     "Anything that names a third party, shows other groups, or changes his meaning is needs_deke and never auto-posts."
-  ]
+  ],
+  "reel_polish": {
+    "_about": "Denis's standard (2026-11-03): every reel gets the Maliboom bed and the Total Vocal closing card. Items may override with their own polish (e.g. a series kicker) or polish:false. Skool-only items stay plain.",
+    "endLines": [
+      "THE FREE COMMUNITY",
+      "FOR A CAPPELLA SINGERS",
+      "TOTAL VOCAL"
+    ],
+    "music": "music/HJ_Maliboom_BED1.mp3",
+    "musicUnder": 0.05,
+    "musicSwell": 0.22
+  }
 }
