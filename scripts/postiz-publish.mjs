@@ -202,6 +202,21 @@ async function uploadMedia(absPath) {
   return { id: body.id, path: body.path };
 }
 
+async function uploadMediaFromUrl(url) {
+  const body = await postizFetch('/upload-from-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  });
+  if (!body?.id || !body?.path) {
+    throw new Error(`Unexpected POST /upload-from-url response for ${url}. Raw: ${JSON.stringify(body).slice(0, 1000)}`);
+  }
+  if (body.status && body.status !== 'ready') {
+    throw new Error(`Postiz media from ${url} is "${body.status}", not ready yet`);
+  }
+  return { id: body.id, path: body.path };
+}
+
 // ── Platform mapping / settings ──────────────────────────────────────────────
 
 function pickIntegration(item, integrations) {
@@ -554,6 +569,14 @@ async function runPublish(manifestPath, { asDraft = false } = {}) {
             uploadCache.set(absMedia, await uploadMedia(absMedia));
           }
           images.push(uploadCache.get(absMedia));
+        }
+        // Large files (over the ~100 MB request limit on POST /upload): Postiz pulls them from a URL.
+        for (const url of item.mediaUrls || []) {
+          if (!uploadCache.has(url)) {
+            log(`${tag} Postiz fetching ${url.slice(0, 80)}...`);
+            uploadCache.set(url, await uploadMediaFromUrl(url));
+          }
+          images.push(uploadCache.get(url));
         }
         posts.push({
           integration: { id: integration.id },

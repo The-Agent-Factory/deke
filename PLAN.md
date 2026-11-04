@@ -2,7 +2,16 @@
 **Last updated:** 2026-11-03 (local)
 **Status:** active
 
-## 🆕 2026-11-03 (late): BILL BIFFLE INTERVIEW EDITED FOR YOUTUBE (review page, nothing uploaded)
+## 🆕 2026-11-04: BILL BIFFLE FINAL WITH DEKE'S INTRO (built, waiting on Denis's review; nothing on YouTube)
+
+- Deke recorded an intro (media/inbox/billbiffle-intro-from-deke.mp4, 1:29). Denis: cut Mo Field from it (Mo half stays out), post only the final, use the usual Total Vocal intro/outro + music (ACE barbershop bed dropped: "no time, would sound bad").
+- Intro trimmed 0.30-54.465 + 80.33-88.72 ("So enjoy this discussion. Well, what am I talking about this for?"), verified by transcription.
+- Final `media/bill-biffle/edit/bill-biffle-deke-youtube-final.mp4` (39:30): splash-intro-interviews-4k + Maliboom bed (0.30, ducked 0.075 under Deke, fades with the bed) -> Deke intro with "Deke Sharon / Total Vocal" plate -> edit -> thank-you card + last 10 s of Maliboom -> splash-outro-interviews-4k. -15.4 LUFS. Built by engine/bill_biffle/assemble_final.py. Captions 597 cues incl. Deke's intro. Chapters shifted +66 s (0:00 Deke introduces Bill).
+- Package refreshed in total-vocal-skool/bill-biffle-2026-10/ (video, .en.srt, thumbnail, UPLOAD-STEPS.txt, manifest with mediaUrls placeholder).
+- Upload path: Postiz /upload is capped (~100 MB, 1.56 GB failed); publisher now supports item.mediaUrls via POST /upload-from-url and item.privacy. Needs a public temp URL (Dropbox temporary link after rclone upload to dropbox:Bill Biffle YouTube/). Captions via Composio deke-yt (youtube_bugre-glop), verified = Deke's channel UCTuZ5LxQIjLK-CJBy0onT_Q. Denis's Google login cannot open Deke's channel in YouTube Studio.
+- Rasmus Krigstrom live cover: total-vocal-skool/rasmus-krigstrom-live/ (1920x1080 + 1460x752; Rasmus = lead, Ringmasters, 2012 champions; photo from ringmasters.se "ras", Denis to confirm).
+
+## 2026-11-03 (late): BILL BIFFLE INTERVIEW EDITED FOR YOUTUBE (review page, nothing uploaded)
 
 - **Denis:** pull the Oct 30 Skool live with Bill Biffle, edit to only Deke and Bill, closed captions, a few opening clips, "extremely respectful"; post on YouTube.
 - **Source:** Skool post "Bill Biffle, past Barbershop Harmony Society president, with Deke and a Bonus!" (Mux HLS, 72.9 min, 1080p), pulled through Denis's logged-in Chrome tab (token never left the browser) to `claude_projects/downloads/`, muxed to `media/bill-biffle/bill-biffle-full.mp4`.
