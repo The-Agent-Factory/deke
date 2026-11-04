@@ -1,30 +1,40 @@
 {
- "packDate": "2026-11-04",
- "items": [
-  {
-   "platform": "youtube",
-   "privacy": "unlisted",
-   "title": "Bill Biffle on 50 Years of Barbershop Harmony, with Deke Sharon",
-   "text": "Bill Biffle has been a barbershopper for nearly fifty years. He judged Sound and Singing for more than two decades, directed Albuquerque's New MexiChords, and served as International President of the Barbershop Harmony Society in 2009-2010. Deke Sharon sits down with him to talk about a cappella and barbershop in the 1970s, why big chapters thrived back then, what barbershop did better, and the long tug of war between harmony and rhythm.\n\nRecorded live in Total Vocal, the free a cappella community: https://skool.com/deke\n\nChapters\n0:00 Deke Sharon introduces Bill Biffle\n1:06 Bill Biffle in his own words\n1:36 A cappella and barbershop in the 1970s\n6:24 Why the 70s and 80s were barbershop's peak\n10:01 Community, civic clubs and a kid who knew a thousand tags\n14:12 Joining for a season\n17:20 \"Show them how much fun it is\"\n20:25 What barbershop did better in the 70s and 80s\n26:38 Harmonic variety, then and now\n31:45 The war between harmony and rhythm\n38:38 \"Our modern songs are 60 years old\"\n\n#barbershop #acappella #barbershopharmony #dekesharon #totalvocal",
-   "tags": [
-    "barbershop",
-    "barbershop harmony",
-    "Barbershop Harmony Society",
-    "a cappella",
-    "acapella",
-    "Bill Biffle",
-    "Deke Sharon",
-    "quartet",
-    "chorus",
-    "vocal harmony",
-    "Total Vocal"
-   ],
-   "scheduledAtISO": "2026-11-04T02:49:12.000Z",
-   "integrationId": "cms1yf65v0fykrv0y63g13rht",
-   "mediaUrls": [
-    "__DROPBOX_TEMP_LINK__"
-   ],
-   "coverPath": "Bill Biffle thumbnail.jpg"
-  }
- ]
+  "packDate": "2026-11-04",
+  "items": [
+    {
+      "platform": "youtube",
+      "privacy": "unlisted",
+      "title": "Bill Biffle on 50 Years of Barbershop Harmony, with Deke Sharon",
+      "text": "Bill Biffle has been a barbershopper for nearly fifty years. He judged Sound and Singing for more than two decades, directed Albuquerque's New MexiChords, and served as International President of the Barbershop Harmony Society in 2009-2010. Deke Sharon sits down with him to talk about a cappella and barbershop in the 1970s, why big chapters thrived back then, what barbershop did better, and the long tug of war between harmony and rhythm.\n\nRecorded live in Total Vocal, the free a cappella community: https://skool.com/deke\n\nChapters\n0:00 Deke Sharon introduces Bill Biffle\n1:06 Bill Biffle in his own words\n1:36 A cappella and barbershop in the 1970s\n6:24 Why the 70s and 80s were barbershop's peak\n10:01 Community, civic clubs and a kid who knew a thousand tags\n14:12 Joining for a season\n17:20 \"Show them how much fun it is\"\n20:25 What barbershop did better in the 70s and 80s\n26:38 Harmonic variety, then and now\n31:45 The war between harmony and rhythm\n38:38 \"Our modern songs are 60 years old\"\n\n#barbershop #acappella #barbershopharmony #dekesharon #totalvocal",
+      "tags": [
+        "barbershop",
+        "barbershop harmony",
+        "Barbershop Harmony Society",
+        "a cappella",
+        "acapella",
+        "Bill Biffle",
+        "Deke Sharon",
+        "quartet",
+        "chorus",
+        "vocal harmony",
+        "Total Vocal"
+      ],
+      "scheduledAtISO": "2026-11-05T11:00:00.000Z",
+      "integrationId": "cms1yf65v0fykrv0y63g13rht",
+      "coverPath": "C:/Users/lafla/claude_projects/deke/total-vocal-skool/bill-biffle-2026-10/Bill Biffle thumbnail.jpg",
+      "mediaPaths": [
+        "C:/Users/lafla/claude_projects/deke/media/bill-biffle/edit/bill-biffle-720.mp4"
+      ],
+      "__coverUploaded": {
+        "id": "418e81d6-1eff-4804-a5ab-8f28a88f352a",
+        "path": "https://uploads.postiz.com/ef9jFfiZvP.jpg"
+      },
+      "failedAttempt": {
+        "postizPostId": "cmw2ioaev0h64l8086tpv6c6n",
+        "error": "YouTube daily upload quota exhausted (2026-11-04)"
+      },
+      "status": "scheduled",
+      "postizPostId": "cmw2j5qrf0hhml808dife0mb0"
+    }
+  ]
 }

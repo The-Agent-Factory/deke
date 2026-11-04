@@ -318,7 +318,8 @@ function buildSettings(item, identifier) {
         title: String(item.title).slice(0, 100),
         // item.privacy: 'public' (default) | 'unlisted' | 'private'
         type: ['public', 'unlisted', 'private'].includes(item.privacy) ? item.privacy : 'public',
-        ...(item.tags ? { tags: item.tags } : {}),
+        // Postiz wants tags as objects: [{ value, label }]
+        ...(item.tags ? { tags: item.tags.map((t) => (typeof t === 'string' ? { value: t, label: t } : t)) } : {}),
         // Custom Shorts thumbnail, same rationale as Instagram above.
         ...(item.__coverUploaded ? { thumbnail: item.__coverUploaded } : {}),
       };

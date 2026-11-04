@@ -2,7 +2,11 @@
 **Last updated:** 2026-11-03 (local)
 **Status:** active
 
-## 🆕 2026-11-04: BILL BIFFLE FINAL WITH DEKE'S INTRO (built, waiting on Denis's review; nothing on YouTube)
+## 🆕 2026-11-04: BILL BIFFLE FINAL WITH DEKE'S INTRO (scheduled in Postiz for Thu Nov 5, 6:00 AM ET, unlisted)
+
+- Denis said "post it". Dropbox is over quota (200 GB of 9.25 GB) so no Dropbox link; Composio YouTube upload quota exhausted; cloudflared download blocked by session rules. Spaces/Supabase S3 remotes hold ClinikPro clinic data: never use them for Deke.
+- Postiz took a 720p copy (media/bill-biffle/edit/bill-biffle-720.mp4, 401 MB). First post (cmw2ioaev...) errored: "YouTube's daily upload quota is exhausted". Rescheduled: Postiz post cmw2j5qrf0hhml808dife0mb0, 2026-11-05T11:00Z, unlisted, thumbnail, tags (publisher now sends tags as {value,label}).
+- **Next (Nov 5 morning):** check the post published (Postiz GET /posts releaseURL), attach captions `total-vocal-skool/bill-biffle-2026-10/Bill Biffle with Deke Sharon.en.srt` via Composio YOUTUBE_UPLOAD_CAPTION_TRACK (account youtube_bugre-glop), send Denis the unlisted link.
 
 - Deke recorded an intro (media/inbox/billbiffle-intro-from-deke.mp4, 1:29). Denis: cut Mo Field from it (Mo half stays out), post only the final, use the usual Total Vocal intro/outro + music (ACE barbershop bed dropped: "no time, would sound bad").
 - Intro trimmed 0.30-54.465 + 80.33-88.72 ("So enjoy this discussion. Well, what am I talking about this for?"), verified by transcription.
