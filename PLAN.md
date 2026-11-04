@@ -2,6 +2,17 @@
 **Last updated:** 2026-11-03 (local)
 **Status:** active
 
+## 🆕 2026-11-03 (late): BILL BIFFLE INTERVIEW EDITED FOR YOUTUBE (review page, nothing uploaded)
+
+- **Denis:** pull the Oct 30 Skool live with Bill Biffle, edit to only Deke and Bill, closed captions, a few opening clips, "extremely respectful"; post on YouTube.
+- **Source:** Skool post "Bill Biffle, past Barbershop Harmony Society president, with Deke and a Bonus!" (Mux HLS, 72.9 min, 1080p), pulled through Denis's logged-in Chrome tab (token never left the browser) to `claude_projects/downloads/`, muxed to `media/bill-biffle/bill-biffle-full.mp4`.
+- **Bill's title (primary source nmchords.com director bio):** BHS International President 2009-2010; certified Sound and Singing judge 1981-2003; directed the New MexiChords (Albuquerque). Note: bio says joined 1976, Bill says 1975 on camera, so no join year in copy.
+- **Edit (38:19):** cold open of 3 Bill clips (31:18 harmony vs rhythm, 23:03 songs I don't know again, 17:42 New MexiChord pep talk), title card, conversation 0:58.5 to 38:41.15 kept in full (Deke + Bill side by side via per-second tile tracking; Deke solo 11:47-12:21 while Bill's camera was off; 2 s held frame at 4:42), end card "Thank you, Bill" + skool.com/deke. No music. -16.4 LUFS. Mo Field segment 38:42-72:55 set aside (possible separate video).
+- **Captions:** `media/bill-biffle/edit/bill-biffle-deke.en.srt`, 578 cues (2 x 42 chars), 71 source-checked name fixes; punctuation restored text-only (word sequence verified unchanged). Listen list: 10:36 "the stage ... Tim Brooks", 18:15 "floodlights".
+- **Scripts:** `engine/bill_biffle/` (track_tiles.py, resolve_layout.py, build_edit.py, build_captions.py). Media under `media/bill-biffle/` (gitignored).
+- **Review page:** https://claude.ai/artifact/98FRtXgF7u8bGuQqKoF7nY (source `media/bill-biffle/edit/REVIEW.html`, republish there).
+- **Upload route:** Postiz has Deke's YouTube (posted Aug 29 long-form). Postiz cannot add a caption track; Deke's channel is not in Composio (7 other YouTube accounts are). Waiting on Denis: privacy, caption route, Mo segment.
+
 ## 🆕 2026-11-03 (night): FOOTAGE NOW WORKS ONLINE, STRAIGHT FROM DROPBOX (no media drive)
 
 - **Denis:** "This should all be done online. Forget about the drive repair." D: is out of the footage path.
