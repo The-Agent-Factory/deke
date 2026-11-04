@@ -301,7 +301,8 @@ function buildSettings(item, identifier) {
       settings = {
         __type: 'youtube',
         title: String(item.title).slice(0, 100),
-        type: 'public',
+        // item.privacy: 'public' (default) | 'unlisted' | 'private'
+        type: ['public', 'unlisted', 'private'].includes(item.privacy) ? item.privacy : 'public',
         ...(item.tags ? { tags: item.tags } : {}),
         // Custom Shorts thumbnail, same rationale as Instagram above.
         ...(item.__coverUploaded ? { thumbnail: item.__coverUploaded } : {}),

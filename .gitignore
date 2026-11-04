@@ -69,3 +69,6 @@ supabase/.temp
 
 # Content engine media (videos, renders, transcripts): local only, never in git or deploys
 /media/
+
+# Bill Biffle upload package (large media)
+total-vocal-skool/bill-biffle-2026-10/*.mp4

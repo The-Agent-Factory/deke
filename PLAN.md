@@ -11,7 +11,11 @@
 - **Captions:** `media/bill-biffle/edit/bill-biffle-deke.en.srt`, 578 cues (2 x 42 chars), 71 source-checked name fixes; punctuation restored text-only (word sequence verified unchanged). Listen list: 10:36 "the stage ... Tim Brooks", 18:15 "floodlights".
 - **Scripts:** `engine/bill_biffle/` (track_tiles.py, resolve_layout.py, build_edit.py, build_captions.py). Media under `media/bill-biffle/` (gitignored).
 - **Review page:** https://claude.ai/artifact/98FRtXgF7u8bGuQqKoF7nY (source `media/bill-biffle/edit/REVIEW.html`, republish there).
-- **Upload route:** Postiz has Deke's YouTube (posted Aug 29 long-form). Postiz cannot add a caption track; Deke's channel is not in Composio (7 other YouTube accounts are). Waiting on Denis: privacy, caption route, Mo segment.
+- **Denis chose:** unlisted first, Mo Field segment left out, connect Deke's channel in Composio.
+- **Postiz upload FAILED** (1.56 GB, `fetch failed` on /upload, likely size limit); nothing was queued. `postiz-publish.mjs` now supports `item.privacy` (public/unlisted/private).
+- **Composio `deke-yt` (youtube_bugre-glop) connected 2026-11-03**, but every call returns 403 `quotaExceeded` on Composio's shared YouTube app (resets midnight Pacific). Channel identity not yet verified. Caption tool: YOUTUBE_UPLOAD_CAPTION_TRACK.
+- **Denis uploads manually:** package in `total-vocal-skool/bill-biffle-2026-10/` (video, .en.srt, thumbnail from the 38:42 smile, UPLOAD-STEPS.txt with title/description/tags). Video is gitignored.
+- **Next:** after Denis uploads unlisted, verify on YouTube (video + caption track) once Composio quota resets; Deke approves, then public.
 
 ## 🆕 2026-11-03 (night): FOOTAGE NOW WORKS ONLINE, STRAIGHT FROM DROPBOX (no media drive)
 

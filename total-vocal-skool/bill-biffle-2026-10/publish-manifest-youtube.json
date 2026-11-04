@@ -1,0 +1,31 @@
+{
+  "packDate": "2026-11-04",
+  "items": [
+    {
+      "platform": "youtube",
+      "privacy": "unlisted",
+      "title": "Bill Biffle on 50 Years of Barbershop Harmony, with Deke Sharon",
+      "text": "Bill Biffle has been a barbershopper for nearly fifty years. He judged Sound and Singing for more than two decades, directed Albuquerque's New MexiChords, and served as International President of the Barbershop Harmony Society in 2009-2010. Deke Sharon sits down with him to talk about a cappella and barbershop in the 1970s, why big chapters thrived back then, what barbershop did better, and the long tug of war between harmony and rhythm.\n\nRecorded live in Total Vocal, the free a cappella community: https://skool.com/deke\n\nChapters\n0:00 Bill Biffle in his own words\n0:30 A cappella and barbershop in the 1970s\n5:18 Why the 70s and 80s were barbershop's peak\n8:55 Community, civic clubs and a kid who knew a thousand tags\n13:06 Joining for a season\n16:14 \"Show them how much fun it is\"\n19:19 What barbershop did better in the 70s and 80s\n25:32 Harmonic variety, then and now\n30:39 The war between harmony and rhythm\n37:32 \"Our modern songs are 60 years old\"\n\n#barbershop #acappella #barbershopharmony #dekesharon #totalvocal",
+      "tags": [
+        "barbershop",
+        "barbershop harmony",
+        "Barbershop Harmony Society",
+        "a cappella",
+        "acapella",
+        "Bill Biffle",
+        "Deke Sharon",
+        "quartet",
+        "chorus",
+        "vocal harmony",
+        "Total Vocal"
+      ],
+      "mediaPaths": [
+        "C:/Users/lafla/claude_projects/deke/media/bill-biffle/edit/bill-biffle-deke-youtube.mp4"
+      ],
+      "scheduledAtISO": "2026-11-04T02:49:12.000Z",
+      "integrationId": "cms1yf65v0fykrv0y63g13rht",
+      "status": "failed",
+      "error": "Network error calling https://api.postiz.com/public/v1/upload: fetch failed"
+    }
+  ]
+}
