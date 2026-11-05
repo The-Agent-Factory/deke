@@ -5,7 +5,7 @@
 ## 🆕 2026-11-05: BILL BIFFLE IS PUBLIC ON DEKE'S YOUTUBE (done)
 
 - **Live:** https://www.youtube.com/watch?v=i2b5hnv0vjs (39:30, Deke's channel UCTuZ5LxQIjLK-CJBy0onT_Q). Postiz published it unlisted at 6:00 AM ET. Denis confirmed it is approved and asked for public; switched 2026-11-05 ~7:35 AM ET via Composio YOUTUBE_UPDATE_VIDEO (account youtube_bugre-glop).
-- **Captions:** corrected 597-cue SRT attached as standard track "English" (replaces the auto track as the default choice; the auto track still exists alongside it). Verified after the switch: privacy public, caption true, title, description, chapters, tags and thumbnail intact, watch page HTTP 200.
+- **Captions:** corrected 597-cue SRT attached as standard track "English"; YouTube's auto track still exists alongside it (which one viewers get by default not checked in a player). Verified after the switch: privacy public, caption true, title, description, chapters, tags and thumbnail intact, watch page HTTP 200.
 - **How the file reached Composio:** workbench pulled the SRT from GitHub (git blob 7fc724d checked), `upload_local_file` gave the s3key, YOUTUBE_UPLOAD_CAPTION_TRACK took it. Reuse this for future caption uploads.
 - **Open:** caption listen list from 2026-11-03 ("Tim Brooks", "floodlights") never confirmed by ear.
 
