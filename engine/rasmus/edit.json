@@ -1,0 +1,23 @@
+{
+  "src": "C:/Users/lafla/claude_projects/deke/media/rasmus/rasmus-full.mp4",
+  "out": "C:/Users/lafla/claude_projects/deke/media/rasmus/edit",
+  "guest_name": "Rasmus Krigström",
+  "guest_first": "Rasmus",
+  "guest_title": "Ringmasters, 2012 International Quartet Champions. Director of Zero8.",
+  "title_card_line": "Ringmasters, 2012 International Quartet Champions  |  Director of Zero8",
+  "_cold_note": "Each clip re-transcribed alone to confirm clean edges (media/rasmus/clips).",
+  "cold": [
+    [1383.60, 1394.25, "We have 10 choirs that would easily be able to go on tour as a professional group, but they're not. They're just amateur choirs singing on a very high level."],
+    [1295.35, 1305.10, "If we're going to perform on a high level, the very first thing we need to do together is get it off paper. That's where it starts for me."],
+    [3298.60, 3312.20, "I would want government-level awareness to the positive effects of singing, and therefore funding."]
+  ],
+  "_main_note": "0-0.4 s cameras still connecting (hold first live frame). Cut 580.62-616.34: Rasmus's audio drops, troubleshooting. Cut 653.98-687.90: Deke loses Rasmus's sound, troubleshooting. 3344.1-3346.7 Rasmus's camera off. Ends on 'Yes, we should.' before the host wrap-up.",
+  "main": [
+    [0.0, 0.4, "big", "holdend"],
+    [0.4, 580.62, "big", "two"],
+    [616.34, 653.98, "big", "two"],
+    [687.90, 3344.1, "big", "two"],
+    [3344.1, 3346.7, "big", "deke"],
+    [3346.7, 3429.66, "big", "two"]
+  ]
+}
