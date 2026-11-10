@@ -21,18 +21,22 @@
         "choral singing",
         "Total Vocal"
       ],
-      "scheduledAtISO": "2026-11-10T20:24:00.000Z",
+      "scheduledAtISO": "2026-11-11T11:00:00.000Z",
       "integrationId": "cms1yf65v0fykrv0y63g13rht",
       "coverPath": "C:/Users/lafla/claude_projects/deke/total-vocal-skool/rasmus-krigstrom-2026-11/Rasmus Krigstrom thumbnail.jpg",
       "mediaPaths": [
         "C:/Users/lafla/claude_projects/deke/media/rasmus/edit/rasmus-krigstrom-720.mp4"
       ],
       "__coverUploaded": {
-        "id": "79367cf3-7017-4567-b66c-a695952a9b27",
-        "path": "https://uploads.postiz.com/grc1RA7z9Y.jpg"
+        "id": "244ea550-ca9d-40f4-a3e3-3c11249572d4",
+        "path": "https://uploads.postiz.com/f77zwPRlNy.jpg"
+      },
+      "failedAttempt": {
+        "postizPostId": "cmwb4m4g50noypq07mxro1lfj",
+        "error": "YouTube daily upload quota exhausted (2026-11-10)"
       },
       "status": "scheduled",
-      "postizPostId": "cmwb4m4g50noypq07mxro1lfj"
+      "postizPostId": "cmwb5hyu40o70pq0792zel9pv"
     }
   ]
 }

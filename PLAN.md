@@ -8,9 +8,14 @@
 - **New final:** `media/rasmus/edit/rasmus-krigstrom-deke-youtube-final.mp4` (57:38, 1080p30, 3.2 GB, -15.5 LUFS; intro -15.8). Bill's layout exactly: splash -> Deke intro (scaled to 1080p, "Deke Sharon / Total Vocal" plate 1-7 s, Maliboom ducked 0.075 and ending with his last line) -> edit -> outro. Built by `engine/rasmus/assemble_final.py` (now Bill-style with intro). Old no-intro final `rasmus-krigstrom-deke-final.mp4` kept, superseded.
 - **Captions:** `rasmus-krigstrom-deke-youtube-final.en.srt`, 911 cues (15 for the intro). Opening re-transcribed from the final: audio and captions agree within ~50 ms. Fixes: "non-North American" kept whole; "talk to him about why is Sweden so singy" (solo re-pass p 0.99, first pass said "them").
 - **Package refreshed:** `total-vocal-skool/rasmus-krigstrom-2026-11/` (video hardlink to the new final, new .srt, UPLOAD-STEPS chapters: 0:00 Deke introduces Rasmus, 0:49 in his own words, rest +45.9 s).
-- **720p copy for Postiz:** `media/rasmus/edit/rasmus-krigstrom-720.mp4` (rendering at handoff).
-- **Review page republished (v2):** https://claude.ai/artifact/4AAcLrYKLVPPXx1rHX3LAF
-- **Next:** Denis watches the opening -> upload via Postiz unlisted (Bill's path: public temp URL + upload-from-url, captions via Composio deke-yt) -> Deke approves -> public.
+- **720p copy for Postiz:** `media/rasmus/edit/rasmus-krigstrom-720.mp4` (595 MB at Bill's bitrate; the first 909 MB encode was replaced).
+- **Captions:** Denis asked about burned-in captions; chose to keep the CC track (same as Bill; deke-video rule: no burn-in on long-form YouTube).
+- **Thumbnail (Denis: webcam frame "looks terrible", wanted positive and fun):** frame 1:02 of Ringmasters' own 4K "Let's Live it Up" video (zd9W-EyJ3Fw), Rasmus laughing, eyes open, sharpest frame picked. Built by `engine/rasmus/make_thumb.py` (Bill's layout, takes a crop box). Option B (ringmasters.se studio headshot) was offered and passed over. Instagram needs a login, so it wasn't searched.
+- **Review page (v4, both thumbnail options):** https://claude.ai/artifact/4AAcLrYKLVPPXx1rHX3LAF
+- **Upload:** Postiz post cmwb4m4g... for 2026-11-10 3:24 PM ET FAILED: "YouTube's daily upload quota is exhausted". Denis chose to retry at 6:00 AM ET. **Rescheduled: Postiz post cmwb5hyu40o70pq0792zel9pv, 2026-11-11T11:00Z, unlisted, state QUEUE** (title, 13 tags, thumbnail verified via Postiz MCP).
+- **Captions staged:** SRT committed (blob 4b4e201, branch deke/rasmus-live-intro, commit 6d72843); attach via Composio YOUTUBE_UPLOAD_CAPTION_TRACK (account youtube_bugre-glop) once the video exists. YOUTUBE_LIST_CHANNEL_VIDEOS mine=true returns 403; use YOUTUBE_LIST_PLAYLIST_ITEMS on UUTuZ5LxQIjLK-CJBy0onT_Q instead (works).
+- **Follow-up:** calendar event 2026-11-11 7:00 AM ET "Rasmus video: check it's up, attach captions, send Deke the link".
+- **Next:** verify upload -> attach captions -> Denis sends Deke the unlisted link -> public when Deke says yes. Branch deke/rasmus-live-intro not merged to main.
 
 ## 2026-11-10: RASMUS KRIGSTROM INTERVIEW EDITED FOR YOUTUBE, BILL BIFFLE RECIPE (review page, nothing uploaded)
 
