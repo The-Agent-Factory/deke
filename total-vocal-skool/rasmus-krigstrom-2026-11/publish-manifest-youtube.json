@@ -35,8 +35,13 @@
         "postizPostId": "cmwb4m4g50noypq07mxro1lfj",
         "error": "YouTube daily upload quota exhausted (2026-11-10)"
       },
-      "status": "scheduled",
-      "postizPostId": "cmwb5hyu40o70pq0792zel9pv"
+      "status": "public",
+      "postizPostId": "cmwb5hyu40o70pq0792zel9pv",
+      "youtubeVideoId": "z0Rs7jkE8OA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=z0Rs7jkE8OA",
+      "publishedUnlistedAt": "2026-11-11T11:01:05Z",
+      "madePublicAt": "2026-11-11T14:54:30Z",
+      "captionTrackId": "AUieDaa2b5H1aq0_F9u2ZBD5A5TnSNNmPlR6tDuKV5d0nf_7V22Cuim_"
     }
   ]
 }

@@ -2,6 +2,13 @@
 **Last updated:** 2026-11-10 (local)
 **Status:** active
 
+## 🆕 2026-11-11: RASMUS KRIGSTROM IS PUBLIC ON DEKE'S YOUTUBE (done)
+
+- **Live:** https://www.youtube.com/watch?v=z0Rs7jkE8OA (57:38, Deke's channel UCTuZ5LxQIjLK-CJBy0onT_Q). Postiz retry published it unlisted at 6:01 AM ET. Denis: Deke and Rasmus approved, make it public; switched 2026-11-11 9:54 AM ET via Composio YOUTUBE_UPDATE_VIDEO (account youtube_bugre-glop).
+- **Captions:** corrected 911-cue SRT (git blob 4b4e201, pulled from GitHub at commit 3ead512, hash checked) attached as standard track "English" before the switch. YouTube's auto (asr) track still exists alongside it.
+- **Verified after the switch:** privacy public, caption true, title, description, 23 chapters, 13 tags and custom thumbnail intact, watch page HTTP 200, oEmbed returns the title under Deke Sharon.
+- **Open:** caption listen list (5:34, 17:55, 26:16, 29:09, 32:08, 44:08, 49:19) never confirmed by ear. Branch deke/rasmus-live-intro still not merged to main.
+
 ## 🆕 2026-11-10 (afternoon): DEKE'S INTRO ADDED TO THE RASMUS VIDEO (review page updated, nothing uploaded)
 
 - Deke sent an intro (`media/inbox/Intro for Deke and Rasmus .mp4`, 46 s, 1024x576 phone clip, VFR). Copied to `media/rasmus/intro/deke-intro-raw.mp4`; used in full (0.15 to 46.0 s), nothing cut.
