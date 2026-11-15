@@ -28,6 +28,13 @@
 
 ## 2026-11-13: WEEK OF NOV 18 TO 24 BUILT FOR DENIS'S OK (night job, nothing sent to Postiz)
 
+- **2026-11-15: RENDERED, waiting for Denis's OK (nothing written to Postiz, nothing scheduled, Deke not emailed).** RENDER-MORNING steps 1 to 9 ran after the lab day render handed back the GPU (12:04). Validator: 0 REJECTED; step 9 dry run ok=True, 0 errors, 0 rule problems.
+  - Reels (all on the Nov 3 standard: no opening label because none is a series, bed at 0.05 under the voice swelling to about -21 LUFS on the Total Vocal card, silence-snapped cuts, captions transcribed from the clip, contact sheet looked at): `tmn-do-what-youre-amazing-at` 44.7 s, -14.8 LUFS; `rehearsal-best-rehearsal-is-a-performance` 22.7 s, -14.6 LUFS; `tmn-four-songs-four-videos` 36.6 s, -15.1 LUFS. Files in `media/engine/renders/` (+ `-captions.jpg`).
+  - Fixed: the first four-songs render opened on the tail of "time" ("I'm it's not about...") and dropped "recordings". Long-form Whisper had stretched 5 word times over pauses; corrected them in `media/engine/transcripts/-zSnIm_XyKk.words.json` (evidence in its `corrections` key, original in `.bak-2026-11-15`), segments now [296.12, 311.66] + [324.50, 341.78], validator PASS, re-rendered clean. Post caption on amazing-at changed to "you're thinking about this all wrong" (his words).
+  - Optional, Denis's call: the rehearsal reel's 4:3 framing cuts off the source's own blue text boxes at the right edge (same as the Oct 27 render Deke saw); `blur169` would show them whole. The amazing-at reel shows the episode's own titles above our captions in the first seconds.
+  - Page republished with playable previews (v3): https://claude.ai/artifact/VwhMamauXHtmdGUtDe8nef (`build_page.py` now skips new items already in the bank and adds `previews/`). Its reply-by line still says 9 PM ET Sun Nov 15.
+  - **Step 10, only after Denis's OK:** `python -X utf8 engine/plan_week.py publish 2026-11-18` (from `C:\Users\lafla\claude_projects\deke`). Queue runs out after Tue Nov 17, so publish by Tue evening.
+
 - Done: 16-post week (Wed Nov 18 text, Thu 19 reel "do what you're amazing at" from TMN Pioneer -zSnIm_XyKk (Denis swapped out ear-training for the guest-name issue), Sat 21 best-rehearsal reel, Mon 23 text, Tue 24 reel "four songs, four videos" from the same episode) in `engine/batches/2026-11-18-deke-plan`; page https://claude.ai/artifact/VwhMamauXHtmdGUtDe8nef (republish there); morning steps in `RENDER-MORNING.txt` (transcribe, snap, add, render 3 reels, verify) before `plan_week.py publish 2026-11-18`.
 
 ## 🆕 2026-11-11: RASMUS KRIGSTROM IS PUBLIC ON DEKE'S YOUTUBE (done)
