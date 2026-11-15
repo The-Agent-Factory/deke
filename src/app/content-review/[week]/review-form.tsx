@@ -88,7 +88,7 @@ export function ReviewForm({ week, token, items, newsletterHtml = {}, initialDec
                     title={`Newsletter: ${item.title}`}
                     srcDoc={newsletterHtml[item.id]}
                     sandbox=""
-                    className="mt-3 h-[900px] w-full rounded-md border border-neutral-200 bg-white"
+                    className="mt-3 h-[1250px] w-full rounded-md border border-neutral-200 bg-white"
                   />
                 ) : null}
                 {item.newsletter?.sources?.length ? (

@@ -136,8 +136,11 @@ def read_state(name, default=None):
     return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else default
 
 
-def site_api(method, path, body=None):
-    """Call dekesharon.com's content-review API with the engine secret."""
+def site_api(method, path, body=None, timeout=None):
+    """Call dekesharon.com's engine APIs with the engine secret.
+    Newsletter sync/schedule talk to Resend at a few requests per second, so they get 5 minutes."""
+    if timeout is None:
+        timeout = 300 if path.startswith("/api/newsletters/engine/") else 60
     secret = ENV.get("ENGINE_REVIEW_SECRET")
     if not secret:
         raise RuntimeError("ENGINE_REVIEW_SECRET missing from deke/.env")
@@ -146,7 +149,7 @@ def site_api(method, path, body=None):
                                  headers={"Authorization": f"Bearer {secret}", "Content-Type": "application/json",
                                           "User-Agent": "deke-content-engine/1.0"})
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
             return json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         raise RuntimeError(f"site {method} {path} -> {e.code}: {e.read().decode('utf-8', 'replace')[:400]}")
