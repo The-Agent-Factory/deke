@@ -138,5 +138,10 @@
     "musicSwell": 0.22
   },
   "media_root": "C:/Users/lafla/claude_projects/deke/media",
-  "_media_root": "Where the engine keeps sources, transcripts and renders: deke/media inside this project, ignored by git and deploys. Env DEKE_MEDIA overrides."
+  "_media_root": "Where the engine keeps sources, transcripts and renders: deke/media inside this project, ignored by git and deploys. Env DEKE_MEDIA overrides.",
+  "dropbox_exclude": [
+    "China/DJI_20260829213306_0060_D.MP4",
+    "China/DJI_20260829213320_0061_D.MP4"
+  ],
+  "_dropbox_exclude": "Trip clips the weekly miner must never use. 0060 and 0061: identifiable child on the bus (card68 sort, 2026-10-15). The rain short (Denis option A, 2026-11-15) uses only 0061's voice, never its picture."
 }

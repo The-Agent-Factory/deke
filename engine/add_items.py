@@ -57,8 +57,11 @@ def check(item, ids):
                 e.append(f"copy.{k} missing")
         if len(c.get("ytTitle", "")) > 95:
             e.append("ytTitle over 95 chars")
-        if (item.get("framing") or {}).get("kind") not in ("blur169", "blur43", "blur45", "crop", "region", "native"):
-            e.append("framing.kind must be blur169, blur43, blur45, crop or region")
+        if (item.get("framing") or {}).get("kind") not in ("blur169", "blur43", "blur45", "crop", "region", "native", "stack"):
+            e.append("framing.kind must be blur169, blur43, blur45, crop, region, native or stack")
+        for n, p in enumerate(item.get("picture") or []):
+            if (p.get("source") or {}).get("type") not in ("dropbox", "file") or not p.get("to", 0) > p.get("from", 0):
+                e.append(f"picture {n} needs a dropbox or file source and from < to")
         item.setdefault("status", "idea")
     else:
         t = item.get("text", {})

@@ -4,7 +4,13 @@ You are running headless, launched by `engine/weekly.py`. Nobody is watching. Do
 
 ## Your input
 
-Read `engine/state/mine-job.json`. It names one source video: YouTube id, title, upload date, URL.
+Read `engine/state/mine-job.json`. It names one source:
+- `"type": "youtube"` (or no type): a YouTube id, title and URL. Frame:
+  `ffmpeg -ss 120 -i <media_root>/engine/yt/<id>.mp4 -frames:v 1 frame.jpg`. Item source `{"type": "youtube", "id": "<id>"}`.
+- `"type": "dropbox"`: one of Deke's trip clips (`path`, relative to the shared Dropbox folder). The `id` is its
+  transcript key. Frame: `python -X utf8 engine/dbx_frame.py "<path>" 120 frame.jpg`. Every reel uses
+  `"source": {"type": "dropbox", "path": "<path from the job>"}` and the sourceNote
+  `"Deke's <folder> footage (Dropbox: <path without extension>) at m:ss"`. Keep all segments of one reel within 15 minutes.
 The transcript is at `<media_root>/engine/transcripts/<id>.txt` (timestamped lines) and
 `<id>.words.json` (word timings). Print exact word timings for any range with:
 
@@ -44,8 +50,13 @@ Who is speaking matters:
 - A guest or interviewer speaking on screen or in the audio: set `"needs_deke": true` and
   `"needs_deke_reason": "guest <name or description> speaks; needs their OK"`. These never auto-post.
 - Anything naming a competitor, criticising a named person or group, or about a minor: needs_deke true.
+- Trip footage is often a workshop: Deke coaching a group that is on camera and answers him. Set needs_deke true
+  ("coaching session: the group is on camera"), unless the frames show only Deke. Never use a clip listed in
+  config `dropbox_exclude`. Do not name a festival, venue or group in the copy unless Deke names it in the clip,
+  and flag any name you cannot verify. Vlogs often start mid-sentence: never start a segment on "and" or "so".
+- A trip clip with almost no usable Deke speech (MC announcements, songs, crowd): write `[]` and stop.
 
-Look at one frame first (`ffmpeg -ss 120 -i <media_root>/engine/yt/<id>.mp4 -frames:v 1 frame.jpg`, then view it).
+Look at one frame first (the frame command for your source type above, then view it).
 For a Zoom-style split screen, crop to Deke's tile only with
 `{"kind": "region", "x": .., "y": .., "w": .., "h": ..}` in 1920x1080 pixels (keep w:h at 16:9). The guest
 is then off screen, so the clip does not need their OK as long as only Deke speaks in it.

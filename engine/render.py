@@ -8,6 +8,9 @@ timings from the local Whisper transcript, then the DekeShort Remotion template
 Usage:  python engine/render.py <item-id> [--force]
 Reads engine/bank.json, writes <media_root>/engine/renders/<id>.mp4 + <id>.jpg
 and updates the item's status to "rendered" (or "render_failed" with the error).
+Optional item fields: "picture" (show other footage under the voice, see picture_inputs), framing
+{"kind": "stack", "tiles": [...]} (two-up interview tiles stacked for vertical), "captionFixes" (see
+caption_fixes) and "whisperPrompt" (see words_from_clip).
 Fails loudly: any step that goes wrong exits 1 with the reason.
 """
 import json, os, subprocess, sys, shutil, re, datetime
@@ -92,6 +95,24 @@ def framing_filter(framing):
         # Native 9:16 crop. cropX = left edge in source pixels at 1920x1080 scale.
         x = framing.get("cropX", 656)
         return f"scale=1920:1080,crop=608:1080:{x}:0,scale=1080:1920:flags=lanczos,fps=30,setsar=1"
+    if kind == "stack":
+        # Two-up interview (guest tile + Deke tile side by side): the tiles stacked on the blurred frame, ending at
+        # y=1250 so captions (from 1310) never cover a face. framing["tiles"] = [[x, y, w, h], ...] in 1920x1080
+        # pixels, top tile first; framing["width"] (default 960) sets the tile width. With an opening label
+        # (y 120 to 210) keep the stack top below 215: two 16:9 tiles at width 900 start at y 226.
+        tiles, gap, tw = framing["tiles"], 10, int(framing.get("width", 960))
+        hs = [round(tw * h / w / 2) * 2 for _, _, w, h in tiles]
+        y = 1250 - sum(hs) - gap * (len(tiles) - 1)
+        if y < 100:
+            die(f"stack framing is {1250 - y}px tall; make framing.width smaller")
+        chain = f"scale=1920:1080,split={len(tiles) + 1}[sb]" + "".join(f"[s{i}]" for i in range(len(tiles)))
+        chain += ";[sb]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=40:2,eq=brightness=-0.15[so0]"
+        for i, (x, y0, w, h) in enumerate(tiles):
+            chain += f";[s{i}]crop={w}:{h}:{x}:{y0},scale={tw}:{hs[i]}:flags=lanczos[st{i}]"
+        for i in range(len(tiles)):
+            chain += f";[so{i}][st{i}]overlay={(1080 - tw) // 2}:{y}" + (f"[so{i + 1}]" if i + 1 < len(tiles) else ",fps=30,setsar=1")
+            y += hs[i] + gap
+        return chain
     if kind == "blur45":
         x = framing.get("cropX", 528)
         fg = f"scale=1920:1080,crop=864:1080:{x}:0,scale=1080:1350:flags=lanczos"
@@ -219,23 +240,60 @@ def safe_start(src, a, allw):
     return round(max(0, a - 0.03) + k * (hop // 2) / 16000, 3)
 
 
-def build_base(item, src, out):
+def picture_inputs(item, tmpdir):
+    """item["picture"]: show other footage than the clip the voice comes from (e.g. Deke's words recorded on a bus,
+    over the show he describes). [{"source": {...}, "from": s, "to": s}, ...] played in order; the voice cuts
+    decide the length, so the pictures must add up to at least that. The voice source's own picture is never used.
+    Returns [(local file, from, to), ...]; Dropbox pictures are pulled as a window, like dropbox_window."""
+    out = []
+    for n, p in enumerate(item["picture"]):
+        a, b, src = float(p["from"]), float(p["to"]), p["source"]
+        if b <= a:
+            die(f"picture {n}: 'to' must be after 'from'")
+        if src["type"] == "dropbox":
+            import dropbox_stream
+            f = os.path.join(tmpdir, f"{item['id']}-pic{n}.mkv")
+            with dropbox_stream.served():
+                run(["ffmpeg", "-v", "error", "-y", "-ss", f"{a:.3f}", "-i", dropbox_stream.url(src["path"]),
+                     "-t", f"{b - a:.3f}", "-map", "0:v:0", "-an", "-vf", "scale=1920:-2", "-c:v", "libx264",
+                     "-preset", "veryfast", "-crf", "14", f])
+            out.append((f, 0.0, b - a))
+        else:
+            out.append((source_path(src), a, b))
+    return out
+
+
+def build_base(item, src, out, pics=None):
     allw = transcript_words(item)
     segs = [[safe_start(src, a, allw), safe_end(src, b, allw)] for a, b in item["segments"]]
     item["cut_segments"] = segs  # what was actually cut, for the record and for caption timing
     parts, labels = [], []
     for i, (a, b) in enumerate(segs):
-        parts.append(f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,"
+        v = "" if pics else f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];"
+        parts.append(f"{v}[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,"
                      f"afade=t=in:d=0.03,afade=t=out:st={max(0, b - a - 0.03):.3f}:d=0.03[a{i}]")
-        labels.append(f"[v{i}][a{i}]")
+        labels.append(f"[a{i}]" if pics else f"[v{i}][a{i}]")
     for a, b in segs:
         if loud_at(src, b):
             die(f"cut at {b:.2f}s lands while the voice is still sounding (would clip a word); fix the segment end")
     total = sum(b - a for a, b in segs)
-    fc = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(segs)}:v=1:a=1[cv][ca];" \
-        f"[cv]{framing_filter(item.get('framing', 'blur169'))},tpad=stop_mode=clone:stop_duration={HOLD}[v];" \
+    inputs = ["-i", src]
+    if pics:
+        have = sum(b - a for _, a, b in pics)
+        if have < total:
+            die(f"picture adds up to {have:.1f}s but the voice runs {total:.1f}s; add more picture")
+        pv = []
+        for j, (p, a, b) in enumerate(pics):
+            inputs += ["-i", p]
+            parts.append(f"[{j + 1}:v]trim={a}:{b},setpts=PTS-STARTPTS,scale=1920:1080,fps=30,setsar=1[p{j}]")
+            pv.append(f"[p{j}]")
+        parts.append("".join(pv) + f"concat=n={len(pics)}:v=1:a=0,trim=0:{total:.3f},setpts=PTS-STARTPTS[cv]")
+        fc = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(segs)}:v=0:a=1[ca];"
+    else:
+        fc = ";".join(parts) + ";" + "".join(labels) + f"concat=n={len(segs)}:v=1:a=1[cv][ca];"
+    fc += f"[cv]{framing_filter(item.get('framing', 'blur169'))},tpad=stop_mode=clone:stop_duration={HOLD}[v];" \
         f"[ca]{NORM},apad=pad_dur={HOLD}[a]"
-    run(["ffmpeg", "-v", "error", "-y", "-i", src, "-filter_complex", fc, "-map", "[v]", "-map", "[a]",
+    run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[v]", "-map", "[a]",
          "-t", f"{total + HOLD:.3f}", *ENC, out])
     return total + HOLD
 
@@ -267,14 +325,16 @@ def words_for(item):
 _WHISPER = None
 
 
-def words_from_clip(base, speech_sec):
+def words_from_clip(base, speech_sec, prompt=None):
     """Transcribe the finished clip itself. Short, clean context gives punctuation, fewer mishearings,
     and timings that match the cut exactly (nothing from outside the clip can appear)."""
     global _WHISPER
     from faster_whisper import WhisperModel
     if _WHISPER is None:
         _WHISPER = WhisperModel("large-v3", device="cuda", compute_type="float16")
-    segs, _ = _WHISPER.transcribe(base, word_timestamps=True, vad_filter=False, language="en")
+    # prompt: optional item "whisperPrompt", a short neutral line (e.g. "Deke Sharon, talking about a cappella.")
+    # for a clip whose pass comes back without punctuation; it is context only and never appears in the captions.
+    segs, _ = _WHISPER.transcribe(base, word_timestamps=True, vad_filter=False, language="en", initial_prompt=prompt)
     out = []
     for s in segs:
         for w in s.words:
@@ -290,11 +350,33 @@ def join_split_words(words):
     out = []
     for w in words:
         t = w["word"]
-        if out and t[:1] in ".-'’" and not t.startswith("..."):
+        # Also '100' '%' and '600' ',000' (numbers Whisper splits).
+        if out and ((t[:1] in ".-'’%" and not t.startswith("...")) or re.match(r",\d", t)):
             out[-1] = {**out[-1], "word": out[-1]["word"] + t, "end": w["end"]}
         else:
             out.append(dict(w))
     return out
+
+
+def caption_fixes(words, fixes):
+    """captionFixes: [["heard", "said"], ...] for words the clip pass mishears but the full-context source transcript
+    (and another listen) agree on, e.g. "local" -> "vocal" or "part of your" -> "harmony group's". Whole words,
+    case-insensitive; the new words share the old words' time span; trailing punctuation is kept."""
+    for wrong, right in fixes:
+        wl, rl = wrong.lower().split(), right.split()
+        i = 0
+        while i + len(wl) <= len(words):
+            if [w["word"].strip(",.?!").lower() for w in words[i:i + len(wl)]] != wl:
+                i += 1
+                continue
+            a, b = words[i]["start"], words[i + len(wl) - 1]["end"]
+            last = words[i + len(wl) - 1]["word"]
+            step = (b - a) / len(rl)
+            new = [{"start": round(a + k * step, 3), "end": round(a + (k + 1) * step, 3), "word": r} for k, r in enumerate(rl)]
+            new[-1]["word"] += last[len(last.rstrip(",.?!")):]
+            words[i:i + len(wl)] = new
+            i += len(rl)
+    return words
 
 
 def caption_chunks(words):
@@ -385,17 +467,19 @@ def main():
     tmpdir = tempfile.mkdtemp(prefix="deke-render-")
     try:
         base = f"{MEDIA}/bases/{item_id}.mp4"
+        pics = picture_inputs(item, tmpdir) if item.get("picture") else None
         if item["source"]["type"] == "dropbox":
             src, off = dropbox_window(item, tmpdir)
             work = dict(item, _offset=off, segments=[[round(a - off, 3), round(b - off, 3)] for a, b in item["segments"]])
-            dur = build_base(work, src, base)
+            dur = build_base(work, src, base, pics)
             item["cut_segments"] = [[round(a + off, 3), round(b + off, 3)] for a, b in work["cut_segments"]]
             planned_words = words_for(work)
         else:
             src = source_path(item["source"])
-            dur = build_base(item, src, base)
+            dur = build_base(item, src, base, pics)
             planned_words = words_for(item)
-        words = words_from_clip(base, dur - HOLD)
+        words = words_from_clip(base, dur - HOLD, item.get("whisperPrompt"))
+        words = caption_fixes(words, item.get("captionFixes", []))
         # Sanity: the clip transcript must cover about the same words as the plan, or something is off.
         if abs(len(words) - len(planned_words)) > max(4, 0.25 * len(planned_words)):
             die(f"clip transcript has {len(words)} words but the plan has {len(planned_words)}; check the cut")

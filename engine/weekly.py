@@ -2,7 +2,8 @@
 
 Steps (each one logged; a failure is reported, never hidden):
  1. Preflight: media drive, Postiz key, node, yt-dlp, claude CLI.
- 2. Refresh the source list from Deke's YouTube channel (new uploads are mined first).
+ 2. Refresh the source list from Deke's YouTube channel (new uploads are mined first) and his indexed
+    Dropbox trip clips (engine/state/dropbox-index.json; config dropbox_exclude is never used).
  3. Refill: while the bank holds under TARGET_WEEKS of reels, transcribe the next unmined
     video and run a headless Claude mining job on it (engine/MINE-PROMPT.md). Max 2 per run.
  4. Render every reel still at status "idea".
@@ -47,6 +48,48 @@ def preflight():
     os.makedirs(f"{MEDIA}/transcripts", exist_ok=True)
 
 
+DBX_INDEX = os.path.join(STATE, "dropbox-index.json")
+
+
+def add_dropbox_sources(src):
+    """Trip clips where Deke talks become mining sources. Footage stays in Dropbox; the indexer already transcribed them.
+    Clips in config dropbox_exclude are never offered."""
+    if not os.path.exists(DBX_INDEX):
+        return 0
+    known = {v["id"] for v in src["videos"]}
+    skip = set(CONFIG.get("dropbox_exclude", []))
+    added = 0
+    for rel, f in json.load(open(DBX_INDEX, encoding="utf-8"))["files"].items():
+        if f.get("speech") != "talking" or f.get("lang") != "en" or f.get("words", 0) < 60:
+            continue
+        if f["key"] in known or rel in skip:
+            continue
+        src["videos"].append({"id": f["key"], "kind": "dropbox", "path": rel, "title": f"Deke's trip footage: {rel}",
+                              "views": 0, "duration": f.get("duration", 0), "words": f.get("words", 0),
+                              "channel_rank": 999, "status": "new", "found": now().date().isoformat()})
+        added += 1
+    return added
+
+
+def mark_in_bank(src):
+    """Mark sources already used in the bank as mined, and excluded trip clips as skip."""
+    # A video that already has clips in the bank counts as mined, even if it was mined by hand.
+    # Dropbox items carry a path, not an id: compare by transcript key.
+    import dropbox_stream
+    in_bank = set()
+    for i in load_bank()["items"]:
+        s = i.get("source") or {}
+        in_bank.add(dropbox_stream.key(s["path"]) if s.get("type") == "dropbox" else s.get("id"))
+    skip = set(CONFIG.get("dropbox_exclude", []))
+    for v in src["videos"]:
+        if v.get("kind") == "dropbox" and v.get("path") in skip and v["status"] == "new":
+            v["status"] = "skip"
+            v["mined"] = "dropbox_exclude"
+        if v["status"] == "new" and v["id"] in in_bank:
+            v["status"] = "mined"
+            v["mined"] = "already in bank"
+
+
 def refresh_sources():
     p = SOURCES_PATH
     src = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {"videos": []}
@@ -66,12 +109,8 @@ def refresh_sources():
                               "duration": dur, "channel_rank": idx, "status": status,
                               "found": now().date().isoformat()})
         added += 1
-    # A video that already has clips in the bank counts as mined, even if it was mined by hand.
-    in_bank = {(i.get("source") or {}).get("id") for i in load_bank()["items"]}
-    for v in src["videos"]:
-        if v["status"] == "new" and v["id"] in in_bank:
-            v["status"] = "mined"
-            v["mined"] = "already in bank"
+    added += add_dropbox_sources(src)
+    mark_in_bank(src)
     json.dump(src, open(p, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     log(f"sources: {added} new, {sum(1 for v in src['videos'] if v['status'] == 'new')} unmined")
     return src
@@ -96,25 +135,49 @@ def recent_topics():
     open(os.path.join(STATE, "recent-topics.txt"), "w", encoding="utf-8").write("\n".join(sorted(set(lines))))
 
 
+def pick_source(pool):
+    """Selection order: Deke's 8 newest YouTube uploads, then trip clips (most words first, so the long coaching
+    sessions come before short vlogs), then the YouTube back catalogue by views. Excluded clips never reach the pool."""
+    skip = set(CONFIG.get("dropbox_exclude", []))
+    pool = [v for v in pool if v.get("path") not in skip]
+    if not pool:
+        return None
+
+    def order(v):
+        if v.get("kind") == "dropbox":
+            return (1, -v.get("words", 0))
+        return (0, v["channel_rank"]) if v["channel_rank"] < 8 else (2, -v["views"])
+    return sorted(pool, key=order)[0]
+
+
 def mine_one(src):
     pool = [v for v in src["videos"] if v["status"] == "new"]
     if not pool:
         log("refill: no unmined videos left on the channel")
         return False
-    # Newest uploads first (channel_rank 0 = newest), then the biggest back-catalogue hits.
-    v = sorted(pool, key=lambda v: (0, v["channel_rank"]) if v["channel_rank"] < 8 else (1, -v["views"]))[0]
+    v = pick_source(pool)
+    if v is None:
+        log("refill: only excluded clips left")
+        return False
     vid = v["id"]
     log(f"refill: mining {vid} '{v['title']}'")
-    path = f"{MEDIA}/yt/{vid}.mp4"
-    if not os.path.exists(path):
-        code, out = sh(["yt-dlp", "-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080]",
-                        "--merge-output-format", "mp4", "-o", f"{MEDIA}/yt/%(id)s.%(ext)s", "--", f"https://youtu.be/{vid}"])
+    if v.get("kind") == "dropbox":
+        # The Dropbox indexer already transcribed it; the footage stays in Dropbox.
+        if not os.path.exists(f"{MEDIA}/transcripts/{vid}.words.json"):
+            raise RuntimeError(f"trip clip {v['path']} has no transcript; run engine/index_dropbox.py first")
+        write_state("mine-job.json", {"type": "dropbox", "id": vid, "path": v["path"], "title": v["title"],
+                                      "duration": v.get("duration", 0)})
+    else:
+        path = f"{MEDIA}/yt/{vid}.mp4"
+        if not os.path.exists(path):
+            code, out = sh(["yt-dlp", "-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080]",
+                            "--merge-output-format", "mp4", "-o", f"{MEDIA}/yt/%(id)s.%(ext)s", "--", f"https://youtu.be/{vid}"])
+            if code != 0:
+                raise RuntimeError(f"download {vid} failed: {out[-400:]}")
+        code, out = sh(PY + [os.path.join(ENGINE, "transcribe.py"), path], timeout=5400)
         if code != 0:
-            raise RuntimeError(f"download {vid} failed: {out[-400:]}")
-    code, out = sh(PY + [os.path.join(ENGINE, "transcribe.py"), path], timeout=5400)
-    if code != 0:
-        raise RuntimeError(f"transcribe {vid} failed: {out[-400:]}")
-    write_state("mine-job.json", {"id": vid, "title": v["title"], "url": f"https://youtu.be/{vid}"})
+            raise RuntimeError(f"transcribe {vid} failed: {out[-400:]}")
+        write_state("mine-job.json", {"type": "youtube", "id": vid, "title": v["title"], "url": f"https://youtu.be/{vid}"})
     recent_topics()
     before = len(load_bank()["items"])
     prompt = open(os.path.join(ENGINE, "MINE-PROMPT.md"), encoding="utf-8").read()
