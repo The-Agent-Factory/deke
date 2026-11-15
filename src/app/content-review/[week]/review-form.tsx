@@ -8,12 +8,14 @@ type Props = {
   week: string
   token: string
   items: ReviewItem[]
+  /** Rendered One Voice email per newsletter item id. */
+  newsletterHtml?: Record<string, string>
   initialDecisions: Record<string, Decision> | null
   initialNote: string | null
   submittedAt: string | null
 }
 
-export function ReviewForm({ week, token, items, initialDecisions, initialNote, submittedAt }: Props) {
+export function ReviewForm({ week, token, items, newsletterHtml = {}, initialDecisions, initialNote, submittedAt }: Props) {
   const [decisions, setDecisions] = useState<Record<string, Decision>>(initialDecisions ?? {})
   const [note, setNote] = useState(initialNote ?? '')
   const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>(submittedAt ? 'sent' : 'idle')
@@ -21,6 +23,8 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
 
   const answered = items.filter((i) => decisions[i.id]).length
   const allAnswered = answered === items.length
+  // The newsletter needs its own tap (Denis, 2026-11-15), so "approve the rest" leaves it alone.
+  const postsLeft = items.some((i) => i.lane !== 'newsletter' && !decisions[i.id])
 
   const choose = (id: string, d: Decision) => {
     setDecisions((prev) => ({ ...prev, [id]: d }))
@@ -28,7 +32,10 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
   }
 
   const approveRest = () =>
-    setDecisions((prev) => Object.fromEntries(items.map((i) => [i.id, prev[i.id] ?? 'approve'])))
+    setDecisions((prev) => ({
+      ...prev,
+      ...Object.fromEntries(items.filter((i) => i.lane !== 'newsletter' && !prev[i.id]).map((i) => [i.id, 'approve' as const])),
+    }))
 
   const send = async () => {
     setState('sending')
@@ -52,13 +59,15 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
     <div className="mt-8 grid gap-6">
       {items.map((item, n) => {
         const d = decisions[item.id]
+        const isNewsletter = item.lane === 'newsletter'
+        const kind = isNewsletter ? 'Newsletter' : item.lane === 'reel' ? 'Video' : 'Text post'
         return (
           <section
             key={item.id}
-            className={`rounded-lg border p-4 ${d === 'skip' ? 'border-neutral-300 bg-neutral-50 opacity-70' : d === 'approve' ? 'border-emerald-300' : 'border-neutral-200'}`}
+            className={`rounded-lg border p-4 ${d === 'skip' ? 'border-neutral-300 bg-neutral-50 opacity-70' : d === 'approve' ? 'border-emerald-300' : isNewsletter ? 'border-amber-400' : 'border-neutral-200'}`}
           >
             <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              {n + 1}. {item.lane === 'reel' ? 'Video' : 'Text post'} . {item.when} . {item.platforms.join(', ')}
+              {n + 1}. {kind} . {item.when} . {item.platforms.join(', ')}
             </p>
             <h2 className="mt-1 text-lg font-semibold">{item.title}</h2>
             {item.videoUrl ? (
@@ -71,7 +80,34 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
                 preload="none"
               />
             ) : null}
-            <p className="mt-3 whitespace-pre-line text-neutral-800">{item.caption}</p>
+            {isNewsletter ? (
+              <>
+                <p className="mt-1 text-sm text-neutral-600">Inbox preview: {item.caption}</p>
+                {newsletterHtml[item.id] ? (
+                  <iframe
+                    title={`Newsletter: ${item.title}`}
+                    srcDoc={newsletterHtml[item.id]}
+                    sandbox=""
+                    className="mt-3 h-[900px] w-full rounded-md border border-neutral-200 bg-white"
+                  />
+                ) : null}
+                {item.newsletter?.sources?.length ? (
+                  <details className="mt-3 text-sm text-neutral-600">
+                    <summary className="cursor-pointer font-semibold">Where every line comes from</summary>
+                    <ul className="mt-2 list-disc pl-5">
+                      {item.newsletter.sources.map((s) => (
+                        <li key={s}>{s}</li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
+                <p className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+                  This one only goes out if you tap Approve. If you tap Hold, or don&apos;t answer, it waits.
+                </p>
+              </>
+            ) : (
+              <p className="mt-3 whitespace-pre-line text-neutral-800">{item.caption}</p>
+            )}
             {item.sourceNote ? <p className="mt-2 text-xs text-neutral-500">From: {item.sourceNote}</p> : null}
             <div className="mt-4 flex gap-3">
               <button
@@ -80,7 +116,7 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
                 aria-pressed={d === 'approve'}
                 className={`inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold ${d === 'approve' ? 'bg-emerald-600 text-white' : 'border border-emerald-600 text-emerald-700'}`}
               >
-                <Check className="h-4 w-4" /> Approve
+                <Check className="h-4 w-4" /> {isNewsletter ? 'Approve and send' : 'Approve'}
               </button>
               <button
                 type="button"
@@ -88,7 +124,7 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
                 aria-pressed={d === 'skip'}
                 className={`inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold ${d === 'skip' ? 'bg-neutral-700 text-white' : 'border border-neutral-400 text-neutral-700'}`}
               >
-                <X className="h-4 w-4" /> Skip
+                <X className="h-4 w-4" /> {isNewsletter ? 'Hold' : 'Skip'}
               </button>
             </div>
           </section>
@@ -108,7 +144,7 @@ export function ReviewForm({ week, token, items, initialDecisions, initialNote, 
       </label>
 
       <div className="flex flex-wrap items-center gap-3">
-        {!allAnswered ? (
+        {postsLeft ? (
           <button type="button" onClick={approveRest} className="rounded-md border border-neutral-400 px-4 py-2 text-sm font-semibold">
             Approve all the rest
           </button>

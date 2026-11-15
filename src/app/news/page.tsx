@@ -25,18 +25,18 @@ const stagger = {
 const pillars = [
   {
     num: "01",
-    title: "The Story",
-    body: "Behind-the-scenes moments from Pitch Perfect sets, Carnegie Hall stages, and rehearsal rooms around the world. The kind of stories Deke only tells in person… until now.",
+    title: "One thing to try",
+    body: "A single fix for your next rehearsal: blend, tuning, rehearsal flow, arranging. Short enough to read on the way in, specific enough to use that night.",
   },
   {
     num: "02",
-    title: "The Craft",
-    body: "Arranging techniques, rehearsal strategies, and performance insights from 35 years of coaching groups from college basements to Broadway. Specific enough to use at your next rehearsal.",
+    title: "From Deke",
+    body: "Moments and lessons from Pitch Perfect sets, The Sing-Off and rehearsal rooms around the world, in Deke's own words.",
   },
   {
     num: "03",
-    title: "The Community",
-    body: "Group spotlights, arrangement breakdowns, reader questions, and what Deke's listening to right now. A cappella doesn't happen alone.",
+    title: "Inside Total Vocal",
+    body: "The week's best video, plus what's happening in Total Vocal, Deke's free a cappella community: live sessions, replays and your questions.",
   },
 ];
 
@@ -139,7 +139,7 @@ function SignupForm({ size = "md" }: { size?: "md" | "lg" }) {
         </p>
       )}
       <p className="text-xs text-[#4A5A6A] leading-relaxed max-w-md">
-        Join 3,400+ singers, directors, and arrangers. One email per month.
+        For singers, a cappella directors and arrangers. One email every Wednesday.
         Unsubscribe anytime.
       </p>
     </form>
@@ -280,7 +280,7 @@ export default function NewsPage() {
               <div className="inline-flex items-center gap-2.5 bg-[#C9943A]/10 px-3.5 py-1.5 rounded-sm">
                 <span className="w-5 h-px bg-[#C9943A]" />
                 <span className="text-[11px] font-medium tracking-[0.15em] text-[#C9943A] uppercase">
-                  One Voice — A Monthly Letter from Deke Sharon
+                  One Voice: A Weekly Letter from Deke Sharon
                 </span>
               </div>
             </motion.div>
@@ -340,7 +340,7 @@ export default function NewsPage() {
           >
             <SectionLabel text="What you'll receive" />
             <h2 className="font-[family-name:var(--font-cormorant)] text-4xl lg:text-5xl font-semibold leading-[1.1] text-white mt-4">
-              Every month, straight to your inbox:
+              Every Wednesday, straight to your inbox:
             </h2>
           </motion.div>
 
@@ -509,7 +509,7 @@ export default function NewsPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Free. Monthly. No spam. Just Deke.
+            Free. Every Wednesday. No spam. Just Deke.
           </motion.p>
 
           <motion.div

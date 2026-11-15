@@ -19,6 +19,8 @@ const PUBLIC_API_ROUTES = [
   "/api/subscribers",
   "/api/newsletter-signup",
   "/api/content-review", // own auth: engine bearer secret, or Deke's per-week link token
+  "/api/newsletters/engine", // own auth: engine bearer secret
+  "/api/newsletters/issues/public", // the /news archive list, read by anonymous visitors
 ]
 
 function isPublicApiRoute(pathname: string): boolean {

@@ -56,17 +56,25 @@ export default async function IssuePage({
     },
   });
 
-  if (!issue || issue.status !== "SENT") notFound();
+  // SENT (old manual sends) or SCHEDULED One Voice broadcasts whose send time has passed.
+  const published = { status: { in: ["SENT", "SCHEDULED"] }, sentAt: { lte: new Date() } };
+  if (
+    !issue ||
+    !["SENT", "SCHEDULED"].includes(issue.status) ||
+    !issue.sentAt ||
+    issue.sentAt.getTime() > Date.now()
+  )
+    notFound();
 
   // Get prev/next for navigation
   const [prev, next] = await Promise.all([
     prisma.newsletterIssue.findFirst({
-      where: { issueNumber: { lt: num }, status: "SENT" },
+      where: { issueNumber: { lt: num }, ...published },
       orderBy: { issueNumber: "desc" },
       select: { issueNumber: true, subject: true, title: true },
     }),
     prisma.newsletterIssue.findFirst({
-      where: { issueNumber: { gt: num }, status: "SENT" },
+      where: { issueNumber: { gt: num }, ...published },
       orderBy: { issueNumber: "asc" },
       select: { issueNumber: true, subject: true, title: true },
     }),

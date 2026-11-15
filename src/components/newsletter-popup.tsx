@@ -140,7 +140,7 @@ export function NewsletterPopup() {
                   </div>
 
                   <p className="text-[#9BA8B8] text-[13px] leading-relaxed mb-4">
-                    Stay in tune with Deke Sharon&apos;s monthly letter on the
+                    Stay in tune with Deke Sharon&apos;s weekly letter on the
                     craft, stories, and future of a cappella.
                   </p>
 
@@ -196,7 +196,7 @@ export function NewsletterPopup() {
                   )}
 
                   <p className="text-[#3A4A5A] text-[11px] mt-3">
-                    Free. Monthly. No spam.
+                    Free. Every Wednesday. No spam.
                   </p>
                 </>
               )}

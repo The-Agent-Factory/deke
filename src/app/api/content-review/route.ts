@@ -8,6 +8,7 @@ import {
   type Review,
   type ReviewItem,
 } from '@/lib/content-review'
+import { validateDraft } from '@/lib/newsletter/one-voice'
 
 /**
  * Engine-only endpoints (Bearer ENGINE_REVIEW_SECRET).
@@ -30,6 +31,13 @@ export async function POST(request: NextRequest) {
   }
   if (body.items.length === 0 || body.items.length > 30) {
     return NextResponse.json({ error: 'items must hold 1 to 30 posts' }, { status: 400 })
+  }
+  for (const item of body.items) {
+    if (item.lane !== 'newsletter') continue
+    const { errors } = validateDraft(item.newsletter)
+    if (errors.length) {
+      return NextResponse.json({ error: `Newsletter item ${item.id} failed the One Voice rules`, errors }, { status: 400 })
+    }
   }
   const existing = await getReview(body.week)
   if (existing?.submittedAt && !body.force) {

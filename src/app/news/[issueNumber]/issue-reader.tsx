@@ -41,14 +41,30 @@ interface Props {
 
 // ─── Section Config ──────────────────────────────────────
 
+// One Voice layout (2026-11-15): opening, the weekly fix, watch + Total Vocal, the question.
 const SECTIONS = [
-  { key: "storyContent" as const, label: "The Story", accent: "#C9943A" },
-  { key: "craftContent" as const, label: "The Craft", accent: "#5B8DEF" },
-  { key: "communityContent" as const, label: "The Community", accent: "#4ADE80" },
-  { key: "noteContent" as const, label: "The Note", accent: "#A78BFA" },
+  { key: "storyContent" as const, label: "This week", accent: "#C9943A" },
+  { key: "craftContent" as const, label: "Try it this week", accent: "#C9943A" },
+  { key: "communityContent" as const, label: "Watch and listen", accent: "#C9943A" },
+  { key: "noteContent" as const, label: "Your turn", accent: "#C9943A" },
 ] as const;
 
 // ─── Content Renderer ────────────────────────────────────
+
+/** Escape everything, then allow only **bold**, [text](https://link) and line breaks. */
+function safeInline(p: string): string {
+  return p
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(
+      /\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener" class="text-[#C9943A] underline">$1</a>',
+    )
+    .replace(/\n/g, "<br/>");
+}
 
 function ContentBlock({ text }: { text: string }) {
   return (
@@ -57,7 +73,7 @@ function ContentBlock({ text }: { text: string }) {
         <p
           key={i}
           className="text-[#C8CDD3] text-[16px] leading-[1.85] font-normal"
-          dangerouslySetInnerHTML={{ __html: p.replace(/\n/g, "<br/>") }}
+          dangerouslySetInnerHTML={{ __html: safeInline(p) }}
         />
       ))}
     </div>

@@ -1,5 +1,6 @@
 import { randomBytes, timingSafeEqual } from 'crypto'
 import { prisma } from '@/lib/db'
+import type { OneVoiceDraft } from '@/lib/newsletter/one-voice'
 
 /**
  * Weekly content review for Deke. The content engine on Denis's machine posts
@@ -14,7 +15,8 @@ const AGENT = 'content-review'
 
 export type ReviewItem = {
   id: string
-  lane: 'reel' | 'text'
+  /** newsletter = a One Voice issue: it goes out ONLY on an explicit Approve (Denis, 2026-11-15). */
+  lane: 'reel' | 'text' | 'newsletter'
   when: string // "Tue Nov 10"
   platforms: string[]
   title: string
@@ -22,6 +24,7 @@ export type ReviewItem = {
   videoUrl?: string
   posterUrl?: string
   sourceNote?: string
+  newsletter?: OneVoiceDraft
 }
 
 export type Decision = 'approve' | 'skip'

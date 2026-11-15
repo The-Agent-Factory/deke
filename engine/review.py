@@ -73,6 +73,10 @@ def send(week):
                 b["posterUrl"] = bank[b["id"]]["posterUrl"]
     save_bank(full)
 
+    import newsletter
+    nl_item = newsletter.weekly_item(week)
+    if nl_item:
+        items.append(nl_item)
     deadline = deadline_for(week)
     res = site_api("POST", "/api/content-review", {"week": site_week(week), "deadline": deadline.isoformat(), "items": items})
     url = res["url"]
@@ -81,7 +85,7 @@ def send(week):
     _save_meta(week, meta)
 
     reels = sum(1 for i in items if i["lane"] == "reel")
-    texts = len(items) - reels
+    texts = sum(1 for i in items if i["lane"] == "text")
     monday = datetime.date.fromisoformat(week)
     body = (
         "<div style='font-family:system-ui,Arial;font-size:16px;max-width:560px;line-height:1.5'>"
@@ -92,8 +96,11 @@ def send(week):
         "border-radius:6px;text-decoration:none;font-weight:600'>Review next week</a></p>"
         "<p>Tap Approve or Skip on each one. It takes about three minutes, and it works on your phone. "
         "Anything you skip never posts, and you can add a note if you want more of something.</p>"
-        f"<p>If I don't hear back by {deadline.strftime('%A at %I %p').replace(' 0', ' ')}, everything goes out as planned.</p>"
-        "<p>Denis</p></div>"
+        + ("<p>Your newsletter, One Voice, is on the same page. It only goes out if you tap "
+           "<b>Approve and send</b> on it.</p>" if nl_item else "")
+        + f"<p>If I don't hear back by {deadline.strftime('%A at %I %p').replace(' 0', ' ')}, "
+        + ("the posts go out as planned and the newsletter waits.</p>" if nl_item else "everything goes out as planned.</p>")
+        + "<p>Denis</p></div>"
     )
     send_email(tag(f"Next week on your channels: {reels} videos, {texts} posts to approve"), body,
                to=deke_inbox(), reply_to=CONFIG["alert_email"], bcc=CONFIG["alert_email"] if LIVE else None,
@@ -134,6 +141,14 @@ def finalize(week, meta, answer):
                            "submittedAt": (answer or {}).get("submittedAt"),
                            "silence_counted_as_yes": not decisions}
     _save_meta(week, meta)
+    try:
+        import newsletter
+        nl_line = newsletter.schedule_for_week(week, decisions.get("newsletter"))
+    except Exception as e:
+        nl_line = f"One Voice scheduling FAILED: {e}"
+    if nl_line:
+        meta["newsletter"] = nl_line
+        _save_meta(week, meta)
     if manifest["items"] and not LIVE:
         # Not live: prove what WOULD be scheduled with the publisher's dry run, schedule nothing.
         code, dry, tail = batch.run_publisher(mpath, dry=True)
@@ -154,7 +169,8 @@ def finalize(week, meta, answer):
     send_email(tag(f"Deke week of {week}: {len(manifest['items'])} posts {'scheduled' if LIVE else 'would post'}, {len(skipped)} skipped"),
                f"<div style='font-family:system-ui,Arial'><p><b>{how}.</b></p>"
                f"<p>{len(manifest['items'])} posts {verb}. Skipped by Deke: {', '.join(skipped) or 'none'}.</p><ul>{lines}</ul>"
-               + (f"<p>Deke's note: <i>{html.escape(note)}</i></p>" if note else "") + "</div>")
+               + (f"<p>Deke's note: <i>{html.escape(note)}</i></p>" if note else "")
+               + (f"<p><b>Newsletter:</b> {html.escape(nl_line)}</p>" if nl_line else "") + "</div>")
     print(f"FINALIZED {week}: {len(manifest['items'])} posts, skipped {skipped}")
 
 

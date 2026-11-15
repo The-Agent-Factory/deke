@@ -1,0 +1,347 @@
+<title>One Voice and Favicon Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: one reading column, rehearsal-mark section heads (boxed letters, as in a score), wide blocks for the favicon sheet and the weekly timeline. */
+:root{
+  --bg:#F6F3EE; --surface:#FFFFFF; --ink:#151B2B; --muted:#5B6274; --line:#E2DDD3;
+  --gold:#B07A1E; --gold-soft:#F3E7CF; --navy:#151B2B; --tile:#151B2B; --tile-gold:#E0A83A;
+  --ok:#2F7A4F; --ok-soft:#E3F1E8; --warn:#A35A12; --warn-soft:#FBEBD8;
+  --f-display:"Space Grotesk",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,sans-serif;
+  --f-letter:"Source Serif 4",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1320; --surface:#171C2C; --ink:#ECEEF3; --muted:#9AA1B3; --line:#2A3147;
+  --gold:#E0A83A; --gold-soft:#2C2616; --navy:#ECEEF3;
+  --ok:#6BC28F; --ok-soft:#16281F; --warn:#F0A65A; --warn-soft:#2E2114; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1320; --surface:#171C2C; --ink:#ECEEF3; --muted:#9AA1B3; --line:#2A3147;
+  --gold:#E0A83A; --gold-soft:#2C2616; --navy:#ECEEF3;
+  --ok:#6BC28F; --ok-soft:#16281F; --warn:#F0A65A; --warn-soft:#2E2114; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+.prose{max-width:66ch}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:26px;font-weight:600}
+h3{font-size:18px;font-weight:600}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-family:var(--f-display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.muted{color:var(--muted)}
+a{color:var(--gold)}
+code{font-size:.9em;background:var(--gold-soft);padding:1px 5px;border-radius:4px}
+
+/* rehearsal mark: boxed letter, like a score */
+.mark{display:flex;align-items:center;gap:14px}
+.mark b{font-family:var(--f-letter);font-weight:600;font-size:22px;width:40px;height:40px;display:grid;place-items:center;
+  border:2px solid var(--ink);flex:none}
+
+header.top{display:flex;flex-direction:column;gap:16px;border-bottom:1px solid var(--line);padding-bottom:28px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.fact{border-top:2px solid var(--gold);padding-top:8px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.fact strong{font-family:var(--f-display);font-size:24px;font-variant-numeric:tabular-nums}
+.fact span{font-size:13px;color:var(--muted)}
+
+/* favicon sheet */
+.sheet{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.concept{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.concept.rec{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.sizes{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.sizes figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sizes figcaption{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:8px 8px 0 0;padding:7px 10px;font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden}
+.tab span{overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--gold-soft);color:var(--gold);align-self:flex-start}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+
+ul.clean{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+
+/* timeline */
+.scroll{overflow-x:auto}
+.week{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));min-width:780px;border-top:2px solid var(--ink)}
+.day{padding:12px 12px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.day:last-child{border-right:0}
+.day .d{font-family:var(--f-display);font-weight:700;font-size:14px}
+.day .who{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.who.claude{color:var(--gold)} .who.deke{color:var(--ok)} .who.auto{color:var(--muted)}
+.day p{font-size:13.5px;line-height:1.45}
+.day.send{background:var(--gold-soft)}
+
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:13px;color:var(--muted)}
+
+/* email mock */
+.email{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;max-width:620px}
+.email .meta{padding:14px 20px;border-bottom:1px solid var(--line);font-size:13px;display:flex;flex-direction:column;gap:2px}
+.email .body{padding:24px 24px 28px;font-family:var(--f-letter);font-size:17px;line-height:1.65;display:flex;flex-direction:column;gap:16px}
+.email .lab{font-family:var(--f-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.email .box{border-left:3px solid var(--gold);padding:4px 0 4px 14px}
+.email .src{font-family:var(--f-body);font-size:12px;color:var(--muted);font-style:normal}
+.anat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,260px);gap:24px;align-items:start}
+@media (max-width:720px){.anat{grid-template-columns:1fr}}
+.anat ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.opt.rec{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.opt p{font-size:14.5px}
+
+.callout{background:var(--warn-soft);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.callout strong{color:var(--warn)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- A: DS monogram -->
+    <symbol id="favA" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#151B2B"/>
+      <text x="32" y="43" text-anchor="middle" font-family="Space Grotesk, system-ui, sans-serif" font-weight="700" font-size="30" letter-spacing="-1.5" fill="#E0A83A">DS</text>
+    </symbol>
+    <!-- B: D with a chord in its bowl -->
+    <symbol id="favB" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#151B2B"/>
+      <path fill="#E0A83A" fill-rule="evenodd" d="M14 10h17a22 22 0 0 1 0 44H14zM23 19v26h8a13 13 0 0 0 0-26z"/>
+      <circle cx="32" cy="25" r="2.7" fill="#E0A83A"/>
+      <circle cx="32" cy="32" r="2.7" fill="#E0A83A"/>
+      <circle cx="32" cy="39" r="2.7" fill="#E0A83A"/>
+    </symbol>
+    <!-- B small: dots drop out under 32px -->
+    <symbol id="favBs" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#151B2B"/>
+      <path fill="#E0A83A" fill-rule="evenodd" d="M12 8h19a24 24 0 0 1 0 48H12zM24 19v26h7a13 13 0 0 0 0-26z"/>
+    </symbol>
+    <!-- C: a chord, three stacked note heads -->
+    <symbol id="favC" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="32" fill="#151B2B"/>
+      <g fill="#E0A83A">
+        <ellipse cx="28" cy="45" rx="8" ry="5.6" transform="rotate(-22 28 45)"/>
+        <ellipse cx="28" cy="33" rx="8" ry="5.6" transform="rotate(-22 28 33)"/>
+        <ellipse cx="28" cy="21" rx="8" ry="5.6" transform="rotate(-22 28 21)"/>
+        <rect x="34.6" y="8" width="3.2" height="35" rx="1.2"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="top">
+  <span class="eyebrow">Deke Sharon · plan for Denis · Nov 15, 2026</span>
+  <h1>A favicon, and a weekly newsletter Deke never has to write</h1>
+  <p class="prose muted">Two pieces of work. The favicon is a one-hour job once you pick a concept. The newsletter is mostly built already: it has 111 opted-in readers and has never sent a single email. This page is the plan. Nothing has been changed or sent yet.</p>
+  <div class="facts">
+    <div class="fact"><strong>111</strong><span>opted in to the newsletter (127 on the list, first signup Mar 10)</span></div>
+    <div class="fact"><strong>0</strong><span>issues ever sent. One empty draft from March.</span></div>
+    <div class="fact"><strong>325</strong><span>Total Vocal Skool members, +23 last week</span></div>
+    <div class="fact"><strong>Ready</strong><span>dekesharon.com verified in Resend, SPF and DMARC in place</span></div>
+  </div>
+</header>
+
+<!-- A FAVICON -->
+<section class="stack">
+  <div class="mark"><b>A</b><h2>Favicon</h2></div>
+  <p class="prose">The site still shows the default Next.js icon that came with the starter kit. The logo on the site is just the words "Deke Sharon" in navy and gold, so the icon should use the same two colours. Three concepts, each shown at real sizes. The 16px one is what people see in a browser tab.</p>
+
+  <div class="sheet">
+    <div class="concept">
+      <span class="pill">Concept 1</span>
+      <h3>DS monogram</h3>
+      <div class="sizes">
+        <figure><svg width="96" height="96"><use href="#favA"/></svg><figcaption>phone 180</figcaption></figure>
+        <figure><svg width="32" height="32"><use href="#favA"/></svg><figcaption>32</figcaption></figure>
+        <figure><svg width="16" height="16"><use href="#favA"/></svg><figcaption>16</figcaption></figure>
+      </div>
+      <div class="tab"><svg width="16" height="16" style="flex:none"><use href="#favA"/></svg><span>Deke Sharon | The Father of Contemporary A Cappella</span></div>
+      <p class="muted" style="font-size:14px">Matches the text logo. Two letters get cramped at 16px.</p>
+    </div>
+
+    <div class="concept rec">
+      <span class="pill ok">Recommended</span>
+      <h3>D with a chord inside</h3>
+      <div class="sizes">
+        <figure><svg width="96" height="96"><use href="#favB"/></svg><figcaption>phone 180</figcaption></figure>
+        <figure><svg width="32" height="32"><use href="#favB"/></svg><figcaption>32</figcaption></figure>
+        <figure><svg width="16" height="16"><use href="#favBs"/></svg><figcaption>16</figcaption></figure>
+      </div>
+      <div class="tab"><svg width="16" height="16" style="flex:none"><use href="#favBs"/></svg><span>Deke Sharon | The Father of Contemporary A Cappella</span></div>
+      <p class="muted" style="font-size:14px">Three stacked notes (a chord, i.e. voices in harmony) sit inside the D. At tab size they drop out and it reads as a clean D.</p>
+    </div>
+
+    <div class="concept">
+      <span class="pill">Concept 3</span>
+      <h3>The chord on its own</h3>
+      <div class="sizes">
+        <figure><svg width="96" height="96"><use href="#favC"/></svg><figcaption>phone 180</figcaption></figure>
+        <figure><svg width="32" height="32"><use href="#favC"/></svg><figcaption>32</figcaption></figure>
+        <figure><svg width="16" height="16"><use href="#favC"/></svg><figcaption>16</figcaption></figure>
+      </div>
+      <div class="tab"><svg width="16" height="16" style="flex:none"><use href="#favC"/></svg><span>Deke Sharon | The Father of Contemporary A Cappella</span></div>
+      <p class="muted" style="font-size:14px">Says "a cappella" right away, but not "Deke". Any choir site could use it.</p>
+    </div>
+  </div>
+
+  <div class="stack prose">
+    <h3>What ships once you pick one</h3>
+    <ul class="clean">
+      <li>The full set: tab icon (16, 32, 48), a sharp SVG for modern browsers, the 180px icon for iPhone home screens, and 192/512 for Android. Next.js picks them up from <code>src/app/</code> automatically.</li>
+      <li>The same mark goes in the newsletter header, so the email and the site look like one brand.</li>
+      <li>Deploy: committed to <code>main</code>, <code>railway up</code> from a clean worktree, then I check that dekesharon.com/favicon.ico has actually changed. (Today it is the 25,931-byte default.)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- B NEWSLETTER -->
+<section class="stack">
+  <div class="mark"><b>B</b><h2>One Voice, the weekly newsletter</h2></div>
+  <p class="prose">This is the advice I'd give as Deke's newsletter editor, followed by how I would run it every week. The brief is to help singers and a cappella directors, and to point them gently toward Total Vocal on Skool. Deke spends about 10 minutes a week on it, on his phone.</p>
+</section>
+
+<section class="stack">
+  <h3>The expert calls</h3>
+  <table>
+    <tr><th style="width:32%">Call</th><th>Why</th></tr>
+    <tr><td><strong>Weekly, short, one idea</strong></td><td>The March framework planned a long monthly essay. A weekly email works when it is a 3-minute read with one thing to try at rehearsal. Each week it expands the theme the social posts already cover, so we never need a separate idea.</td></tr>
+    <tr><td><strong>Keep the name "One Voice"</strong></td><td>That is the name readers saw on dekesharon.com/news when they signed up. The March draft used "The Arrangement". Pick one; I recommend the one already live.</td></tr>
+    <tr><td><strong>Only Deke's real words</strong></td><td>Every story and tip comes from something Deke has said on record: YouTube, Skool lives, his posts. The review page shows the source and timestamp next to each paragraph. We never make up an anecdote in his name.</td></tr>
+    <tr><td><strong>90% help, 10% Skool</strong></td><td>One Skool link per issue, always paired with something useful: a live coming up, a replay, a free resource. No sales language. Once the paid tier launches, it is pitched to "a cappella directors", never "choir directors".</td></tr>
+    <tr><td><strong>Start with a hello issue</strong></td><td>The list has been quiet for eight months. People who forgot signing up click "spam", and that hurts every later issue. Issue 0 reminds them who it's from and what's coming, with one tip.</td></tr>
+    <tr><td><strong>Measure clicks and replies</strong></td><td>Open rates are unreliable since Apple Mail started opening emails automatically. We track clicks to Skool, replies, unsubscribes and spam complaints. A "How did you hear about us?" question on the Skool join form, with a "the newsletter" option, shows real conversions.</td></tr>
+  </table>
+</section>
+
+<section class="stack">
+  <h3>What one issue looks like</h3>
+  <div class="anat">
+    <div class="email">
+      <div class="meta">
+        <span><strong>Deke Sharon</strong> <span class="muted">· One Voice</span></span>
+        <span><strong>The last time through</strong></span>
+        <span class="muted">One sentence at the end of every song changes how your group learns it.</span>
+      </div>
+      <div class="body">
+        <p>At the end of every song you rehearse, say: this is the last time through. That is the cue for everyone to pull out their phone and record it.<br><span class="src">Source: Deke's text post, Nov 9</span></p>
+        <div class="box">
+          <span class="lab">Try it this week</span>
+          <p>They listen on the way to the next rehearsal, sing along, and walk in the door remembering how the bridge goes. You save the remedial time at the top of rehearsal and get to the emotion much faster.</p>
+        </div>
+        <p><span class="lab">Watch</span><br>This week's reel: "Do what you're amazing at" (60 sec)</p>
+        <p><span class="lab">Inside Total Vocal</span><br>The full Rasmus Krigström conversation is up, free for members. skool.com/deke</p>
+        <p>Does your group record its run-throughs? Hit reply and tell me.<br><br>Keep singing,<br>Deke</p>
+      </div>
+    </div>
+    <div class="stack">
+      <span class="pill">Mock-up, real Deke lines</span>
+      <ol>
+        <li><strong>Subject</strong>: the hook, nothing else. No issue numbers.</li>
+        <li><strong>Opening</strong>: 2 or 3 sentences, a moment or a line from Deke.</li>
+        <li><strong>Try it this week</strong>: one practical fix, about 250 words, for singers and directors.</li>
+        <li><strong>Watch</strong>: the week's best reel, linked. This ties the email to the social posts.</li>
+        <li><strong>Inside Total Vocal</strong>: one sentence, one link. Rotates between live, replay, resource and member moment.</li>
+        <li><strong>A question</strong> to reply to. The best replies become next week's "From the inbox".</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="stack">
+  <h3>The weekly rhythm</h3>
+  <p class="prose muted">It rides on the content engine that already builds Deke's social week. One build, one review page, one yes from Deke covers both.</p>
+  <div class="scroll">
+    <div class="week">
+      <div class="day"><span class="d">Saturday</span><span class="who claude">Claude</span><p>The weekly run mines the theme and clips as it does today, and now also drafts the issue from the same source.</p></div>
+      <div class="day"><span class="d">Sunday</span><span class="who claude">Claude</span><p>Strategy check: voice, sources, one Skool link, no em dashes, all links tested. A test email goes to you.</p></div>
+      <div class="day"><span class="d">Monday</span><span class="who deke">Deke</span><p>His usual review page gets a "Newsletter" tab. He reads it on his phone and replies yes, or sends a fix.</p></div>
+      <div class="day"><span class="d">Tuesday noon ET</span><span class="who auto">Deadline</span><p>Approval cutoff. On a yes, Claude schedules the email in Resend and the social week in Postiz.</p></div>
+      <div class="day send"><span class="d">Wednesday 8 AM ET</span><span class="who auto">Sends</span><p>One Voice goes out on the same day the social week begins. The text post that day says "full tip in my newsletter".</p></div>
+      <div class="day"><span class="d">Next Monday</span><span class="who claude">Claude</span><p>Clicks, Skool clicks, replies and unsubscribes are added to the engine's status report.</p></div>
+    </div>
+  </div>
+  <table>
+    <tr><th style="width:22%">Who</th><th>Weekly job</th></tr>
+    <tr><td><strong>Claude</strong> (editor)</td><td>Drafts, checks, sends tests, schedules, reads replies, writes the numbers up. Keeps the list clean (bounces, unsubscribes synced back to the site).</td></tr>
+    <tr><td><strong>Deke</strong></td><td>About 10 minutes: read and say yes. Optional: a 60-second voice memo answering "what happened at rehearsal this week?", which becomes the opening.</td></tr>
+    <tr><td><strong>Denis</strong></td><td>Nothing routine. You get the Sunday test email and only step in if something is flagged.</td></tr>
+  </table>
+</section>
+
+<section class="stack">
+  <h3>What has to be built first (one session)</h3>
+  <ul class="clean prose">
+    <li><strong>Send through Resend Broadcasts</strong> rather than the site's own send button. Broadcasts add the one-click unsubscribe header that Gmail and Yahoo now expect, can be scheduled, and report clicks per link. The site's current sender loops one email at a time without that header.</li>
+    <li><strong>Sync the list</strong>: the 111 opted-in readers go into a Resend "One Voice" segment, new signups are added automatically, and unsubscribes flow back to the site's database.</li>
+    <li><strong>Turn on click tracking</strong> for dekesharon.com (it is off today). Add a tag to every Skool link so we can count them.</li>
+    <li><strong>Restyle the email template</strong>: the weekly format above, the new favicon mark in the header, a real postal address in the footer.</li>
+    <li><strong>Engine lane</strong>: the newsletter draft step in the Saturday run, plus a Newsletter tab on Deke's review page.</li>
+    <li><strong>Fix the website copy</strong>: dekesharon.com/news says "Free. Monthly." and becomes "Free. Every Wednesday."</li>
+    <li><strong>Each issue is archived</strong> on dekesharon.com/news (already built), which also helps Google find Deke.</li>
+  </ul>
+  <div class="callout">
+    <strong>Blocker: a postal address</strong>
+    <p>US law (CAN-SPAM) requires a physical mailing address in every newsletter footer. It can be Deke's business address, a PO box or a virtual mailbox. I could not find one in the project, so you'll need to supply it. Nothing can be sent until we have it.</p>
+  </div>
+</section>
+
+<section class="stack">
+  <h3>Launch dates</h3>
+  <table>
+    <tr><th style="width:24%">When</th><th>What</th></tr>
+    <tr><td>Nov 16 to 20</td><td>Favicon live. Newsletter wiring built and tested with emails to you only.</td></tr>
+    <tr><td>Sun Nov 22</td><td>Deke approves Issue 0 ("Welcome to One Voice": who this is from, what arrives every Wednesday, one tip, the Skool invite).</td></tr>
+    <tr><td>Tue Nov 24, 8 AM ET</td><td>Issue 0 goes out. Sent Tuesday to avoid the Wednesday before Thanksgiving.</td></tr>
+    <tr><td>Wed Dec 2</td><td>Issue 1. Weekly from here on. Dec 23 is a "year in harmony" holiday issue, and we skip Dec 30.</td></tr>
+    <tr><td>After Issue 4</td><td>First scorecard. Approval stays an explicit yes from Deke every week (Denis, Nov 15). With no yes by Tuesday noon, that week's issue is held and you get an alert.</td></tr>
+  </table>
+  <table>
+    <tr><th style="width:40%">90-day targets</th><th>Number</th></tr>
+    <tr><td>Readers</td><td>111 to 300, from a weekly "get the full tip" post, a link in bio, and a line in every YouTube description</td></tr>
+    <tr><td>Click rate</td><td>5% or more of delivered emails</td></tr>
+    <tr><td>Unsubscribes / spam complaints</td><td>Under 0.5% / under 0.1% per issue</td></tr>
+    <tr><td>Skool</td><td>Count of "came from the newsletter" answers on the join form</td></tr>
+  </table>
+</section>
+
+<!-- C DEPLOY -->
+<section class="stack">
+  <div class="mark"><b>C</b><h2>How to deploy the newsletter</h2></div>
+  <div class="options">
+    <div class="opt rec">
+      <span class="pill ok">Recommended</span>
+      <h3>Add it to the content engine</h3>
+      <p>The Saturday run drafts the issue next to the social week, and the same review page and the same yes cover both. A newsletter-editor agent file holds the rules on this page. Runs on the Max plan with no API costs.</p>
+      <p class="muted">Catch: it pauses whenever the engine pauses. Today the engine is in dry-run mode and the Postiz queue has 3 days left, so that needs fixing too.</p>
+    </div>
+    <div class="opt">
+      <h3>A separate weekly routine</h3>
+      <p>A newsletter-only cloud routine with its own review email to Deke. Keeps working if the engine is paused.</p>
+      <p class="muted">Catch: two approvals a week for Deke, and the newsletter and posts can drift onto different themes.</p>
+    </div>
+    <div class="opt">
+      <h3>Deke uses the dashboard</h3>
+      <p>The composer at /dashboard/newsletters is already built. Deke writes and presses send himself.</p>
+      <p class="muted">Catch: you said he has no idea how to do this. Realistically, it never ships.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stack">
+  <h3>Decisions (Denis, Nov 15)</h3>
+  <ul class="clean prose">
+    <li><span class="pill ok">Locked</span> Favicon: the D with a chord.</li>
+    <li><span class="pill ok">Locked</span> Deploy: added to the content engine.</li>
+    <li><span class="pill ok">Locked</span> Name: One Voice.</li>
+    <li><span class="pill ok">Locked</span> Approval: an explicit yes from Deke for every issue. No reply means the issue is held.</li>
+    <li><span class="pill warn">Open</span> The postal address for the footer.</li>
+  </ul>
+</section>
+
+<footer>Source facts checked Nov 15, 2026: subscriber counts from the deke-production database, Resend domain status and DNS records read live, social post text from engine batches. Plan file: deke/newsletter/plan.html</footer>
+</div>

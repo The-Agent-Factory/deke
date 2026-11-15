@@ -153,6 +153,13 @@ def plan(week, auto):
     if mode == "deke":
         import review  # Deke approves on dekesharon.com; review.tick() schedules on Sunday night
         try:
+            import newsletter  # One Voice rides on the same review page (needs Deke's explicit Approve)
+            newsletter.draft(week)
+        except Exception as e:
+            send_email(f"[Deke engine] One Voice: no newsletter draft for {week}",
+                       f"<p>The week was planned, but the newsletter draft failed, so Deke's page has no newsletter this week.</p>"
+                       f"<pre>{html.escape(str(e))[:1500]}</pre>")
+        try:
             review.send(week)
         except Exception as e:
             meta.update(status="send_failed", send_error=str(e)[:500])
