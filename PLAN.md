@@ -1,6 +1,57 @@
 # Deke: Plan
-**Last updated:** 2026-11-05 (local)
+**Last updated:** 2026-11-10 (local)
 **Status:** active
+
+## 🆕 2026-11-11: RASMUS KRIGSTROM IS PUBLIC ON DEKE'S YOUTUBE (done)
+
+- **Live:** https://www.youtube.com/watch?v=z0Rs7jkE8OA (57:38, Deke's channel UCTuZ5LxQIjLK-CJBy0onT_Q). Postiz retry published it unlisted at 6:01 AM ET. Denis: Deke and Rasmus approved, make it public; switched 2026-11-11 9:54 AM ET via Composio YOUTUBE_UPDATE_VIDEO (account youtube_bugre-glop).
+- **Captions:** corrected 911-cue SRT (git blob 4b4e201, pulled from GitHub at commit 3ead512, hash checked) attached as standard track "English" before the switch. YouTube's auto (asr) track still exists alongside it.
+- **Verified after the switch:** privacy public, caption true, title, description, 23 chapters, 13 tags and custom thumbnail intact, watch page HTTP 200, oEmbed returns the title under Deke Sharon.
+- **Open:** caption listen list (5:34, 17:55, 26:16, 29:09, 32:08, 44:08, 49:19) never confirmed by ear. Branch deke/rasmus-live-intro still not merged to main.
+
+## 🆕 2026-11-10 (afternoon): DEKE'S INTRO ADDED TO THE RASMUS VIDEO (review page updated, nothing uploaded)
+
+- Deke sent an intro (`media/inbox/Intro for Deke and Rasmus .mp4`, 46 s, 1024x576 phone clip, VFR). Copied to `media/rasmus/intro/deke-intro-raw.mp4`; used in full (0.15 to 46.0 s), nothing cut.
+- **New final:** `media/rasmus/edit/rasmus-krigstrom-deke-youtube-final.mp4` (57:38, 1080p30, 3.2 GB, -15.5 LUFS; intro -15.8). Bill's layout exactly: splash -> Deke intro (scaled to 1080p, "Deke Sharon / Total Vocal" plate 1-7 s, Maliboom ducked 0.075 and ending with his last line) -> edit -> outro. Built by `engine/rasmus/assemble_final.py` (now Bill-style with intro). Old no-intro final `rasmus-krigstrom-deke-final.mp4` kept, superseded.
+- **Captions:** `rasmus-krigstrom-deke-youtube-final.en.srt`, 911 cues (15 for the intro). Opening re-transcribed from the final: audio and captions agree within ~50 ms. Fixes: "non-North American" kept whole; "talk to him about why is Sweden so singy" (solo re-pass p 0.99, first pass said "them").
+- **Package refreshed:** `total-vocal-skool/rasmus-krigstrom-2026-11/` (video hardlink to the new final, new .srt, UPLOAD-STEPS chapters: 0:00 Deke introduces Rasmus, 0:49 in his own words, rest +45.9 s).
+- **720p copy for Postiz:** `media/rasmus/edit/rasmus-krigstrom-720.mp4` (595 MB at Bill's bitrate; the first 909 MB encode was replaced).
+- **Captions:** Denis asked about burned-in captions; chose to keep the CC track (same as Bill; deke-video rule: no burn-in on long-form YouTube).
+- **Thumbnail (Denis: webcam frame "looks terrible", wanted positive and fun):** frame 1:02 of Ringmasters' own 4K "Let's Live it Up" video (zd9W-EyJ3Fw), Rasmus laughing, eyes open, sharpest frame picked. Built by `engine/rasmus/make_thumb.py` (Bill's layout, takes a crop box). Option B (ringmasters.se studio headshot) was offered and passed over. Instagram needs a login, so it wasn't searched.
+- **Review page (v4, both thumbnail options):** https://claude.ai/artifact/4AAcLrYKLVPPXx1rHX3LAF
+- **Upload:** Postiz post cmwb4m4g... for 2026-11-10 3:24 PM ET FAILED: "YouTube's daily upload quota is exhausted". Denis chose to retry at 6:00 AM ET. **Rescheduled: Postiz post cmwb5hyu40o70pq0792zel9pv, 2026-11-11T11:00Z, unlisted, state QUEUE** (title, 13 tags, thumbnail verified via Postiz MCP).
+- **Captions staged:** SRT committed (blob 4b4e201, branch deke/rasmus-live-intro, commit 6d72843); attach via Composio YOUTUBE_UPLOAD_CAPTION_TRACK (account youtube_bugre-glop) once the video exists. YOUTUBE_LIST_CHANNEL_VIDEOS mine=true returns 403; use YOUTUBE_LIST_PLAYLIST_ITEMS on UUTuZ5LxQIjLK-CJBy0onT_Q instead (works).
+- **Follow-up:** calendar event 2026-11-11 7:00 AM ET "Rasmus video: check it's up, attach captions, send Deke the link".
+- **Next:** verify upload -> attach captions -> Denis sends Deke the unlisted link -> public when Deke says yes. Branch deke/rasmus-live-intro not merged to main.
+
+## 2026-11-10: RASMUS KRIGSTROM INTERVIEW EDITED FOR YOUTUBE, BILL BIFFLE RECIPE (review page, nothing uploaded)
+
+- **Denis:** edit the Nov 9 Skool live with Rasmus "in the exact same manner as the Bill Biffle interview". Source (downloaded by Denis) moved to `media/rasmus/rasmus-full.mp4` (58:08, 1080p).
+- **Review page (republish here):** https://claude.ai/artifact/4AAcLrYKLVPPXx1rHX3LAF (source `media/rasmus/edit/review/REVIEW.html`, publish with the `files` map of the preview mp4 + rev-*.jpg + thumb.jpg in the same folder).
+- **Final:** `media/rasmus/edit/rasmus-krigstrom-deke-final.mp4` (56:52, 3.1 GB, -15.5 LUFS): splash-intro-interviews + Maliboom -> 3 Rasmus cold-open clips (bed soft under them, up under the title card) -> title -> conversation -> "Thank you, Rasmus" card + Maliboom tail -> splash-outro. No separate Deke intro (his read-aloud happened before the recording). Sync checked at 9 points (audio <19 ms, picture 1-2 frames, no drift).
+- **Cuts:** 9:40-10:16 and 10:54-11:28 (Rasmus's audio drops, troubleshooting); 0-0.4 s grey held on first live frame; Deke solo 55:44-55:47 (Rasmus's camera off); ends on "Yes, we should." before Denis's "ministers of song" wrap-up. Denis's own question at 49:06 kept (answers depend on it).
+- **Captions:** 896 cues, ~99 timed name/mishearing fixes in `engine/rasmus/build_captions.py`; punctuation text-only pass (`media/rasmus/punct-out.json`, word sequence verified). Listen list on the review page (5:34, 17:55, 26:16, 29:09, 32:08, 44:08, 49:19).
+- **Package:** `total-vocal-skool/rasmus-krigstrom-2026-11/` (video hardlink, .en.srt, thumbnail from 53:59 smile, UPLOAD-STEPS.txt with title/description/22 chapters/tags). Title: "Rasmus Krigström on Why Sweden Sings, with Deke Sharon".
+- **Scripts (reusable for the next guest):** `engine/rasmus/` = Bill's recipe with the guest in `edit.json` (build_edit.py, build_captions.py, assemble_final.py, scan_layout.py, retranscribe.py). Bill's per-guest tile tracking not needed: layout is the fixed "big" two-tile one.
+- **Next:** Denis reviews -> Postiz upload needs a 720p copy (Bill's path: unlisted first, captions via Composio deke-yt, public after Deke says yes).
+
+## 🆕 2026-11-09: RASMUS LIVE INTRO FOR DEKE (built, not sent to Deke)
+
+- **Page (republish here):** https://claude.ai/artifact/BXYhKLHcpY1yfWU159Gh61 (source `total-vocal-skool/rasmus-krigstrom-live/DEKE-INTRO.html`). Read-aloud opening, full (~60 s) and short (~20 s), with copy buttons. Facts taken only from the cheat sheet. Says baritone now, lead in 2012. Pronunciation "KREEG-strum" is my guess, not checked with Rasmus.
+- Made on branch `deke/rasmus-live-intro`, nothing committed.
+
+## 🆕 2026-11-09: RASMUS CHEAT SHEET FOR DEKE (built, not sent to Deke)
+
+- **Page (republish here):** https://claude.ai/artifact/EAFkYyMCD5PUvUBHhBWDXR (source `total-vocal-skool/rasmus-krigstrom-live/DEKE-CHEAT-SHEET.html`). One-page PDF beside it for forwarding.
+- **Found:** ringmasters.se/about lists Rasmus as baritone as of 2026 (Emanuel Roll moved to management, Victor Nilsson of Lemon Squeezy joined). He sang lead in 2012 (AIC, Zero8 Japan bio). The Skool post and today's Postiz promo say "sings lead" / "lead of Ringmasters". The sheet warns Deke. Posts not changed.
+
+## 🆕 2026-11-09: SAME-DAY PROMO FOR THE DEKE + RASMUS LIVE (accepted by Postiz for 9:13 AM ET; going live NOT verified, Denis closed the session and skipped the check)
+
+- **Live:** today 1 PM Toronto on Skool. Denis asked for one post to all of Deke's channels, reviewed it, then chose to post without X. Deke did not see it first.
+- **Sent:** Postiz posts for Instagram, Facebook, LinkedIn, Threads, YouTube, TikTok, 2026-11-09T14:13Z; ids in `publish-manifest.json`. X left out on Denis's call.
+- **Preview page (republish here):** https://claude.ai/artifact/Sys7rh2WkWdLhQTEAJeHjo (source `total-vocal-skool/rasmus-krigstrom-live/promo-2026-11-09/PREVIEW.html`).
+- **Assets:** same folder. `card-4x5.jpg` (Instagram, Facebook, LinkedIn, Threads, X), `deke-rasmus-live-today.mp4` (10 s, -21.1 LUFS, YouTube Short + TikTok), `publish-manifest.json`.
+- **Checks:** Rasmus = lead in the 2012 lineup, per ringmasters.se/about. Denis wrote "November 11th" for the card; calendar and Skool post say today, so the card says November 9.
 
 ## 🆕 2026-11-05: BILL BIFFLE IS PUBLIC ON DEKE'S YOUTUBE (done)
 
