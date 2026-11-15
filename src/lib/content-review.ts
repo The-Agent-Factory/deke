@@ -33,7 +33,11 @@ export type Review = {
   week: string
   token: string
   items: ReviewItem[]
-  deadline: string // ISO, when silence counts as yes
+  deadline: string // ISO, when silence counts as yes (ignored when explicit)
+  /** explicit = a one-off pack: nothing posts without Approve, no deadline line (Denis, 2026-11-15). */
+  explicit?: boolean
+  heading?: string
+  intro?: string
   createdAt: string
   decisions: Record<string, Decision> | null
   note: string | null

@@ -60,15 +60,20 @@ export default async function ContentReviewPage({
         </p>
       ) : null}
       <p className="text-sm font-semibold uppercase tracking-wider text-amber-700">
-        {onlyNewsletter ? 'One Voice . your newsletter' : `Total Vocal . week of ${label}`}
+        {onlyNewsletter ? 'One Voice . your newsletter' : review.explicit ? 'Total Vocal . new videos' : `Total Vocal . week of ${label}`}
       </p>
       <h1 className="mt-2 text-3xl font-semibold text-balance">
-        {onlyNewsletter ? 'Your newsletter is ready to read' : 'Next week on your channels'}
+        {onlyNewsletter ? 'Your newsletter is ready to read' : review.explicit ? review.heading || 'New videos for your OK' : 'Next week on your channels'}
       </h1>
       {onlyNewsletter ? (
         <p className="mt-3 text-neutral-700">
           Here is the next issue of One Voice, built from your own words. Read it, then tap Approve to send it or
           Hold to keep it back. It only goes out if you tap Approve.
+        </p>
+      ) : review.explicit ? (
+        <p className="mt-3 text-neutral-700">
+          {review.intro ||
+            'Watch each one, tap Approve or Skip, then press Send. Nothing here posts unless you tap Approve.'}
         </p>
       ) : (
         <>

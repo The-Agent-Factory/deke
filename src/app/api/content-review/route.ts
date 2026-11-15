@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const body = (await request.json().catch(() => null)) as
-    | { week?: string; deadline?: string; items?: ReviewItem[]; force?: boolean }
+    | { week?: string; deadline?: string; items?: ReviewItem[]; force?: boolean; explicit?: boolean; heading?: string; intro?: string }
     | null
   if (!body || !body.week || !WEEK_RE.test(body.week) || !Array.isArray(body.items) || !body.deadline) {
     return NextResponse.json({ error: 'week (YYYY-MM-DD), deadline and items[] are required' }, { status: 400 })
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
     token: existing?.token ?? newToken(),
     items: body.items,
     deadline: body.deadline,
+    ...(body.explicit ? { explicit: true, heading: body.heading?.slice(0, 120), intro: body.intro?.slice(0, 600) } : {}),
     createdAt: new Date().toISOString(),
     decisions: null,
     note: null,
