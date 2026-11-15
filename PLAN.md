@@ -2,6 +2,16 @@
 **Last updated:** 2026-11-15 (local)
 **Status:** active
 
+## 2026-11-15 (afternoon): WEEK PUBLISHED, INTERVIEW THUMBNAILS SWAPPED, PICKS FOR SHORTS + TRIP PACK
+
+- **Week Nov 18 to 24 SCHEDULED** (Denis OK): `plan_week.py publish 2026-11-18` -> 16 posts confirmed; Postiz queue read back: 20 upcoming posts, last on Tue Nov 24. Renders and checks: see the 2026-11-13 section (commit 54ba133).
+- **Why the gap happened (Denis asked):** engine `live=false` since early Nov, so no Saturday build; the Nov 18 week waited on a manual render. **Why trip footage was unused:** the refill only mines YouTube uploads (and only when live); 126 trip clips were indexed Nov 3 but only the China Pingtan reel ever posted.
+- **Interview thumbnails LIVE (Denis OK):** Bill Biffle "WHAT BARBERSHOP LOST", Rasmus "6% OF SWEDEN SINGS" via Composio YOUTUBE_UPDATE_THUMBNAIL (account youtube_bugre-glop), images hosted at dekesharon.com/yt-thumbs/*-v2.jpg; verified on i.ytimg.com. Builder `media/interviews/review/make_thumbs.py` (face left, text panel right: Denis rejected text over faces). Old thumbnails: `media/interviews/<slug>/current-thumb.jpg`.
+- **Picks page:** https://claude.ai/artifact/6FzdVc46XE86jo5oKxGqf8 (source `media/interviews/review/index.html`). Full picks `media/interviews/PICKS.md`; trip pack `engine/batches/trip-pack-2026-11/` (8 reels + 1 text, 6 need Deke; rain short held; MINER-FIX.md).
+- **Decided (Denis menu):** Shorts = top 3 each from Bill and Rasmus; McKnight skipped for now (Claude McKnight's own UBN show, needs his OK); rain short = option A (Deke's bus-clip voice over the 0057 rain picture, end on 0058 poncho; no bus picture); trip pack now + miner fix.
+- **One Voice Issue 1** ("The last time through", `newsletter/issues/001-last-time-through.json`) sent to Deke for approval; deadline Tue Nov 17 8 PM ET; send Wed Nov 18 8 AM ET if approved (review tick schedules it).
+- **In flight:** one helper renders the 6 Shorts + trip pack + rain short (A) and implements the miner fix, then builds a review page. Nothing goes to Postiz without Denis.
+
 ## 2026-11-15: ONE VOICE NEWSLETTER BUILT AND LIVE ON THE SITE (nothing sent to subscribers)
 
 - **Built, on main (18148d2 .. da52349), deployed (Railway SUCCESS):** `src/lib/newsletter/one-voice.ts` (format rules, email, archive mapping), `resend-sync.ts`, `/api/newsletters/engine/{sync,test,schedule}` (engine bearer secret), Newsletter card on `/content-review/<key>` (explicit "Approve and send", excluded from "approve all"), `/news` + popup copy weekly, removed false "3,400+" claim, archive shows SCHEDULED issues after send time, reader escapes HTML. **Bug fixed:** `/api/newsletters/issues/public` was blocked by middleware for visitors.
