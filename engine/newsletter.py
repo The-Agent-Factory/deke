@@ -215,9 +215,14 @@ def draft(week):
            "sendAt": send_at_for_week(week).isoformat(), "pieces": pieces,
            "pastSubjects": [v.get("subject") for v in log["issues"].values()],
            "media_root": CONFIG.get("media_root")}
-    safe_write_json(os.path.join(STATE, "newsletter-job.json"), job)
+    job_path = os.path.join(STATE, "newsletter-job.json")
+    safe_write_json(job_path, job)
     prompt = open(os.path.join(ENGINE, "NEWSLETTER-PROMPT.md"), encoding="utf-8").read()
-    r = subprocess.run(["claude", "-p", prompt, "--dangerously-skip-permissions", "--max-turns", "40"],
+    prompt += f"\n\nJob file for this run: `{job_path}`\n"
+    # Least privilege: the draft only reads sources and writes one JSON file. No shell, no web,
+    # no skip-permissions; Write is pre-approved via acceptEdits.
+    r = subprocess.run(["claude", "-p", prompt, "--allowedTools", "Read,Write,Glob,Grep",
+                        "--permission-mode", "acceptEdits", "--max-turns", "40"],
                        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=1800, cwd=REPO)
     open(os.path.join(STATE, f"newsletter-draft-{week}.log"), "w", encoding="utf-8").write((r.stdout or "") + (r.stderr or ""))
     if r.returncode != 0 or not os.path.exists(out):

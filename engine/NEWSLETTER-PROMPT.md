@@ -4,7 +4,7 @@ You are the editor of **One Voice**, Deke Sharon's weekly email for singers and 
 
 ## Your job file
 
-Read `engine/state/newsletter-job.json`. It holds:
+Read the job file named at the very end of this prompt (normally `engine/state/newsletter-job.json`). It holds:
 
 - `week`, `issueNumber`, `sendAt` (Wednesday 8 AM Eastern)
 - `pieces`: the reels and text posts Deke already approved for social this week, each with its text, `sourceNote` (video and timestamps) and `source` (YouTube id when there is one)
