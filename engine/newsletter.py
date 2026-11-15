@@ -158,7 +158,9 @@ def review(path, key, send_at_iso):
     check(draft)
     send_at = datetime.datetime.fromisoformat(send_at_iso).astimezone(TZ)
     deadline = send_at - datetime.timedelta(hours=12)
-    res = site_api("POST", "/api/content-review", {"week": key, "deadline": deadline.isoformat(),
+    # force: a (re)send always wipes earlier answers, so a tap on Denis's preview copy can never
+    # count as Deke's approval once newsletter_live is on.
+    res = site_api("POST", "/api/content-review", {"week": key, "deadline": deadline.isoformat(), "force": True,
                                                    "items": [review_item(draft, send_at)]})
     url = res["url"]
     safe_write_json(_state_for(path), {"key": key, "sendAt": send_at.isoformat(), "deadline": deadline.isoformat(),

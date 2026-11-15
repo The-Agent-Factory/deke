@@ -1,6 +1,29 @@
 # Deke: Plan
-**Last updated:** 2026-11-10 (local)
+**Last updated:** 2026-11-15 (local)
 **Status:** active
+
+## 2026-11-15: ONE VOICE NEWSLETTER BUILT AND LIVE ON THE SITE (nothing sent to subscribers)
+
+- **Built, on main (18148d2 .. da52349), deployed (Railway SUCCESS):** `src/lib/newsletter/one-voice.ts` (format rules, email, archive mapping), `resend-sync.ts`, `/api/newsletters/engine/{sync,test,schedule}` (engine bearer secret), Newsletter card on `/content-review/<key>` (explicit "Approve and send", excluded from "approve all"), `/news` + popup copy weekly, removed false "3,400+" claim, archive shows SCHEDULED issues after send time, reader escapes HTML. **Bug fixed:** `/api/newsletters/issues/public` was blocked by middleware for visitors.
+- **Engine:** `engine/newsletter.py` + `NEWSLETTER-PROMPT.md`; `batch.py` drafts before `review.send`; `review.finalize` schedules only on `decisions.newsletter == approve`, else held + email Denis; `review.py tick` (Task "Deke Engine Review", 9 AM + 9 PM) also finalizes stand-alone issues. Own switch **`config.newsletter_live` = false** (off: Deke emails go to Denis, approvals are only logged). Draft job runs `claude -p` least-privilege (Read/Write/Glob/Grep, no skip-permissions; the auto-mode classifier blocked the skip-permissions version).
+- **Resend:** segment "One Voice (Deke Sharon newsletter)" `79c5e2c1-964e-4fcd-a126-2c5b858cff5d`; synced 111/111, 0 failures. Click tracking ON for dekesharon.com. Railway vars set: `NEWSLETTER_SEGMENT_ID`, `NEWSLETTER_FROM` = Deke Sharon <news@dekesharon.com>. Reply-to defaults to deke@dekesharon.com (`NEWSLETTER_REPLY_TO`). Resend "unsubscribed" is account-wide (shared with other brands).
+- **Tested:** Issue 0 test email delivered to Denis (Resend 01a1df89...); Issue 0 review page live (key `2026-11-24`, private link in `newsletter/issues/000-welcome.json.state.json`, gitignored; ready-to-read email went to Denis); dry approve path logs "would_schedule"; weekly draft job on dry week 2026-11-09 produced a transcript-sourced issue that passed the rules.
+- **Issue 0:** `newsletter/issues/000-welcome.json`, send Tue Nov 24 8:00 AM ET, Deke deadline Mon Nov 23 8 PM ET.
+- **Blockers (Denis):** (1) postal address -> Railway var `NEWSLETTER_POSTAL_ADDRESS` (schedule refuses without it); (2) flip `newsletter_live` true, then re-send Issue 0 to Deke: `python engine/newsletter.py review newsletter/issues/000-welcome.json --key 2026-11-24 --send-at 2026-11-24T08:00:00-05:00`; (3) replies: keep going to deke@dekesharon.com or route elsewhere; (4) weekly issues need the social engine `live` true (it is paused).
+
+## 2026-11-15: FAVICON + WEEKLY NEWSLETTER "ONE VOICE" PLANNED (nothing built or sent)
+
+- Plan page (republish here): https://claude.ai/artifact/VK6mq8AuXARzV6owRpkMgg (source `newsletter/plan.html`).
+- Facts: site favicon is the stock Next.js one (25,931 bytes). EmailSubscriber has 127 rows, 111 newsletterOptIn, first signup 2026-03-10; NewsletterIssue has 1 empty DRAFT, nothing ever sent. dekesharon.com verified in Resend (click and open tracking off); DMARC p=none and SPF present. /news page says "One Voice, monthly"; the draft says "The Arrangement".
+- Proposed: favicon "D with a chord" (3 concepts on the page). Weekly One Voice, Wed 8 AM ET, a 3-minute read built from the engine's weekly social theme; uses only Deke's on-record words; 1 Skool link per issue; Resend Broadcasts plus segment sync; review tab on Deke's existing weekly page. Issue 0 Tue Nov 24, Issue 1 Wed Dec 2.
+- **Decisions locked (Denis, 2026-11-15 menu):** favicon = D with a chord (3 dots drop out under 32px); deploy = newsletter lane inside the content engine (same Saturday run, a Newsletter tab on Deke's review page); name = One Voice; approval = an explicit Deke yes for EVERY issue (no silence-as-yes; no yes by Tue noon ET means the issue is held and Denis is alerted).
+- **Blocker (Denis):** postal address for the CAN-SPAM footer.
+- **DONE 2026-11-15: favicon LIVE.** Commit 0a41cf5 on main; Railway deployment 53b47842 SUCCESS (auto-deployed from the GitHub push; the deke service is GitHub-connected, so no `railway up`). Verified live: /favicon.ico 3,831 bytes (was 25,931), icon.svg, apple-icon.png 180 and manifest.webmanifest all 200, and the page head links all three. Generator: Pillow script (D 16-48 without dots, 180/192/512 with dots).
+- **Earlier next-up list (favicon now done):** (1) favicon set in `src/app/` (icon.svg, favicon.ico 16/32/48, apple-icon 180, 192/512), commit to main, `railway up` from a fresh worktree, verify /favicon.ico is no longer 25,931 bytes. (2) Newsletter wiring: Resend segment sync plus signup hook, click tracking on, template restyle, engine lane, /news copy "Every Wednesday". (3) Issue 0 for Tue Nov 24.
+
+## 2026-11-13: WEEK OF NOV 18 TO 24 BUILT FOR DENIS'S OK (night job, nothing sent to Postiz)
+
+- Done: 16-post week (Wed Nov 18 text, Thu 19 reel "do what you're amazing at" from TMN Pioneer -zSnIm_XyKk (Denis swapped out ear-training for the guest-name issue), Sat 21 best-rehearsal reel, Mon 23 text, Tue 24 reel "four songs, four videos" from the same episode) in `engine/batches/2026-11-18-deke-plan`; page https://claude.ai/artifact/VwhMamauXHtmdGUtDe8nef (republish there); morning steps in `RENDER-MORNING.txt` (transcribe, snap, add, render 3 reels, verify) before `plan_week.py publish 2026-11-18`.
 
 ## 🆕 2026-11-11: RASMUS KRIGSTROM IS PUBLIC ON DEKE'S YOUTUBE (done)
 
