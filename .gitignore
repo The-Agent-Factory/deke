@@ -72,3 +72,6 @@ supabase/.temp
 
 # Bill Biffle upload package (large media)
 total-vocal-skool/bill-biffle-2026-10/*.mp4
+
+# One Voice review state (holds Deke's private review link token)
+newsletter/issues/*.state.json

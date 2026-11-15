@@ -193,6 +193,18 @@ def finalize(path):
     return line
 
 
+def tick_standalone():
+    """Called by review.py tick (9 AM and 9 PM): finalize every stand-alone issue awaiting Deke."""
+    if not NL_LIVE:
+        return ["newsletter_live is off: stand-alone issues not checked"]
+    import glob
+    out = []
+    for st_path in sorted(glob.glob(os.path.join(REPO, "newsletter", "issues", "*.json.state.json"))):
+        issue_path = st_path[: -len(".state.json")]
+        out.append(f"{os.path.basename(issue_path)}: {finalize(issue_path)}")
+    return out
+
+
 # ---------- weekly draft ----------
 
 def draft(week):

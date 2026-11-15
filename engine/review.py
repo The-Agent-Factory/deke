@@ -175,6 +175,14 @@ def finalize(week, meta, answer):
 
 
 def tick(force_remind=False, force_finalize=False):
+    # Stand-alone One Voice issues (e.g. Issue 0) have their own switch, newsletter_live,
+    # so they run even while the social engine is paused.
+    try:
+        import newsletter
+        for line in newsletter.tick_standalone():
+            print(line)
+    except Exception as e:
+        send_email(tag("One Voice: stand-alone issue check FAILED"), f"<pre>{html.escape(str(e))[:1500]}</pre>")
     if not LIVE and not DRY:
         print("engine not live (config live=false): review step paused, nothing sent to Deke")
         return
