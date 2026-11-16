@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { Kicker, EndSplash, MusicBed } from "./Polish";
-import type { KickerProps, EndSplashProps, MusicProps } from "./Polish";
+import { Kicker, EndSplash, MusicBed, ImageCard } from "./Polish";
+import type { KickerProps, EndSplashProps, MusicProps, ImageCardProps } from "./Polish";
 import {
   AbsoluteFill,
   Img,
@@ -36,6 +36,7 @@ export type DekeShortProps = {
   endSplash?: EndSplashProps; // Total Vocal closing card (replaces the small end pill)
   music?: MusicProps; // a cappella bed under the voice, swelling on the closing card
   joinWord?: string; // end pill word before TOTAL VOCAL (default "JOIN"; dubbed versions translate it)
+  imageCard?: ImageCardProps; // partner logo or poster before the closing card (e.g. CROappella on the Zadar reel)
 };
 
 const chunkWords = (words: Word[]): Word[][] => {
@@ -311,6 +312,7 @@ export const DekeShort: React.FC<DekeShortProps> = ({
   endSplash,
   music,
   joinWord,
+  imageCard,
 }) => {
   return (
     <AbsoluteFill style={{ background: "black" }}>
@@ -321,6 +323,7 @@ export const DekeShort: React.FC<DekeShortProps> = ({
       ))}
       {showTitle ? <TitleOverlay /> : null}
       {kicker ? <Kicker {...kicker} /> : null}
+      {imageCard ? <ImageCard {...imageCard} /> : null}
       <Captions words={words} />
       {endSplash ? <EndSplash {...endSplash} /> : <EndCta joinWord={joinWord} />}
       {music ? <MusicBed {...music} /> : null}

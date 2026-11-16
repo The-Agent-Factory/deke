@@ -253,9 +253,11 @@ def picture_inputs(item, tmpdir):
         if src["type"] == "dropbox":
             import dropbox_stream
             f = os.path.join(tmpdir, f"{item['id']}-pic{n}.mkv")
+            # rotate180: clips filmed with the camera upside down (China DJI_0059, the rain on stage)
+            vf = ("hflip,vflip," if p.get("rotate180") else "") + "scale=1920:-2"
             with dropbox_stream.served():
                 run(["ffmpeg", "-v", "error", "-y", "-ss", f"{a:.3f}", "-i", dropbox_stream.url(src["path"]),
-                     "-t", f"{b - a:.3f}", "-map", "0:v:0", "-an", "-vf", "scale=1920:-2", "-c:v", "libx264",
+                     "-t", f"{b - a:.3f}", "-map", "0:v:0", "-an", "-vf", vf, "-c:v", "libx264",
                      "-preset", "veryfast", "-crf", "14", f])
             out.append((f, 0.0, b - a))
         else:
@@ -268,13 +270,18 @@ def build_base(item, src, out, pics=None):
     segs = [[safe_start(src, a, allw), safe_end(src, b, allw)] for a, b in item["segments"]]
     item["cut_segments"] = segs  # what was actually cut, for the record and for caption timing
     parts, labels = [], []
+    # loudEndOK: source-time segment ends checked by hand where words run together with no gap, so the quietest
+    # point between them still reads as "sounding" in a roomy recording. Those ends get an 80 ms fade.
+    off = item.get("_offset", 0.0)
+    ok_end = lambda b: any(abs(b + off - t) < 0.06 for t in item.get("loudEndOK", []))
     for i, (a, b) in enumerate(segs):
         v = "" if pics else f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];"
+        fo = 0.08 if ok_end(b) else 0.03
         parts.append(f"{v}[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,"
-                     f"afade=t=in:d=0.03,afade=t=out:st={max(0, b - a - 0.03):.3f}:d=0.03[a{i}]")
+                     f"afade=t=in:d=0.03,afade=t=out:st={max(0, b - a - fo):.3f}:d={fo}[a{i}]")
         labels.append(f"[a{i}]" if pics else f"[v{i}][a{i}]")
     for a, b in segs:
-        if loud_at(src, b):
+        if loud_at(src, b) and not ok_end(b):
             die(f"cut at {b:.2f}s lands while the voice is still sounding (would clip a word); fix the segment end")
     total = sum(b - a for a, b in segs)
     inputs = ["-i", src]
@@ -509,6 +516,12 @@ def main():
         os.makedirs(pub, exist_ok=True)
         shutil.copyfile(base, os.path.join(pub, f"{item_id}.mp4"))
         props = {"baseFile": f"engine/{item_id}.mp4", "words": words, "showTitle": False, "durationSec": round(dur, 3)}
+        if item.get("imageCard"):  # partner logo before the closing card; endSec defaults to the card start
+            ic = dict(item["imageCard"])
+            ic.setdefault("endSec", round(dur - HOLD + 0.25, 3))
+            if not os.path.exists(os.path.join(REMOTION, "public", ic["src"])):
+                die(f"imageCard src {ic['src']} is not in my-video/public")
+            props["imageCard"] = ic
         pol = item.get("polish")
         if pol is None and not item.get("skool_only"):
             sys.path.insert(0, ENGINE)

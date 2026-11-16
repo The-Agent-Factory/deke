@@ -152,6 +152,34 @@ export const EndSplash: React.FC<EndSplashProps> = ({ lines, url, startSec }) =>
 };
 
 /**
+ * A partner logo or poster near the end (Deke 2026-11-16: name the festival at the end of the Zadar reel).
+ * The video dims behind it; it sits above the captions (which start at y 1310) and fades out before the
+ * closing card.
+ */
+export type ImageCardProps = { src: string; startSec: number; endSec: number; height?: number; top?: number };
+
+export const ImageCard: React.FC<ImageCardProps> = ({ src, startSec, endSec, height = 1060, top = 170 }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  if (t < startSec || t > endSec) return null;
+  const f = frame - startSec * fps;
+  const pop = spring({ frame: f, fps, config: { damping: 200 }, durationInFrames: 18 });
+  const out = interpolate(t, [endSec - 0.3, endSec], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return (
+    <AbsoluteFill style={{ opacity: Math.min(pop, out) }}>
+      <AbsoluteFill style={{ background: "rgba(10,10,10,0.55)" }} />
+      <div style={{ position: "absolute", top, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+        <Img
+          src={staticFile(src)}
+          style={{ height, width: "auto", transform: `scale(${0.94 + 0.06 * pop})`, filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.6))" }}
+        />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/**
  * Sing-Off a cappella bed under Deke's voice: barely there while he talks, rises on the closing
  * card, fades out at the very end.
  */
