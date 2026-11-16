@@ -2,6 +2,14 @@
 **Last updated:** 2026-11-15 (local)
 **Status:** active
 
+## 2026-11-15 (night): ALL 15 REVIEW PIECES SCHEDULED, QUEUE RUNS TO DEC 29
+
+- **Denis's call:** schedule the whole 2026-11-15 review pack as if Deke approved everything, locked cadence (3 reels a week Tue/Thu/Sat, text in the empty Wed Nov 25 slot). Deke has NOT clicked Approve yet; his review page (dekesharon.com/content-review/2026-11-15, explicit mode) still says nothing posts without Approve.
+- **Scheduled with `plan_week.py plan` + `publish` for Mondays 2026-11-23, 11-30, 12-07, 12-14, 12-21, 12-28:** 62 posts, every week confirmed in Postiz; read-back = 82 upcoming posts, no duplicate slots, last Tue Dec 29 19:00 UTC. Manifests in `engine/batches/<monday>-deke-plan/`.
+- **Order:** Wed Nov 25 text four-ways-to-match; Thu Nov 26 klapa; Sat 28 Bill sing-out recruit; Tue Dec 1 harmony-at-the-holidays (Christmas album); Thu 3 Rasmus Sweden sings; Sat 5 hear a smile; Tue 8 Bill Oktoberfest; Thu 10 just people; Sat 12 Rasmus off paper; Tue 15 autopilot; Thu 17 Bill harmony vs rhythm; Sat 19 rain short; Tue 22 Rasmus blow to the throat; Thu 24 kindergartners; Sat 26 ABBA; Tue 29 quieter not weaker. The 3 reels with words to check by ear (Rasmus "not my voice", ABBA "seeing the smiles", quieter "grabbing") sit Dec 22 or later on purpose.
+- **If Deke rejects a piece:** delete that item's 4 posts in Postiz (find by `engineItem` in the week's manifest, `postizPostId`) and set its bank status back to `rendered`.
+- **Still open this week:** Mon Nov 16, Fri 20, Sun 22 empty (off-cadence days, left empty). Bank after this: 0 reels and 0 text ready for new weeks after Dec 29 except older rendered items (rehearsal-start-on-time, ear-training, career-do-anything-else, uk-doctors, wa-four-tips-full, wa-tip1). Engine still `live=false`.
+
 ## 2026-11-15 (evening): SHORTS, TRIP PACK, RAIN SHORT RENDERED; MINER FIX
 
 - **Review page (private Artifact):** https://claude.ai/artifact/5Hxk51ZbP3vxhHrXWXtgxg (15 pieces, 540p previews, caption text, length, LUFS, platform, needs_deke). Republish from `media/engine/review-2026-11-15/` (`build_review.py`, notes in `review_notes.json`). Nothing written to Postiz, nothing scheduled, nothing uploaded, Deke not emailed. Config `live` still false, `newsletter_live` untouched.
