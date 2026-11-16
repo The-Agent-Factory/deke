@@ -24,6 +24,9 @@ FILLERS = {"uh", "um", "uhm", "erm", "ah"}
 ENC = ["-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", "30",
        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart"]
 NORM = "loudnorm=I=-14:TP=-1.5:LRA=11"
+# audioBlend: camera audio of a roomy far-mic recording with the boom cut, before it is mixed with the isolated voice
+BLEND_EQ = ("highpass=f=100,equalizer=f=220:t=q:w=1.0:g=-6,equalizer=f=500:t=q:w=1.2:g=-2,"
+            "equalizer=f=3200:t=q:w=1.0:g=3,agate=threshold=0.015:ratio=1.6:range=0.4:attack=5:release=150")
 
 
 def die(msg):
@@ -486,11 +489,27 @@ def main():
                 if not os.path.exists(cached):
                     clean_audio.clean_window_file(src, cached)
                 orig_window, src = src, cached
+            elif item.get("audioBlend"):
+                # Denis 2026-11-16 (Deke: "split the difference" between garbled and boomy): camera audio with the
+                # boom cut, mixed with the cached isolated voice. 60% clean was the most before words garble.
+                # The two tracks are sample-aligned (GCC-PHAT 0 ms), so the mix adds no echo.
+                import clean_audio
+                cached = f"{MEDIA}/clean-windows/{item_id}-{off:.2f}.mkv"
+                if not os.path.exists(cached):
+                    clean_audio.clean_window_file(src, cached)
+                w = float(item["audioBlend"]["clean"])
+                lev = "loudnorm=I=-20:TP=-2:LRA=11,aresample=48000"
+                blended = os.path.join(tmpdir, f"{item_id}-blend.mkv")
+                run(["ffmpeg", "-v", "error", "-y", "-i", src, "-i", cached, "-filter_complex",
+                     f"[0:a]{BLEND_EQ},{lev}[o];[1:a]{lev}[c];"
+                     f"[o][c]amix=inputs=2:weights='{1 - w:.2f} {w:.2f}':normalize=0[a]",
+                     "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "pcm_s16le", blended])
+                orig_window, src = src, blended
             work = dict(item, _offset=off, segments=[[round(a - off, 3), round(b - off, 3)] for a, b in item["segments"]])
             dur = build_base(work, src, base, pics)
             item["cut_segments"] = [[round(a + off, 3), round(b + off, 3)] for a, b in work["cut_segments"]]
             planned_words = words_for(work)
-            if item.get("audioClean"):
+            if item.get("audioClean") or item.get("audioBlend"):
                 # Captions come from the ORIGINAL audio of the same cuts. On far-mic room recordings the isolated
                 # voice made Whisper mishear badly (2026-11-15: "live in Korea", "Bernardo", "appalling dance"),
                 # while the original transcribed cleanly. The viewer still hears the cleaned audio.
