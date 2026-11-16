@@ -35,6 +35,7 @@ export type DekeShortProps = {
   kicker?: KickerProps; // small gold label at the top during the opening line
   endSplash?: EndSplashProps; // Total Vocal closing card (replaces the small end pill)
   music?: MusicProps; // a cappella bed under the voice, swelling on the closing card
+  joinWord?: string; // end pill word before TOTAL VOCAL (default "JOIN"; dubbed versions translate it)
 };
 
 const chunkWords = (words: Word[]): Word[][] => {
@@ -254,7 +255,8 @@ const ProgressBar: React.FC = () => {
   );
 };
 
-const EndCta: React.FC = () => {
+// joinWord: the word before TOTAL VOCAL on the end pill, so dubbed versions can say it in their language.
+const EndCta: React.FC<{ joinWord?: string }> = ({ joinWord = "JOIN" }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const startF = durationInFrames - 4.2 * fps;
@@ -289,7 +291,7 @@ const EndCta: React.FC = () => {
             color: "white",
           }}
         >
-          JOIN <span style={{ color: GOLD }}>TOTAL VOCAL</span>
+          {joinWord} <span style={{ color: GOLD }}>TOTAL VOCAL</span>
         </div>
         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 32, color: GOLD, marginTop: 4 }}>
           skool.com/deke
@@ -308,6 +310,7 @@ export const DekeShort: React.FC<DekeShortProps> = ({
   kicker,
   endSplash,
   music,
+  joinWord,
 }) => {
   return (
     <AbsoluteFill style={{ background: "black" }}>
@@ -319,7 +322,7 @@ export const DekeShort: React.FC<DekeShortProps> = ({
       {showTitle ? <TitleOverlay /> : null}
       {kicker ? <Kicker {...kicker} /> : null}
       <Captions words={words} />
-      {endSplash ? <EndSplash {...endSplash} /> : <EndCta />}
+      {endSplash ? <EndSplash {...endSplash} /> : <EndCta joinWord={joinWord} />}
       {music ? <MusicBed {...music} /> : null}
       <ProgressBar />
     </AbsoluteFill>

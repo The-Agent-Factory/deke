@@ -1,6 +1,17 @@
 # Deke: Plan
-**Last updated:** 2026-11-15 (local)
+**Last updated:** 2026-11-16 (local)
 **Status:** active
+
+## 2026-11-16: MULTILINGUAL TEST, FOUR-TIPS REEL IN FRENCH AND GERMAN (nothing sent to Deke)
+
+- **Why:** AltaCross (Maxime Aiguier) pitched Deke voice-kept dubbing into Japanese, German, Korean; Deke replied "I think we have this ability built in already - Denis?" (Gmail thread 1a1e509fb86ee60e, unanswered).
+- **Decided (Denis menu):** sample = `wa-four-tips-full` reel; voice only, no lip-sync.
+- **Built:** `engine/dub_sample.py <item> <langs>`: base audio only goes to Fal `fal-ai/elevenlabs/dubbing` (clones Deke's voice from the clip, $0.60/min), dub laid back on the caption-free base, Whisper captions in the language, optional `<dubs>/<id>-<lang>.fixes.json` caption corrections, DekeShort render with new `joinWord` prop (REJOIGNEZ / MACH MIT BEI). Reuses a paid dub if the raw file + `.request` exist. bank.json untouched.
+- **Output:** `media/engine/dubs/wa-four-tips-full-{fr,de}.mp4` (107.7 s, -14.9 / -14.6 LUFS, QA clean, caption sheets checked). Fal requests FR 01a1e50e-ac15-7e72-ab72-bf3941460425, DE 01a1e51b-29a4-75a3-8679-28ed9c08c3ab. Spend about $2.16. Dub took 21 s per language.
+- **Review page (private Artifact, republish here):** https://claude.ai/artifact/DRXH883Cup4T7vt2UjwXxo (source `media/engine/dubs/review/index.html`, previews in `review/v/`).
+- **Findings:** French good (vous throughout; literal "fusion" for blend; "pull people early, after rehearsal" mistranslated). German mixes ihr / Sie / du and uses "Blendprobleme", "Noten klopfen": not publishable as is. For real publishing: own the translation (Claude + a cappella glossary + one form of address, native skim), then his cloned voice reads it. Lip-sync on Fal: sync lipsync-2 $3/min, pro $5/min.
+- **Caught:** render.caption_sheet temp tiles (`work/cap_NNN.jpg`) collide with a concurrent render; dub_sample.py now uses a private folder. The engine's own render.py still shares the name.
+- **Next up (Denis):** watch the page; decide whether to send it to Deke (artifact video does not play for others: use the dekesharon.com content-review page) and how to answer the AltaCross thread.
 
 ## 2026-11-15 (night): ALL 15 REVIEW PIECES SCHEDULED, QUEUE RUNS TO DEC 29
 
