@@ -467,18 +467,37 @@ def main():
     tmpdir = tempfile.mkdtemp(prefix="deke-render-")
     try:
         base = f"{MEDIA}/bases/{item_id}.mp4"
+        caption_src = None  # set only for audioClean reels (captions from the original audio)
         pics = picture_inputs(item, tmpdir) if item.get("picture") else None
         if item["source"]["type"] == "dropbox":
             src, off = dropbox_window(item, tmpdir)
+            if item.get("audioClean"):
+                # Roomy footage (Denis 2026-11-15): isolate the voice in this window with the approved recipe.
+                # Cached per item and window start, so a re-render does not pay for isolation again.
+                import clean_audio
+                cached = f"{MEDIA}/clean-windows/{item_id}-{off:.2f}.mkv"
+                if not os.path.exists(cached):
+                    clean_audio.clean_window_file(src, cached)
+                orig_window, src = src, cached
             work = dict(item, _offset=off, segments=[[round(a - off, 3), round(b - off, 3)] for a, b in item["segments"]])
             dur = build_base(work, src, base, pics)
             item["cut_segments"] = [[round(a + off, 3), round(b + off, 3)] for a, b in work["cut_segments"]]
             planned_words = words_for(work)
+            if item.get("audioClean"):
+                # Captions come from the ORIGINAL audio of the same cuts. On far-mic room recordings the isolated
+                # voice made Whisper mishear badly (2026-11-15: "live in Korea", "Bernardo", "appalling dance"),
+                # while the original transcribed cleanly. The viewer still hears the cleaned audio.
+                caption_src = os.path.join(tmpdir, f"{item_id}-caption-audio.wav")
+                chains = [f"[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS[c{i}]" for i, (a, b) in enumerate(work["cut_segments"])]
+                labels = "".join(f"[c{i}]" for i in range(len(chains)))
+                run(["ffmpeg", "-v", "error", "-y", "-i", orig_window, "-filter_complex",
+                     ";".join(chains) + f";{labels}concat=n={len(chains)}:v=0:a=1[o]", "-map", "[o]",
+                     "-ac", "1", "-ar", "16000", caption_src])
         else:
             src = source_path(item["source"])
             dur = build_base(item, src, base, pics)
             planned_words = words_for(item)
-        words = words_from_clip(base, dur - HOLD, item.get("whisperPrompt"))
+        words = words_from_clip(caption_src or base, dur - HOLD, item.get("whisperPrompt"))
         words = caption_fixes(words, item.get("captionFixes", []))
         # Sanity: the clip transcript must cover about the same words as the plan, or something is off.
         if abs(len(words) - len(planned_words)) > max(4, 0.25 * len(planned_words)):

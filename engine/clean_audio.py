@@ -105,6 +105,46 @@ def merge(windows):
     return out
 
 
+def clean_range(src, a, b, tmp, n, key):
+    """Isolate src[a:b], warm it, put it back at the window's own level, and line it up with the source to
+    within 5 ms. Returns a 48 kHz stereo WAV exactly b - a long."""
+    raw, iso, clean = (os.path.join(tmp, f"w{n}.{e}") for e in ("mp3", "iso.mp3", "wav"))
+    ff("-ss", str(a), "-to", str(b), "-i", src, "-vn", "-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "320k", raw)
+    open(iso, "wb").write(isolate(raw, key))
+    level = window_lufs(src, a, b)
+    lag = lag_seconds(src, a, b, iso)
+    if lag < -0.02:
+        die(f"isolated audio runs early ({lag * 1000:.0f} ms) for {a:.1f}-{b:.1f} s; not expected, check by hand")
+    # late: drop the late start; a few ms early (seen once, -5 ms): delay it. Then pad the tail and hold the
+    # window to its exact length so the splice stays in sync.
+    shift = (f"atrim=start={lag:.4f},asetpts=PTS-STARTPTS" if lag >= 0
+             else f"adelay={-lag * 1000:.0f}:all=1")
+    ff("-i", iso, "-af", f"{shift},{WARM_F},"
+       f"loudnorm=I={level}:TP=-1.5:LRA=11,aresample=48000,apad,atrim=end={b - a:.4f}",
+       "-ar", "48000", "-ac", "2", clean)
+    check = lag_seconds(src, a, b, clean)
+    if abs(check) > 0.005:
+        die(f"still {check * 1000:.0f} ms out of sync after the fix for {a:.1f}-{b:.1f} s")
+    print(f"  isolated {a:.1f}-{b:.1f} s at {level} LUFS; lag {lag * 1000:.0f} ms removed, now {check * 1000:.1f} ms")
+    return clean
+
+
+def clean_window_file(src, out):
+    """For Dropbox reels (render.py, item "audioClean": true): the render pulls only a short window of the clip,
+    so clean that whole window and write a copy with the same video. Cached by the caller."""
+    key = os.environ.get("FAL_KEY")
+    if not key:
+        die("FAL_KEY not set (needed for audioClean)")
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", src],
+                       capture_output=True, text=True)
+    dur = float(r.stdout.strip())
+    tmp = tempfile.mkdtemp(prefix="deke-clean-")
+    clean = clean_range(src, 0.0, dur, tmp, 0, key)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    ff("-i", src, "-i", clean, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "pcm_s16le", out)
+    return out
+
+
 def main(ids):
     key = os.environ.get("FAL_KEY")
     if not key:
@@ -134,25 +174,10 @@ def main(ids):
         ff("-i", src, "-vn", "-ar", "48000", "-ac", "2", full)
         pieces, cursor = [], 0.0
         for n, (a, b) in enumerate(windows):
-            raw, iso, clean = (os.path.join(tmp, f"w{n}.{e}") for e in ("mp3", "iso.mp3", "wav"))
-            ff("-ss", str(a), "-to", str(b), "-i", src, "-vn", "-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "320k", raw)
-            open(iso, "wb").write(isolate(raw, key))
-            level = window_lufs(src, a, b)
-            lag = lag_seconds(src, a, b, iso)
-            if lag < 0:
-                die(f"isolated audio runs early ({lag * 1000:.0f} ms) for {a:.1f}-{b:.1f} s; not expected, check by hand")
-            # drop the late start, pad the tail, and hold the window to its exact length so the splice stays in sync
-            ff("-i", iso, "-af", f"atrim=start={lag:.4f},asetpts=PTS-STARTPTS,{WARM_F},"
-               f"loudnorm=I={level}:TP=-1.5:LRA=11,aresample=48000,apad,atrim=end={b - a:.4f}",
-               "-ar", "48000", "-ac", "2", clean)
-            check = lag_seconds(src, a, b, clean)
-            if abs(check) > 0.005:
-                die(f"still {check * 1000:.0f} ms out of sync after the fix for {a:.1f}-{b:.1f} s")
-            print(f"  lag {lag * 1000:.0f} ms removed, now {check * 1000:.1f} ms")
+            clean = clean_range(src, a, b, tmp, n, key)
             pieces.append(("orig", cursor, a))
             pieces.append(("clean", clean))
             cursor = b
-            print(f"  isolated {a:.1f}-{b:.1f} s at {level} LUFS")
         pieces.append(("orig", cursor, None))
         inputs, chains, labels = ["-i", full], [], []
         for k, p in enumerate(pieces):
