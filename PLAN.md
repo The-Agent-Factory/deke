@@ -2,6 +2,17 @@
 **Last updated:** 2026-11-16 (local)
 **Status:** active
 
+## 2026-11-16: DEKE'S NOTES ON THE REVIEW PACK, 9 PIECES RE-CUT AND RE-SCHEDULED
+
+- **Deke (WhatsApp 11/16):** (1) the first videos (Croatia coaching) sounded garbled and slurred, "like I'm drunk... is this AI imitating my voice?" though he likes the content; (2) rain short: show them performing in the pouring rain, too much pre-rain footage, anti-climactic; (3) Zadar reel: put up the CROappella logo / mention the festival and Croatia at the end ("Coachella" in his message = dictation of CROappella). Denis: the interviews are all great.
+- **Cause of (1):** ElevenLabs isolation on far-mic room audio rebuilt his voice with artifacts (Whisper already misheard it). Close-mic interview Shorts keep their cleaning. **Rule: never isolate far-mic / roomy trip footage; use the camera audio.**
+- **Fixed:** 7 coaching reels `audioClean: false` (original camera audio, untouched, `audioNote` on each). Rain short: new `picture` list (old one in `picture_before_2026_11_16`): opens on DJI_0059 torrential rain on stage (file is upside down, new `rotate180` picture option), GOLDEN still lands on "Golden", rain sheet on "the rain started", EXIT under umbrellas on "the show kept going", ends on the 0058 poncho smile; pre-rain picture 25 s -> 10.6 s. Zadar: new `imageCard` (Remotion `ImageCard`, render.py prop) shows the official CROappella IV poster (croappella.com/Logo4.svg, "with special guest Deke Sharon", "Zadar, Croatia", July dates cropped off; `my-video/public/brand/croappella-iv.png`) from "It's just stunning" to the closing card; caption, title and TikTok copy now name CROappella IV, Zadar, Croatia (old copy in `copy_before_2026_11_16`).
+- **Render notes:** smile end 981.30 is the valley between "joy." and "And Ian" (no gap); room tail trips `loud_at`, so new item key `loudEndOK` (hand-checked ends, 80 ms fade). ABBA captionFix keeps "like Dancing Queen. What, a song about". Zadar's first try died on `mkl_malloc` (transient memory), retry OK. All 9 QA clean, LUFS -14.4 to -16.1. Commit 3f01b06.
+- **Postiz:** new `engine/replace_posts.py <monday> <ids> --apply` (deletes the item's posts, checks the rest of the week is untouched, rebuilds rows from the bank in the same slots, `plan_week.publish`). All 36 posts swapped in weeks 11-23 to 12-28; read-back 82 upcoming, no duplicate slots, last Tue Dec 29. Manifest rows carry `replacedFrom`.
+- **Deke's review page updated, same link** (dekesharon.com/content-review/2026-11-15, token in `media/engine/review-2026-11-15/deke-review.json`): 9 cards titled "Updated: ...", one "what changed" line on each, intro line added. Script `media/engine/review-2026-11-15/update_after_notes.py`; stored review before the change in `site-review-before-2026-11-16.json`. Deke has still not pressed Approve (decisions null).
+- **For Denis's ear (low stakes):** "just people" captions now hear "most important thing" (earlier pass "most compelling"); "smile" hears "the more hearty". Bank backup before these edits: `engine/bank.json.pre-deke-feedback-2026-11-16`.
+- **Next up:** Denis sends Deke the reply; Deke approves on the page.
+
 ## 2026-11-16: MULTILINGUAL TEST, FOUR-TIPS REEL IN FRENCH AND GERMAN (nothing sent to Deke)
 
 - **Why:** AltaCross (Maxime Aiguier) pitched Deke voice-kept dubbing into Japanese, German, Korean; Deke replied "I think we have this ability built in already - Denis?" (Gmail thread 1a1e509fb86ee60e, unanswered).
