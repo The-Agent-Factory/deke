@@ -1,6 +1,13 @@
 # Deke: Plan
-**Last updated:** 2026-11-16 (local, evening)
+**Last updated:** 2026-11-23 (morning)
 **Status:** active
+
+## 2026-11-23: WATCHDOG RED "AUTOPILOT 475 HOURS" (root cause found, Dropbox fix waiting on Denis)
+
+- **Cause 1:** the Nov 5 Claude reinstall (`claude-reinstall/reinstall.ps1`) paused all Claude-path tasks and never restored three of them: `DekeDropboxAutopilot`, `Deke Channel Pulse Scrape`, `Deke Skool Pulse (daily)`. The Paused Jobs page (https://claude.ai/artifact/7cj1hczZiaGrxcjYZX3UfL) has no choices recorded. Denis asked to fix the alert, so `DekeDropboxAutopilot` was re-enabled 2026-11-23; the two pulse tasks stay off (not part of this alert; Channel Pulse costs about $0.35/day on Apify).
+- **Cause 2 (the real blocker):** the first run failed: `rclone lsjson dropbox:TotalVocal Skool` gives "directory not found". Deke's shared folder is no longer added to Denis's Dropbox (laflamme.denis@gmail.com, 9.25 GiB total, 11 MiB used); adding it back gives `insufficient_quota`. The folder holds about 90 GB (126 clips indexed Nov 3). No local fix exists: needs more Dropbox space or a different way to read the folder.
+- **Watchdog fixed (`engine/watchdog.py`):** it read the retired `D:/deke-media/autopilot-log.txt` (so "Is the D: drive plugged in?" was wrong); now reads `engine/state/dropbox/autopilot-log.txt`. A failed autopilot run is now red (was shown as amber "activity"). The bank note no longer claims it refills while `live=false`.
+- **Engine `live=false` is unchanged** (Denis's master switch).
 
 ## 2026-11-16 (evening): DEKE'S SECOND ROUND OF NOTES (audio middle ground, Golden bed, order, TMN camp)
 

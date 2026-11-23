@@ -12,7 +12,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import LIVE, CONFIG, now, load_bank, deke_posts, send_email, write_state, read_state, BATCHES
 
 SKOOL = "C:/Users/lafla/claude_projects/claude-academy/1- Youtube Production/pipeline/Projects/deke/growth/data/skool.jsonl"
-AUTOPILOT_LOG = "D:/deke-media/autopilot-log.txt"
+# Online mode since 2026-11-03: dropbox-autopilot.mjs logs here, not on the D: drive.
+AUTOPILOT_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state", "dropbox", "autopilot-log.txt")
 
 
 def check():
@@ -90,7 +91,8 @@ def check():
                  needs_deke=sum(1 for i in bank["items"] if i.get("needs_deke") and not i.get("week")))
     if weeks < CONFIG["bank_alert_weeks"]:
         amber.append(f"The clip bank holds {weeks:.1f} weeks ({reels_ready} reels, {text_ready} text posts). "
-                     "The weekly run mines more from Deke's YouTube automatically; this is a heads-up, not a task.")
+                     + ("The weekly run mines more from Deke's YouTube automatically; this is a heads-up, not a task." if LIVE
+                        else "The weekly run only mines more while the engine is live, so this will not refill on its own."))
 
     # 5. Footage autopilot
     try:
@@ -99,12 +101,16 @@ def check():
         age_h = (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(stamp.replace("Z", "+00:00"))).total_seconds() / 3600
         facts["autopilot_last"] = lines[-1][:120]
         if age_h > 14:
-            red.append(f"The Dropbox footage autopilot last logged {age_h:.0f} hours ago (it runs every 6 hours). Is the D: drive plugged in?")
+            red.append(f"The Dropbox footage autopilot last logged {age_h:.0f} hours ago (it runs every 6 hours). Check that the scheduled task DekeDropboxAutopilot is enabled.")
         recent_new = [l for l in lines[-8:] if "nothing new" not in l]
-        if recent_new:
+        failed = [l for l in lines[-3:] if "RUN FAILED" in l or "ERROR" in l]
+        if failed:
+            red.append("The Dropbox footage autopilot's last run failed: " + failed[0][:200] +
+                       " See engine/state/dropbox/autopilot-log.txt.")
+        elif recent_new:
             amber.append("Deke's Dropbox had activity: " + recent_new[-1][:160])
     except Exception as e:
-        red.append(f"Cannot read the footage autopilot log ({e}). The D: drive may be unplugged.")
+        red.append(f"Cannot read the footage autopilot log ({e}). Check the scheduled task DekeDropboxAutopilot.")
 
     # 6. Skool trend (for the report only)
     try:
