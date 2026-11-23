@@ -498,11 +498,22 @@ def main():
                 if not os.path.exists(cached):
                     clean_audio.clean_window_file(src, cached)
                 w = float(item["audioBlend"]["clean"])
+                # Optional "ranges": [[src_start, src_end, clean], ...] (source seconds) where isolation garbles a
+                # word, e.g. just-people 2026-11-23: "compelling" came out "iconic" at 60%; camera audio is clear.
+                # Each range fades in and out over its last 0.3 s inside the edges, so there is no jump in tone.
+                def weight(cam):
+                    r = 0.3
+                    e = f"{w:.3f}"
+                    for a, b, c in reversed(item["audioBlend"].get("ranges", [])):
+                        d = f"max({a - off:.3f}-t,t-{b - off:.3f})"
+                        e = f"if(lt({d},0),{c:.3f}+({w - c:.3f})*clip(({d}+{r})/{r},0,1),{e})"
+                    return f"1-({e})" if cam else e
                 lev = "loudnorm=I=-20:TP=-2:LRA=11,aresample=48000"
                 blended = os.path.join(tmpdir, f"{item_id}-blend.mkv")
                 run(["ffmpeg", "-v", "error", "-y", "-i", src, "-i", cached, "-filter_complex",
-                     f"[0:a]{BLEND_EQ},{lev}[o];[1:a]{lev}[c];"
-                     f"[o][c]amix=inputs=2:weights='{1 - w:.2f} {w:.2f}':normalize=0[a]",
+                     f"[0:a]{BLEND_EQ},{lev},volume='{weight(True)}':eval=frame[o];"
+                     f"[1:a]{lev},volume='{weight(False)}':eval=frame[c];"
+                     f"[o][c]amix=inputs=2:weights='1 1':normalize=0[a]",
                      "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "pcm_s16le", blended])
                 orig_window, src = src, blended
             work = dict(item, _offset=off, segments=[[round(a - off, 3), round(b - off, 3)] for a, b in item["segments"]])
