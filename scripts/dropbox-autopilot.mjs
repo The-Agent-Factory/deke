@@ -30,6 +30,7 @@ const FOOTAGE = path.join(DEKE_ROOT, 'engine', 'state', 'dropbox'); // online mo
 mkdirSync(FOOTAGE, { recursive: true });
 const PYTHON = process.env.DEKE_PYTHON || 'C:/Python313/python.exe';
 const INDEXER = path.join(DEKE_ROOT, 'engine', 'index_dropbox.py');
+const STREAM = path.join(DEKE_ROOT, 'engine', 'dropbox_stream.py');
 const SNAPSHOT = path.join(FOOTAGE, 'autopilot-remote-snapshot.json');
 const LOCK = path.join(FOOTAGE, 'autopilot.lock');
 const LOG = path.join(FOOTAGE, 'autopilot-log.txt');
@@ -107,9 +108,12 @@ async function main() {
     const current = { files: {} };
     const newNonVideo = [];
     for (const watch of CONFIG.watches) {
-      const res = runOrThrow(RCLONE, ['lsjson', watch.remote, '--recursive', '--files-only']);
+      // Since 2026-11-23 the folder is read through its shared link (it is not added to Denis's Dropbox:
+      // ~90 GB vs 9.25 GB of space), so list it with dropbox_stream.py, not rclone lsjson.
+      const folder = watch.remote.replace(/^[^:]+:/, '');
+      const res = runOrThrow(PYTHON, ['-X', 'utf8', STREAM, 'lsjson', folder]);
       if (!res.stdout || !res.stdout.trim()) {
-        throw new Error(`rclone lsjson returned empty output for ${watch.remote} (exit ${res.status}, rclone=${RCLONE}, cwd=${process.cwd()})\nstderr: ${(res.stderr || '(empty)').slice(-2000)}`);
+        throw new Error(`dropbox_stream lsjson returned empty output for ${folder} (exit ${res.status}, cwd=${process.cwd()})\nstderr: ${(res.stderr || '(empty)').slice(-2000)}`);
       }
       for (const e of JSON.parse(res.stdout)) {
         const key = `${watch.name}:${e.Path}`;

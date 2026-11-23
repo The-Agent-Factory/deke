@@ -1,7 +1,7 @@
 {
   "_about": "Deke content engine settings. Change approval_mode only on Denis's word.",
   "timezone": "America/Toronto",
-  "live": false,
+  "live": true,
   "_live": "Master switch. false = nothing goes to Deke and nothing is scheduled in Postiz. Only Denis flips it to true, after the dry run passes.",
   "newsletter_live": true,
   "_newsletter_live": "One Voice newsletter switch (Denis, 2026-11-15), separate from live. false = review emails go to Denis, approved issues are logged, nothing is scheduled in Resend. Every issue needs Deke's explicit Approve; silence or Hold = held. See engine/newsletter.py.",
@@ -39,7 +39,7 @@
           ],
           [
             "youtube",
-            "12:00"
+            "09:00"
           ],
           [
             "tiktok",
@@ -60,7 +60,7 @@
           ],
           [
             "youtube",
-            "12:00"
+            "09:00"
           ],
           [
             "tiktok",
@@ -81,7 +81,7 @@
           ],
           [
             "youtube",
-            "12:00"
+            "09:00"
           ],
           [
             "tiktok",
